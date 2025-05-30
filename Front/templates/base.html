@@ -3,11 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Fithub</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static',filename='css/main.css',_external=True) }}"
+    />
   </head>
   <body>
-    <nav></nav>
-    <p style="color: black">Hola</p>
+    <nav><p class="ml-6 text-blue-700">Hola</p></nav>
+
     <main>{% block content %} {% endblock %}</main>
 
     <footer></footer>
