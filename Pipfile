@@ -8,6 +8,7 @@ flask = "*"
 flasgger = "*"
 flask-cors = "*"
 mysql-connector = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
