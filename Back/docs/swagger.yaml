@@ -1,0 +1,630 @@
+# openapi: 3.0.3
+info:
+  title: Fithub API
+  description: API para la plataforma de entrenamiento Fitter
+  version: 1.0.0-SNAPSHOT
+
+servers:
+  - url: http://localhost:8080/api
+
+paths:
+  /usuarios:
+    get:
+      summary: Obtener todos los usuarios
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
+    post:
+      summary: Crear nuevo usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuario'
+      responses:
+        '201':
+          description: Usuario creado
+
+  /usuarios/{id}:
+    get:
+      summary: Obtener usuario por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+    put:
+      summary: Actualizar usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuario'
+      responses:
+        '200':
+          description: Usuario actualizado
+    delete:
+      summary: Eliminar usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Usuario eliminado
+
+  /login:
+    post:
+      summary: Autenticación (login)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                correo:
+                  type: string
+                contraseña:
+                  type: string
+              required:
+                - correo
+                - contraseña
+      responses:
+        '200':
+          description: Token de autenticación
+
+  /roles:
+    get:
+      summary: Listar todos los roles
+      responses:
+        '200':
+          description: Lista de roles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rol'
+    post:
+      summary: Crear nuevo rol
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rol'
+      responses:
+        '201':
+          description: Rol creado
+
+  /planes:
+    get:
+      summary: Obtener todos los planes
+      responses:
+        '200':
+          description: Lista de planes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Plan'
+    post:
+      summary: Crear nuevo plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Plan'
+      responses:
+        '201':
+          description: Plan creado
+
+  /planes/{id}:
+    get:
+      summary: Obtener un plan por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Plan encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plan'
+    put:
+      summary: Actualizar plan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Plan'
+      responses:
+        '200':
+          description: Plan actualizado
+    delete:
+      summary: Eliminar plan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Plan eliminado
+
+  /alquileres:
+    get:
+      summary: Ver todos los alquileres
+      responses:
+        '200':
+          description: Lista de alquileres
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Alquiler'
+    post:
+      summary: Registrar nuevo alquiler
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Alquiler'
+      responses:
+        '201':
+          description: Alquiler registrado
+
+  /alquileres/{id}:
+    get:
+      summary: Ver alquiler por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Alquiler encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alquiler'
+    put:
+      summary: Editar nota o plan del alquiler
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Alquiler'
+      responses:
+        '200':
+          description: Alquiler actualizado
+    delete:
+      summary: Eliminar alquiler
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Alquiler eliminado
+
+  /horarios:
+    get:
+      summary: Obtener todos los horarios
+      responses:
+        '200':
+          description: Lista de horarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Horario'
+    post:
+      summary: Crear nuevo horario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Horario'
+      responses:
+        '201':
+          description: Horario creado
+
+  /horarios/{id}:
+    put:
+      summary: Actualizar día o plan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Horario'
+      responses:
+        '200':
+          description: Horario actualizado
+    delete:
+      summary: Eliminar horario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Horario eliminado
+
+  /horarios/usuario/{id}:
+    get:
+      summary: Horarios asignados a un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de horarios del usuario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Horario'
+
+  /compras:
+    get:
+      summary: Obtener todas las compras
+      responses:
+        '200':
+          description: Lista de compras
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Compra'
+    post:
+      summary: Registrar nueva compra
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Compra'
+      responses:
+        '201':
+          description: Compra registrada
+
+  /compras/{id}:
+    get:
+      summary: Obtener compra por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Compra encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Compra'
+    delete:
+      summary: Eliminar compra
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Compra eliminada
+
+  /compras/usuario/{id}:
+    get:
+      summary: Ver compras hechas por un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de compras del usuario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Compra'
+
+  /detalle-compra/{id}:
+    get:
+      summary: Obtener detalles de una compra
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalles de la compra
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetalleCompra'
+
+  /detalle-compra:
+    post:
+      summary: Agregar ítems a una compra
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetalleCompra'
+      responses:
+        '201':
+          description: Ítems agregados
+
+  /productos:
+    get:
+      summary: Obtener todos los productos
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Producto'
+    post:
+      summary: Crear nuevo producto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Producto'
+      responses:
+        '201':
+          description: Producto creado
+
+  /productos/{id}:
+    get:
+      summary: Obtener producto por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Producto'
+    put:
+      summary: Actualizar producto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Producto'
+      responses:
+        '200':
+          description: Producto actualizado
+    delete:
+      summary: Eliminar producto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Producto eliminado
+
+components:
+  schemas:
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        correo:
+          type: string
+        contraseña:
+          type: string
+        rolId:
+          type: integer
+      required:
+        - nombre
+        - correo
+        - contraseña
+
+    Rol:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+      required:
+        - nombre
+
+    Plan:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        precio:
+          type: number
+      required:
+        - nombre
+        - precio
+
+    Alquiler:
+      type: object
+      properties:
+        id:
+          type: integer
+        usuarioId:
+          type: integer
+        planId:
+          type: integer
+        nota:
+          type: string
+      required:
+        - usuarioId
+        - planId
+
+    Horario:
+      type: object
+      properties:
+        id:
+          type: integer
+        usuarioId:
+          type: integer
+        dia:
+          type: string
+        hora:
+          type: string
+        planId:
+          type: integer
+      required:
+        - usuarioId
+        - dia
+        - hora
+        - planId
+
+    Compra:
+      type: object
+      properties:
+        id:
+          type: integer
+        usuarioId:
+          type: integer
+        fecha:
+          type: string
+      required:
+        - usuarioId
+        - fecha
+
+    DetalleCompra:
+      type: object
+      properties:
+        id:
+          type: integer
+        compraId:
+          type: integer
+        productoId:
+          type: integer
+        cantidad:
+          type: integer
+      required:
+        - compraId
+        - productoId
+        - cantidad
+
+    Producto:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        precio:
+          type: number
+        stock:
+          type: integer
+      required:
+        - nombre
+        - precio
+        - stock
