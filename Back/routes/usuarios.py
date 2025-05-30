@@ -1,9 +1,9 @@
-from flask import Blueprint, jsonifym request
-from db import get_connection
+from flask import Blueprint, jsonify, request
+from db.db import get_connection
 
 usuarios_bp = Blueprint("usuarios",__name__)
 
-//aca las rutas
+#aca las rutas
 
 @usuarios_bp.route("/")
 def get_usuarios():

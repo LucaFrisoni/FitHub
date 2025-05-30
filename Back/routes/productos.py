@@ -1,9 +1,9 @@
-from flask import Blueprint, jsonifym request
-from db import get_connection
+from flask import Blueprint, jsonify, request
+from db.db import get_connection
 
 productos_bp = Blueprint("productos",__name__)
 
-//aca las rutas
+#aca las rutas
 
 @productos_bp.route("/")
 def get_productos():
