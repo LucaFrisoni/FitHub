@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fithub</title>
+    <!-- tailwind -->
     <link
       rel="stylesheet"
       href="{{ url_for('static',filename='css/main.css',_external=True) }}"
@@ -27,7 +28,9 @@
 
       <!-- Iconos -->
       <div class="flex items-center pt-2.5">
-        <div class="flex flex-col items-center pl-10 pr-10 cursor-pointer">
+        <div
+          class="flex flex-col items-center pl-10 pr-10 cursor-pointer hover:text-primary transition"
+        >
           <img
             class="max-w-[40px] max-h-[40px]"
             src="{{ url_for('static',filename='images/home.svg')}}"
@@ -36,7 +39,9 @@
           <p class="font-medium">Home</p>
         </div>
 
-        <div class="flex flex-col items-center pl-10 pr-10 cursor-pointer">
+        <div
+          class="flex flex-col items-center pl-10 pr-10 cursor-pointer hover:text-primary transition"
+        >
           <img
             class="max-w-[40px] max-h-[40px]"
             src="{{ url_for('static',filename='images/schedule.svg')}}"
@@ -45,7 +50,9 @@
           <p class="font-medium">Reservas</p>
         </div>
 
-        <div class="flex flex-col items-center pl-10 pr-10 cursor-pointer">
+        <div
+          class="flex flex-col items-center pl-10 pr-10 cursor-pointer hover:text-primary transition"
+        >
           <img
             class="min-w-[40px] min-h-[40px]"
             src="{{ url_for('static',filename='images/store.svg')}}"
@@ -54,7 +61,9 @@
           <p class="font-medium">Tienda</p>
         </div>
 
-        <div class="flex flex-col items-center pl-10 pr-10 cursor-pointer">
+        <div
+          class="flex flex-col items-center pl-10 pr-10 cursor-pointer hover:text-primary transition"
+        >
           <img
             class="min-w-[40px] min-h-[40px]"
             src="{{ url_for('static',filename='images/planes.svg')}}"
@@ -70,7 +79,7 @@
         style="background-image: url('{{ url_for('static', filename='images/gradiente.png') }}')"
       >
         <div
-          class="hover:bg-stone-200/40 transition rounded-md p-2 cursor-pointer"
+          class="hover:bg-yellow-200/40 transition rounded-md p-2 cursor-pointer"
         >
           <img
             class="min-w-[40px] min-h-[40px]"
@@ -78,7 +87,12 @@
             alt="logo"
           />
         </div>
-        <button>Iniciar sesion</button>
+        <button
+          type="button"
+          class="cursor-pointer p-3 ml-6 bg-black font-bold text-stone-100 rounded-xl shadow-sm"
+        >
+          Iniciar sesion
+        </button>
       </div>
     </nav>
 
