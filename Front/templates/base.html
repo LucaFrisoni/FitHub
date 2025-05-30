@@ -8,9 +8,79 @@
       rel="stylesheet"
       href="{{ url_for('static',filename='css/main.css',_external=True) }}"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
-  <body>
-    <nav><p class="ml-6 text-blue-700">Hola</p></nav>
+  <body class="bg-stone-100">
+    <nav class="bg-white w-full h-[90px] flex justify-between fixed">
+      <!-- Logo -->
+      <div class="flex items-center justify-center pl-10">
+        <img
+          class="min-w-[50px] max-h-[50px]"
+          src="{{ url_for('static',filename='images/logo.jpg')}}"
+          alt="logo"
+        />
+        <p class="pl-3 text-2xl font-bold tracking-wide">FITHUB</p>
+      </div>
+
+      <!-- Iconos -->
+      <div class="flex items-center pt-2.5">
+        <div class="flex flex-col items-center pl-10 pr-10 cursor-pointer">
+          <img
+            class="max-w-[40px] max-h-[40px]"
+            src="{{ url_for('static',filename='images/home.svg')}}"
+            alt="logo"
+          />
+          <p class="font-medium">Home</p>
+        </div>
+
+        <div class="flex flex-col items-center pl-10 pr-10 cursor-pointer">
+          <img
+            class="max-w-[40px] max-h-[40px]"
+            src="{{ url_for('static',filename='images/schedule.svg')}}"
+            alt="logo"
+          />
+          <p class="font-medium">Reservas</p>
+        </div>
+
+        <div class="flex flex-col items-center pl-10 pr-10 cursor-pointer">
+          <img
+            class="min-w-[40px] min-h-[40px]"
+            src="{{ url_for('static',filename='images/store.svg')}}"
+            alt="logo"
+          />
+          <p class="font-medium">Tienda</p>
+        </div>
+
+        <div class="flex flex-col items-center pl-10 pr-10 cursor-pointer">
+          <img
+            class="min-w-[40px] min-h-[40px]"
+            src="{{ url_for('static',filename='images/planes.svg')}}"
+            alt="logo"
+          />
+          <p class="font-medium">Planes</p>
+        </div>
+      </div>
+
+      <!-- Boton - Light/Dark mode - gradiente de colores -->
+      <div
+        class="flex items-center justify-center bg-cover w-[300px] h-full"
+        style="background-image: url('{{ url_for('static', filename='images/gradiente.png') }}')"
+      >
+        <div
+          class="hover:bg-stone-200/40 transition rounded-md p-2 cursor-pointer"
+        >
+          <img
+            class="min-w-[40px] min-h-[40px]"
+            src="{{ url_for('static',filename='images/sun.svg')}}"
+            alt="logo"
+          />
+        </div>
+        <button>Iniciar sesion</button>
+      </div>
+    </nav>
 
     <main>{% block content %} {% endblock %}</main>
 

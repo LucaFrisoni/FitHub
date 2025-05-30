@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+/* Aplicamos globalmente la tipografia Inter */
+@theme {
+  --font-inter: "Inter", sans-serif;
+}
+@theme inline {
+  --font-sans: var(--font-inter);
+}
+@layer base {
+  body {
+    @apply font-sans;
+  }
+}
+/* ------------------------------------------ */
+
