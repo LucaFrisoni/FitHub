@@ -8,7 +8,7 @@ def home():
 
 @app.route('/Reservas')
 def reserva():
-   return render_template('reservas.html')
+   return render_template("reservas.html")
 
 if __name__ == '__main__':
    app.run("localhost", port=3000)
