@@ -20,7 +20,7 @@
       <div class="flex items-center justify-center pl-10">
         <img
           class="min-w-[50px] max-h-[50px]"
-          src="{{ url_for('static',filename='images/logo.jpg')}}"
+          src="{{ url_for('static',filename='images/logo.png')}}"
           alt="logo"
         />
         <p class="pl-3 text-2xl font-bold tracking-wide">FITHUB</p>
@@ -28,8 +28,9 @@
 
       <!-- Iconos -->
       <div class="flex items-center pt-2.5">
-        <div
+        <a
           class="flex flex-col items-center pl-10 pr-10 cursor-pointer hover:text-primary transition"
+          href="{{ url_for('home') }}"
         >
           <img
             class="max-w-[40px] max-h-[40px]"
@@ -37,10 +38,11 @@
             alt="logo"
           />
           <p class="font-medium">Home</p>
-        </div>
+        </a>
 
-        <div
+        <a
           class="flex flex-col items-center pl-10 pr-10 cursor-pointer hover:text-primary transition"
+          href="{{ url_for('reservas') }}"
         >
           <img
             class="max-w-[40px] max-h-[40px]"
@@ -48,10 +50,11 @@
             alt="logo"
           />
           <p class="font-medium">Reservas</p>
-        </div>
+        </a>
 
-        <div
+        <a
           class="flex flex-col items-center pl-10 pr-10 cursor-pointer hover:text-primary transition"
+          href="{{ url_for('tienda') }}"
         >
           <img
             class="min-w-[40px] min-h-[40px]"
@@ -59,10 +62,11 @@
             alt="logo"
           />
           <p class="font-medium">Tienda</p>
-        </div>
+        </a>
 
-        <div
+        <a
           class="flex flex-col items-center pl-10 pr-10 cursor-pointer hover:text-primary transition"
+          href="{{ url_for('planes') }}"
         >
           <img
             class="min-w-[40px] min-h-[40px]"
@@ -70,7 +74,7 @@
             alt="logo"
           />
           <p class="font-medium">Planes</p>
-        </div>
+        </a>
       </div>
 
       <!-- Boton - Light/Dark mode - gradiente de colores -->
@@ -87,17 +91,26 @@
             alt="logo"
           />
         </div>
-        <button
-          type="button"
-          class="cursor-pointer p-3 ml-6 bg-black font-bold text-stone-100 rounded-xl shadow-sm"
+        <a href="{{ url_for('user') }}">
+          <button
+            type="button"
+            class="cursor-pointer p-3 ml-6 bg-black font-bold text-stone-100 rounded-xl shadow-sm"
+            href="{{ url_for('tienda') }}"
+          >
+            Iniciar sesion
+          </button></a
         >
-          Iniciar sesion
-        </button>
       </div>
     </nav>
 
-    <main>{% block content %} {% endblock %}</main>
+    <main class="pt-24">{% block content %} {% endblock %}</main>
 
     <footer></footer>
+
+    <script
+      async
+      defer
+      src="https://unpkg.com/@material-tailwind/html@latest/scripts/ripple.js"
+    ></script>
   </body>
 </html>
