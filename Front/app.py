@@ -6,5 +6,9 @@ app = Flask(__name__)
 def home():
    return render_template('home.html')
 
+@app.route('/reservas')
+def reserva():
+   return render_template('reservas.html')
+
 if __name__ == '__main__':
    app.run("localhost", port=3000)
