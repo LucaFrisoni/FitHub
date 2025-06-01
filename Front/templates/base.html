@@ -15,7 +15,7 @@
     />
   </head>
   <body class="bg-stone-100">
-    <nav class="bg-white w-full h-[90px] flex justify-between fixed">
+    <nav class="bg-white w-full h-[90px] flex justify-between fixed z-10">
       <!-- Logo -->
       <div class="flex items-center justify-center pl-10">
         <img
@@ -34,7 +34,7 @@
         >
           <img
             class="max-w-[40px] max-h-[40px]"
-            src="{{ url_for('static',filename='images/home.svg')}}"
+            src="{{ url_for('static',filename='images/home.png')}}"
             alt="logo"
           />
           <p class="font-medium">Home</p>
@@ -46,7 +46,7 @@
         >
           <img
             class="max-w-[40px] max-h-[40px]"
-            src="{{ url_for('static',filename='images/schedule.svg')}}"
+            src="{{ url_for('static',filename='images/schedule.png')}}"
             alt="logo"
           />
           <p class="font-medium">Reservas</p>
@@ -94,7 +94,7 @@
         <a href="{{ url_for('user') }}">
           <button
             type="button"
-            class="cursor-pointer p-3 ml-6 bg-black font-bold text-stone-100 rounded-xl shadow-sm"
+            class="cursor-pointer p-3 ml-6 bg-black hover:bg-black/90 transition font-bold text-stone-100 rounded-xl shadow-sm"
             href="{{ url_for('tienda') }}"
           >
             Iniciar sesion
