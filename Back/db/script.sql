@@ -1,5 +1,5 @@
 CREATE DATABASE IF NOT EXISTS fithub_db;
-USE gimnasio_db;
+USE fithub_db;
 
 -- Tabla de roles
 CREATE TABLE ROLES (
