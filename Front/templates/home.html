@@ -1,5 +1,55 @@
 {% extends "base.html" %} {% block content %}
-<h1>Bienvenido a la página de inicio</h1>
-<p>Este es el contenido de la home.</p>
+
+<div class="relative z-0 w-full h-full">
+
+<img src="{{ url_for('static', filename='images/home1.png') }}"
+alt="Home1 deberia ir aca..."
+class="object-cover"
+> 
+
+<div class="absolute inset-0 bg-black/30 z-1"></div>
+<div class="z-2 absolute bottom-0 w-full h-[200px] bg-gradient-to-b from-transparent to-white" > </div>
+
+<!-- - - - -///TEXTO INICIAL HOME///- - - - -->
+
+<div class="z-3 absolute inset-0 flex-col flex justify-center items-center pb-25">
+    
+<img src="{{ url_for('static', filename='images/home2.png') }}" 
+alt="Home2 deberia ir aca..." 
+class="min-w-[300px] max-h-[300px]"
+>
+
+<p class="text-stone-100 text-2xl max-w-[1000px] pt-5 pb-8 text-center"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
+
+<!-- Botones -->
+<div>
+<a>
+<button 
+type="button"
+class="w-[195px] h-[72px] text-[30px] rounded-xl shadow-sm cursor-pointer mr-10 bg-transparent  border-[5px] border-black box-border   font-bold text-stone-100   hover:border-stone-100 transition"
+>
+Saber mas
+</button> </a>
+<a href="{{ url_for('user') }}">
+<button
+type="button"
+class="w-[195px] h-[72px] text-[30px] rounded-xl shadow-sm cursor-pointer ml-10 bg-primary  border-[5px] border-primary box-border  font-bold text-black   hover:bg-blue-950 transition hover:text-stone-100 hover:border-blue-950"
+>
+Unirme ya
+</button> </a>
+</div>
+<!-- Botones -->
+ </div>
+<!-- - - - -///TEXTO INICIAL HOME///- - - - -->
+
+
+
+<!-- - - - -///SECCION "NUESTRA HISTORIA"///- - - - -->
+<div> 
+
+
+
+</div>
+<!-- - - - -///SECCION "NUESTRA HISTORIA"///- - - - -->
 
 {% endblock %}
