@@ -1,42 +1,136 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 
-{% block content %} 
+{% block content %}
+<div>
     <div>
-        <div>
-            <p>Disponibilidad</p>
-        </div>
-        <div>
-            <p>Tipo de Entrenamiento</p>
-            <form class="max-w-sm mx-auto">
-                <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
-                <select id="countries" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                  <option selected>Tipo...</option>
-                  <option value="Body_B">Bodybuilding</option>
-                  <option value="SP">Spinning</option>
-                  <option value="SF">Sport-focus</option>
-                </select>
-        </div>
-        <div>
-            <p>Turno</p>
-        </div>
-        <div>
-            <p>Horario</p>
-        </div>
-        <div>
-            <p>Comentarios</p>
-            <input class="w-full bg-transparent placeholder:text-slate-400 text-slate-700
+        <p>Disponibilidad</p>
+
+
+        <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Choose technology:</h3>
+        <ul class="grid w-full gap-6 md:grid-cols-3">
+            <li>
+                <input type="checkbox" id="flowbite-option" value="" class="hidden peer">
+                <label for="flowbite-option" class="inline-flex items-center justify-between p-5 text-gray-500 bg-white 
+                    border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 
+                    dark:border-gray-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 
+                    hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
+                    hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+                    <div class="block">
+                        <div class="w-full text-lg font-semibold">Lunes</div>
+                    </div>
+                </label>
+            </li>
+            <li>
+                <input type="checkbox" id="flowbite-option" value="" class="hidden peer">
+                <label for="flowbite-option" class="inline-flex items-center justify-between p-5 text-gray-500 bg-white 
+                    border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 
+                    dark:border-gray-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 
+                    hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
+                    hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+                    <div class="block">
+                        <div class="w-full text-lg font-semibold">Martes</div>
+                    </div>
+                </label>
+            </li>
+            <li>
+                <input type="checkbox" id="flowbite-option" value="" class="hidden peer">
+                <label for="flowbite-option" class="inline-flex items-center justify-between p-5 text-gray-500 bg-white 
+                    border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 
+                    dark:border-gray-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 
+                    hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
+                    hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+                    <div class="block">
+                        <div class="w-full text-lg font-semibold">Miercoles</div>
+                    </div>
+                </label>
+            </li>
+            <li>
+                <input type="checkbox" id="flowbite-option" value="" class="hidden peer">
+                <label for="flowbite-option" class="inline-flex items-center justify-between p-5 text-gray-500 bg-white 
+                    border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 
+                    dark:border-gray-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 
+                    hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
+                    hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+                    <div class="block">
+                        <div class="w-full text-lg font-semibold">Jueves</div>
+                    </div>
+                </label>
+            </li>
+            <li>
+                <input type="checkbox" id="flowbite-option" value="" class="hidden peer">
+                <label for="flowbite-option" class="inline-flex items-center justify-between p-5 text-gray-500 bg-white 
+                    border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 
+                    dark:border-gray-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 
+                    hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
+                    hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+                    <div class="block">
+                        <div class="w-full text-lg font-semibold">Viernes</div>
+                    </div>
+                </label>
+            </li>
+            <li>
+                <input type="checkbox" id="flowbite-option" value="" class="hidden peer">
+                <label for="flowbite-option" class="inline-flex items-center justify-between p-5 text-gray-500 bg-white 
+                    border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 
+                    dark:border-gray-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 
+                    hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
+                    hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+                    <div class="block">
+                        <div class="w-full text-lg font-semibold">Sabado</div>
+                    </div>
+                </label>
+            </li>
+            <li>
+                <input type="checkbox" id="flowbite-option" value="" class="hidden peer">
+                <label for="flowbite-option" class="inline-flex items-center justify-between p-5 text-gray-500 bg-white 
+                    border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 
+                    dark:border-gray-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 
+                    hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
+                    hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+                    <div class="block">
+                        <div class="w-full text-lg font-semibold">Domingo</div>
+                    </div>
+                </label>
+            </li>
+
+        </ul>
+
+
+    </div>
+    <div>
+        <p>Tipo de Entrenamiento</p>
+        <form class="max-w-sm mx-auto">
+            <label for="type_sport" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an
+                option</label>
+            <select id="type_sport" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
+                        focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
+                        dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <option selected>Tipo...</option>
+                <option value="Body_B">Bodybuilding</option>
+                <option value="SP">Spinning</option>
+                <option value="SF">Sport-focus</option>
+            </select>
+    </div>
+    <div>
+        <p>Turno</p>
+    </div>
+    <div>
+        <p>Horario</p>
+    </div>
+    <div>
+        <p>Comentarios</p>
+        <input class="w-full bg-transparent placeholder:text-slate-400 text-slate-700
                     text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300
                     ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
-                    placeholder="Type here..."
-            />
-        </div>
-        <div>
-            <p>Turnos disponibles</p>
-        </div>
-        <div>
-            <button type="button" class="cursor-pointer focus:outline-none text-black
-                    bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium
-                    rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:focus:ring-yellow-900" >RESERVAR</button>
-        </div>
+            placeholder="Type here..." />
     </div>
+    <div>
+        <p>Turnos disponibles</p>
+    </div>
+    <div>
+        <button type="button" class="cursor-pointer focus:outline-none text-black
+                    bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium
+                    rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:focus:ring-yellow-900">RESERVAR</button>
+    </div>
+</div>
 {% endblock %}
