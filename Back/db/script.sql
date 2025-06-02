@@ -33,7 +33,7 @@ CREATE TABLE planes (
 CREATE TABLE alquileresplan (
     ID_AlquilerPlan INT PRIMARY KEY AUTO_INCREMENT,
     ID_Plan INT,
-    ID_Usuario VARCHAR(50),
+    ID_Usuario INT,
     Nota VARCHAR(255),
     FOREIGN KEY (ID_Plan) REFERENCES planes(ID_Plan),
     FOREIGN KEY (ID_Usuario) REFERENCES usuarios(ID_usuario)
@@ -45,7 +45,7 @@ CREATE TABLE horariosentrenamiento (
     Dias VARCHAR(50),
     Horario VARCHAR(50),
     ID_Plan INT,
-    ID_Usuario VARCHAR(50),
+    ID_Usuario INT,
     FOREIGN KEY (ID_Plan) REFERENCES planes(ID_Plan),
     FOREIGN KEY (ID_Usuario) REFERENCES usuarios(ID_usuario)
 );
@@ -64,7 +64,7 @@ CREATE TABLE productos (
 CREATE TABLE compras (
     ID_Compra INT PRIMARY KEY AUTO_INCREMENT,
     NroCompra INT,
-    ID_Usuario VARCHAR(50),
+    ID_Usuario INT,
     FechaCompra DATE,
     Total INT,
     FOREIGN KEY (ID_Usuario) REFERENCES usuarios(ID_usuario)
