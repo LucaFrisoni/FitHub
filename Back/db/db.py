@@ -12,7 +12,7 @@ def get_connection():
     return mysql.connector.connect(
         host=MYSQL_HOST,
         port=MYSQL_PORT,
-        user=MYSQL_PORT,
+        user=MYSQL_USERNAME,
         password=MYSQL_PASSWD,
         database="fithub_db"
     )
