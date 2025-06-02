@@ -45,7 +45,7 @@ def get_usuario(id):
 # ─────────────────────────────────────────────────────────────────────────────
 # Tabla: USUARIOS
 # ─────────────────────────────────────────────────────────────────────────────
-# ID_usuario VARCHAR(50) PRIMARY KEY,
+# ID_usuario INT PRIMARY KEY AUTO_INCREMENT,
 # Nombre VARCHAR(50),
 # Apellido VARCHAR(50),
 # Email VARCHAR(100),
@@ -60,7 +60,7 @@ def get_usuario(id):
 @usuarios_bp.route("/", methods=["POST"])
 def post_usuario():
     body = request.get_json()
-    required = {'ID_usuario': str, 'Nombre': str, 'Apellido': str, 'Email': str, 'FechaNacimiento': str, 'Usuario': str, 'Contrasena': str, 'ID_rol': int, 'Telefono': int}
+    required = {'Nombre': str, 'Apellido': str, 'Email': str, 'FechaNacimiento': str, 'Usuario': str, 'Contrasena': str, 'ID_rol': int, 'Telefono': int}
     missing = [r for r in required if r not in body]
     if len(missing) > 0:
         return jsonify({'error': 'bad request', 'missing': missing}), 400
@@ -72,10 +72,9 @@ def post_usuario():
         cursor = conn.cursor()
         cursor.execute(
             """
-            INSERT INTO usuarios (ID_usuario,Nombre,Apellido,Email,FechaNacimiento,Usuario,Contrasenia,ID_rol,Telefono)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            INSERT INTO usuarios (Nombre,Apellido,Email,FechaNacimiento,Usuario,Contrasenia,ID_rol,Telefono)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
             """, (
-                body.get('ID_usuario'),
                 body.get('Nombre'),
                 body.get('Apellido'),
                 body.get('Email'),
@@ -86,8 +85,12 @@ def post_usuario():
                 body.get('Telefono')
                 )
         )
+        new_id = cursor.fetchone()[0]
         conn.commit()
-        return jsonify({'success': True}), 201
+        return jsonify({
+            'success': True,
+            'id': new_id  
+        }), 201
     except Exception as ex:
         return devolver_error(ruta="usuarios", metodo="POST", ex=ex)
     finally: 
