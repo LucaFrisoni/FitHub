@@ -105,7 +105,44 @@
 
     <main class="pt-24">{% block content %} {% endblock %}</main>
 
-    <footer></footer>
+    <footer class="bg-gray-100 text-gray-800 py-10 mt-auto">
+  <div class="max-w-7xl mx-auto px-6 flex justify-between items-start">
+    <!-- Logo y nombre -->
+    <div class="flex items-center space-x-4 w-1/2">
+      <img src="{{ url_for('static', filename='images/Logo.png') }}" alt="logo" class="h-12 w-auto" />
+      <h2 class="text-2xl font-bold">FITHUB</h2>
+    </div>
+
+    <!-- Información de contacto -->
+    <div class="text-right w-1/2 pr-10">
+      <h3 class="text-lg font-bold text-yellow-600 mb-2">Contact Information</h3>
+      <p>Argentina, CABA, Av. Sta Fe, 3223</p>
+      <p>fithub.com.ar</p>
+      <p>WhatsApp: 123432456</p>
+    </div>
+  </div>
+
+  <!-- Redes sociales -->
+  <div class="flex justify-center items-center gap-6 mt-10">
+  <a href="https://twitter.com" target="_blank" aria-label="Twitter">
+    <img src="{{ url_for('static', filename='images/x-twitter.png') }}" alt="Twitter" class="h-8 w-8 hover:opacity-70 transition-opacity">
+  </a>
+  <a href="https://instagram.com" target="_blank" aria-label="Instagram">
+    <img src="{{ url_for('static', filename='images/Instagram.svg') }}" alt="Instagram" class="h-8 w-8 hover:opacity-70 transition-opacity">
+  </a>
+  <a href="https://youtube.com" target="_blank" aria-label="YouTube">
+    <img src="{{ url_for('static', filename='images/youtube.svg') }}" alt="YouTube" class="h-8 w-8 hover:opacity-70 transition-opacity">
+  </a>
+  <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn">
+    <img src="{{ url_for('static', filename='images/linkedin.svg') }}" alt="LinkedIn" class="h-8 w-8 hover:opacity-70 transition-opacity">
+  </a> 
+</div>
+
+  <!-- Copyright -->
+  <div class="text-center text-sm mt-6 text-gray-600">
+    © 2025 Programando.sh, Inc. All rights reserved.
+  </div> 
+</footer>
 
     <script
       async
