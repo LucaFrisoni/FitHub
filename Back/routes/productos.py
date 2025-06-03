@@ -30,7 +30,7 @@ def get_producto(id):
     try: 
         conn= get_connection()
         cursor= conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM productos WHERE id = %s", (id,))
+        cursor.execute("SELECT * FROM productos WHERE ID_Producto = %s", (id,))
         producto= cursor.fetchone()
         if producto:
             return jsonify(producto)
@@ -63,7 +63,7 @@ def post_producto():
         conn = get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT id FROM productos WHERE Codigo = %s", (body['Codigo'],))
+        cursor.execute("SELECT ID_Producto FROM productos WHERE Codigo = %s", (body['Codigo'],))
         if cursor.fetchone():
             return jsonify({'error': 'El código ya existe'}), 409
         
@@ -71,7 +71,6 @@ def post_producto():
             """
             INSERT INTO productos (Nombre, Descripcion, Codigo, Cantidad, Precio)
             VALUES (%s, %s, %s, %s, %s)
-            RETURNING id  # Obtener el ID generado
             """, (
                 body['Nombre'],
                 body['Descripcion'],
@@ -81,7 +80,7 @@ def post_producto():
             )
         )
         
-        new_id = cursor.fetchone()[0]
+        new_id = cursor.lastrowid
         conn.commit()
         
         return jsonify({
