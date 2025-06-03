@@ -28,6 +28,7 @@
           </label>
           <div class="relative">
             <input
+              id="email"
               type="email"
               class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
             />
@@ -39,6 +40,7 @@
               class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
             ></div>
             <label
+              for="email"
               class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
             >
               Ingrese su email..
@@ -48,10 +50,11 @@
         <!-- nueva contraseña -->
         <div class="w-[70%]">
           <label class="block mb-2 text-base text-black font-semibold">
-           Nueva Contraseña
+            Nueva Contraseña
           </label>
           <div class="relative">
             <input
+              id="contra"
               type="password"
               class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
             />
@@ -63,12 +66,12 @@
               class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
             ></div>
             <label
+              for="contra"
               class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
             >
               Ingrese su contraseña..
             </label>
           </div>
-        
         </div>
         <!-- repetir contraseña -->
         <div class="w-[70%]">
@@ -77,6 +80,7 @@
           </label>
           <div class="relative">
             <input
+              id="contra2"
               type="password"
               class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
             />
@@ -88,6 +92,7 @@
               class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
             ></div>
             <label
+              for="contra2"
               class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
             >
               Ingrese su contraseña..
@@ -125,7 +130,11 @@
       <div class="flex flex-col items-center justify-center gap-y-4 mt-6">
         <span class="text-slate-400"
           >No tienes cuenta? Registrese
-          <a class="text-primary font-bold cursor-pointer" href="{{ url_for('registro') }}">aquí</a></span
+          <a
+            class="text-primary font-bold cursor-pointer"
+            href="{{ url_for('registro') }}"
+            >aquí</a
+          ></span
         >
       </div>
     </div>

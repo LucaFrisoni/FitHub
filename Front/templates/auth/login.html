@@ -28,6 +28,7 @@
           </label>
           <div class="relative">
             <input
+              id="email"
               type="email"
               class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
             />
@@ -39,6 +40,7 @@
               class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
             ></div>
             <label
+              for="email"
               class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
             >
               Ingrese su email..
@@ -52,6 +54,7 @@
           </label>
           <div class="relative">
             <input
+              id="contra"
               type="password"
               class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
             />
@@ -59,14 +62,12 @@
               src="{{ url_for('static',filename='images/candado_icono.png')}}"
               class="absolute w-4 h-5 top-2.5 left-3"
             />
-            <!-- <img
-              src="{{ url_for('static',filename='images/ojo_icono.png')}}"
-              class="absolute w-4 h-4 top-3 right-2.5"
-            /> -->
+
             <div
               class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
             ></div>
             <label
+              for="contra"
               class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
             >
               Ingrese su contraseña..
@@ -76,7 +77,7 @@
         <!-- boton -->
         <div class="flex items-center justify-center w-[70%] pt-6">
           <button
-            type="button"
+            type="submit"
             class="cursor-pointer p-3 w-full bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition"
           >
             Continuar
