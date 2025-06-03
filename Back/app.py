@@ -16,4 +16,4 @@ app.register_blueprint(usuarios_bp, url_prefix="/usuarios")
 init_docs(app)
 
 if __name__ == "__main__":
-    app.run(debug=true)
+    app.run(debug=True)

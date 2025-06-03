@@ -1,7 +1,7 @@
-{% extends "base.html" %} {% block navbar %}{% endblock %} {% block content %}
+{% extends "base.html" %} {% block content %} {% block navbar %}{% endblock %}
 <div
   class="flex h-screen w-full font-inter bg-cover bg-center"
-  style="background-image: url('{{ url_for('static', filename='images/login_imagen.jpeg') }}')"
+  style="background-image: url('{{ url_for('static', filename='images/cambiarcontra_imagen.jpg') }}')"
 >
   <!-- logo -->
   <div class="flex items-center justify-center w-1/2">
@@ -16,7 +16,7 @@
     <div
       class="w-[570px] h-[600px] bg-stone-100 rounded-lg shadow-md flex flex-col p-6 border"
     >
-      <p class="font-bold text-2xl">Iniciar sesión</p>
+      <p class="font-bold text-2xl">Cambiar contraseña</p>
       <form
         action=""
         class="flex flex-col items-center justify-center pt-10 gap-y-4"
@@ -45,10 +45,10 @@
             </label>
           </div>
         </div>
-        <!-- contraseña -->
+        <!-- nueva contraseña -->
         <div class="w-[70%]">
           <label class="block mb-2 text-base text-black font-semibold">
-            Contraseña
+           Nueva Contraseña
           </label>
           <div class="relative">
             <input
@@ -59,10 +59,6 @@
               src="{{ url_for('static',filename='images/candado_icono.png')}}"
               class="absolute w-4 h-5 top-2.5 left-3"
             />
-            <!-- <img
-              src="{{ url_for('static',filename='images/ojo_icono.png')}}"
-              class="absolute w-4 h-4 top-3 right-2.5"
-            /> -->
             <div
               class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
             ></div>
@@ -72,6 +68,47 @@
               Ingrese su contraseña..
             </label>
           </div>
+        
+        </div>
+        <!-- repetir contraseña -->
+        <div class="w-[70%]">
+          <label class="block mb-2 text-base text-black font-semibold">
+            Repetir Contraseña
+          </label>
+          <div class="relative">
+            <input
+              type="password"
+              class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <img
+              src="{{ url_for('static',filename='images/candado_icono.png')}}"
+              class="absolute w-4 h-5 top-2.5 left-3"
+            />
+            <div
+              class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
+            ></div>
+            <label
+              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+            >
+              Ingrese su contraseña..
+            </label>
+          </div>
+          <p class="flex items-start mt-2 text-xs text-slate-400">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-5 h-5 mr-1.5"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+
+            Use al menos 8 caracteres, una mayuscula, una minuscula y un número.
+          </p>
         </div>
         <!-- boton -->
         <div class="flex items-center justify-center w-[70%] pt-6">
@@ -82,44 +119,16 @@
             Continuar
           </button>
         </div>
-
-        <!-- botones auth terceros -->
-        <div class="w-[70%] flex justify-between pt-8">
-          <img
-            src="{{ url_for('static',filename='images/google_icono.png')}}"
-            class="cursor-pointer p-2 hover:bg-slate-200 rounded-2xl transition"
-          />
-          <img
-            src="{{ url_for('static',filename='images/github_icono.png')}}"
-            class="cursor-pointer p-2 hover:bg-slate-200 rounded-2xl transition"
-          />
-          <img
-            src="{{ url_for('static',filename='images/facebook_icono.png')}}"
-            class="cursor-pointer p-2 hover:bg-slate-200 rounded-2xl transition"
-          />
-        </div>
       </form>
       <hr class="w-full text-black/20 mt-8" />
       <!-- textos -->
       <div class="flex flex-col items-center justify-center gap-y-4 mt-6">
         <span class="text-slate-400"
           >No tienes cuenta? Registrese
-          <a
-            class="text-primary font-bold cursor-pointer"
-            href="{{ url_for('registro') }}"
-            >aquí</a
-          ></span
-        >
-        <span class="text-slate-400"
-          >No recuerda su contraseña? Haga click
-          <a
-            class="text-primary font-bold cursor-pointer"
-            href="{{ url_for('cambiarcontra') }}"
-            >aquí</a
-          ></span
+          <a class="text-primary font-bold cursor-pointer" href="{{ url_for('registro') }}">aquí</a></span
         >
       </div>
     </div>
   </div>
 </div>
-{% endblock %} {% block footer %}{% endblock %}
+{% block footer %}{% endblock %} {% endblock %}
