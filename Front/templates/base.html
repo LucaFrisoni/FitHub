@@ -14,7 +14,7 @@
       rel="stylesheet"
     />
   </head>
-  <body class="bg-stone-100">
+  <body class="bg-stone-100 min-h-screen w-full flex flex-col">
     {% block navbar %}
     <nav class="bg-white w-full h-[90px] flex justify-between fixed z-10">
       <!-- Logo -->
@@ -105,9 +105,9 @@
     </nav>
     {% endblock %}
 
-    <main class="pt-24">{% block content %} {% endblock %}</main>
+    <main class="flex-grow">{% block content %} {% endblock %}</main>
     {% block footer %}
-    <footer class="bg-gray-100 text-gray-800 py-10 mt-auto">
+    <footer class="bg-gray-100 text-gray-800 py-10 mt-auto ">
       <div class="max-w-7xl mx-auto px-6 flex justify-between items-start">
         <!-- Logo y nombre -->
         <div class="flex items-center space-x-4 w-1/2">
