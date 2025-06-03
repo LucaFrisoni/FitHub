@@ -14,7 +14,8 @@
       rel="stylesheet"
     />
   </head>
-  <body class="bg-stone-100">
+  <body class="bg-stone-100 ">
+    {% block navbar %}
     <nav class="bg-white w-full h-[90px] flex justify-between fixed z-10">
       <!-- Logo -->
       <div class="flex items-center justify-center pl-10">
@@ -83,7 +84,7 @@
         style="background-image: url('{{ url_for('static', filename='images/gradiente.png') }}')"
       >
         <div
-          class="hover:bg-yellow-200/40 transition rounded-md p-2 cursor-pointer"
+          class="hover:bg-slate-200/40 transition rounded-2xl p-2 cursor-pointer"
         >
           <img
             class="min-w-[40px] min-h-[40px]"
@@ -102,11 +103,11 @@
         >
       </div>
     </nav>
-
-    <main class="pt-24">{% block content %} {% endblock %}</main>
-
+    {% endblock %}
+    <main>{% block content %} {% endblock %}</main>
+    {% block footer %}
     <footer></footer>
-
+    {% endblock %}
     <script
       async
       defer
