@@ -92,11 +92,10 @@
             alt="logo"
           />
         </div>
-        <a href="{{ url_for('user') }}">
+        <a href="{{ url_for('login') }}">
           <button
             type="button"
             class="cursor-pointer p-3 ml-6 bg-black hover:bg-black/90 transition font-bold text-stone-100 rounded-xl shadow-sm"
-            href="{{ url_for('tienda') }}"
           >
             Iniciar sesion
           </button></a
@@ -107,7 +106,7 @@
 
     <main class="flex-grow">{% block content %} {% endblock %}</main>
     {% block footer %}
-    <footer class="bg-gray-100 text-gray-800 py-10 mt-auto ">
+    <footer class="bg-gray-100 text-gray-800 py-10 mt-auto">
       <div class="max-w-7xl mx-auto px-6 flex justify-between items-start">
         <!-- Logo y nombre -->
         <div class="flex items-center space-x-4 w-1/2">
