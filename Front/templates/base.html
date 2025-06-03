@@ -14,7 +14,8 @@
       rel="stylesheet"
     />
   </head>
-  <body class="bg-stone-100">
+  <body class="bg-stone-100 min-h-screen w-full flex flex-col">
+    {% block navbar %}
     <nav class="bg-white w-full h-[90px] flex justify-between fixed z-10">
       <!-- Logo -->
       <div class="flex items-center justify-center pl-10">
@@ -83,7 +84,7 @@
         style="background-image: url('{{ url_for('static', filename='images/gradiente.png') }}')"
       >
         <div
-          class="hover:bg-yellow-200/40 transition rounded-md p-2 cursor-pointer"
+          class="hover:bg-slate-200/40 transition rounded-2xl p-2 cursor-pointer"
         >
           <img
             class="min-w-[40px] min-h-[40px]"
@@ -102,47 +103,71 @@
         >
       </div>
     </nav>
+    {% endblock %}
 
-    <main class="pt-24">{% block content %} {% endblock %}</main>
+    <main class="flex-grow">{% block content %} {% endblock %}</main>
+    {% block footer %}
+    <footer class="bg-gray-100 text-gray-800 py-10 mt-auto ">
+      <div class="max-w-7xl mx-auto px-6 flex justify-between items-start">
+        <!-- Logo y nombre -->
+        <div class="flex items-center space-x-4 w-1/2">
+          <img
+            src="{{ url_for('static', filename='images/Logo.png') }}"
+            alt="logo"
+            class="h-12 w-auto"
+          />
+          <h2 class="text-2xl font-bold">FITHUB</h2>
+        </div>
 
-    <footer class="bg-gray-100 text-gray-800 py-10 mt-auto">
-  <div class="max-w-7xl mx-auto px-6 flex justify-between items-start">
-    <!-- Logo y nombre -->
-    <div class="flex items-center space-x-4 w-1/2">
-      <img src="{{ url_for('static', filename='images/Logo.png') }}" alt="logo" class="h-12 w-auto" />
-      <h2 class="text-2xl font-bold">FITHUB</h2>
-    </div>
+        <!-- Información de contacto -->
+        <div class="text-right w-1/2 pr-10">
+          <h3 class="text-lg font-bold text-yellow-600 mb-2">
+            Contact Information
+          </h3>
+          <p>Argentina, CABA, Av. Sta Fe, 3223</p>
+          <p>fithub.com.ar</p>
+          <p>WhatsApp: 123432456</p>
+        </div>
+      </div>
 
-    <!-- Información de contacto -->
-    <div class="text-right w-1/2 pr-10">
-      <h3 class="text-lg font-bold text-yellow-600 mb-2">Contact Information</h3>
-      <p>Argentina, CABA, Av. Sta Fe, 3223</p>
-      <p>fithub.com.ar</p>
-      <p>WhatsApp: 123432456</p>
-    </div>
-  </div>
+      <!-- Redes sociales -->
+      <div class="flex justify-center items-center gap-6 mt-10">
+        <a href="https://twitter.com" target="_blank" aria-label="Twitter">
+          <img
+            src="{{ url_for('static', filename='images/x-twitter.png') }}"
+            alt="Twitter"
+            class="h-8 w-8 hover:opacity-70 transition-opacity"
+          />
+        </a>
+        <a href="https://instagram.com" target="_blank" aria-label="Instagram">
+          <img
+            src="{{ url_for('static', filename='images/Instagram.svg') }}"
+            alt="Instagram"
+            class="h-8 w-8 hover:opacity-70 transition-opacity"
+          />
+        </a>
+        <a href="https://youtube.com" target="_blank" aria-label="YouTube">
+          <img
+            src="{{ url_for('static', filename='images/youtube.svg') }}"
+            alt="YouTube"
+            class="h-8 w-8 hover:opacity-70 transition-opacity"
+          />
+        </a>
+        <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn">
+          <img
+            src="{{ url_for('static', filename='images/linkedin.svg') }}"
+            alt="LinkedIn"
+            class="h-8 w-8 hover:opacity-70 transition-opacity"
+          />
+        </a>
+      </div>
 
-  <!-- Redes sociales -->
-  <div class="flex justify-center items-center gap-6 mt-10">
-  <a href="https://twitter.com" target="_blank" aria-label="Twitter">
-    <img src="{{ url_for('static', filename='images/x-twitter.png') }}" alt="Twitter" class="h-8 w-8 hover:opacity-70 transition-opacity">
-  </a>
-  <a href="https://instagram.com" target="_blank" aria-label="Instagram">
-    <img src="{{ url_for('static', filename='images/Instagram.svg') }}" alt="Instagram" class="h-8 w-8 hover:opacity-70 transition-opacity">
-  </a>
-  <a href="https://youtube.com" target="_blank" aria-label="YouTube">
-    <img src="{{ url_for('static', filename='images/youtube.svg') }}" alt="YouTube" class="h-8 w-8 hover:opacity-70 transition-opacity">
-  </a>
-  <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn">
-    <img src="{{ url_for('static', filename='images/linkedin.svg') }}" alt="LinkedIn" class="h-8 w-8 hover:opacity-70 transition-opacity">
-  </a> 
-</div>
-
-  <!-- Copyright -->
-  <div class="text-center text-sm mt-6 text-gray-600">
-    © 2025 Programando.sh, Inc. All rights reserved.
-  </div> 
-</footer>
+      <!-- Copyright -->
+      <div class="text-center text-sm mt-6 text-gray-600">
+        © 2025 Programando.sh, Inc. All rights reserved.
+      </div>
+    </footer>
+    {% endblock %}
 
     <script
       async
