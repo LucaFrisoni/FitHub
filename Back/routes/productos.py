@@ -10,7 +10,7 @@ productos_bp = Blueprint("productos",__name__)
 def get_productos():
     conn = None
     cursor = None
-
+    
     try:
         conn= get_connection()
         cursor= conn.cursor(dictionary=True)
