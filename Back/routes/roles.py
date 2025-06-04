@@ -3,51 +3,51 @@ from db.db import get_connection
 from util.log import devolver_error
 from util.util import *
 
-planes_bp = Blueprint("planes",__name__)
+roles_bp = Blueprint("roles",__name__)
 
 #aca las rutas
 
-@planes_bp.route("/")
-def get_planes():
+@roles_bp.route("/")
+def get_roles():
     conn = None
     cursor = None
     
     try:
         conn= get_connection()
         cursor= conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM planes")
-        planes= cursor.fetchall()
-        return jsonify(planes)
+        cursor.execute("SELECT * FROM roles")
+        roles= cursor.fetchall()
+        return jsonify(roles)
     except Exception as ex:  
-        return devolver_error(ruta='planes', ex=ex)
+        return devolver_error(ruta='roles', ex=ex)
     finally:
         if cursor:
             cursor.close()
         if conn: 
             conn.close()
 
-@planes_bp.route("/<int:id>")
-def get_plan(id):
+@roles_bp.route("/<int:id>")
+def get_rol(id):
     try: 
         conn= get_connection()
         cursor= conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM planes WHERE ID_Plan = %s", (id,))
-        plan= cursor.fetchone()
-        if plan:
-            return jsonify(plan)
+        cursor.execute("SELECT * FROM roles WHERE ID_rol = %s", (id,))
+        rol= cursor.fetchone()
+        if rol:
+            return jsonify(rol)
         else:
-            return jsonify({"error": "Plan no encontrado"}), 404
+            return jsonify({"error": "Rol no encontrado"}), 404
     except Exception as ex: 
-        return devolver_error(ruta=f"planes/{id}", ex=ex)
+        return devolver_error(ruta=f"roles/{id}", ex=ex)
     finally:
         cursor.close()
         conn.close()
 
-@planes_bp.route("/", methods=["POST"])
-def post_plan():
+@roles_bp.route("/", methods=["POST"])
+def post_rol():
     body = request.get_json()
     
-    required = {'Precio': int, 'Descripcion': str, 'DuracionPlan': str}
+    required = {'tipo_rol': str}
 
     missing = [r for r in required if r not in body]
     if missing:
@@ -57,25 +57,21 @@ def post_plan():
     if badtype:
         return jsonify({'error': 'Tipos incorrectos', 'campos': badtype}), 400
     
-    if body['Precio'] < 0:
-        return jsonify({'error': 'Precio debe ser positivo'}), 400
 
     try:
         conn = get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT ID_Plan FROM planes WHERE Descripcion = %s", (body['Descripcion'],))
+        cursor.execute("SELECT ID_rol FROM roles WHERE tipo_rol = %s", (body['tipo_rol'],))
         if cursor.fetchone():
-            return jsonify({'error': 'La descripcion ya existe'}), 409
+            return jsonify({'error': 'El rol ya existe'}), 409
         
         cursor.execute(
             """
-            INSERT INTO planes (Precio, Descripcion, DuracionPlan)
-            VALUES (%s, %s, %s)
+            INSERT INTO roles (tipo_rol)
+            VALUES (%s)
             """, (
-                body['Precio'],
-                body['Descripcion'],
-                body['DuracionPlan']
+                body['tipo_rol'],
             )
         )
         
@@ -88,21 +84,21 @@ def post_plan():
         }), 201
         
     except Exception as ex:
-        return devolver_error(ruta="planes", metodo="POST", ex=ex)
+        return devolver_error(ruta="roles", metodo="POST", ex=ex)
     finally: 
         if cursor:
             cursor.close()
         if conn:
             conn.close()
 
-@planes_bp.route("/<int:id>", methods=["PUT"])
-def put_plan(id):
+@roles_bp.route("/<int:id>", methods=["PUT"])
+def put_rol(id):
     body = request.get_json()
     
     if not body:
         return jsonify({'error': 'No se proporcionaron datos para actualizar'}), 400
 
-    required = {'Precio': int, 'Descripcion': str, 'DuracionPlan': str}
+    required = {'tipo_rol': str}
 
     missing = [r for r in required if r not in body]
     if missing:
@@ -112,23 +108,20 @@ def put_plan(id):
     if badtype:
         return jsonify({'error': 'Tipos incorrectos', 'campos': badtype}), 400
 
-    if body['Precio'] < 0:
-        return jsonify({'error': 'Precio debe ser positivo'}), 400
-
     try:
         conn = get_connection()
         cursor = conn.cursor()
         
-        cursor.execute("SELECT 1 FROM planes WHERE ID_Plan = %s", (id,))
+        cursor.execute("SELECT 1 FROM roles WHERE ID_rol = %s", (id,))
         if not cursor.fetchone():
-            return jsonify({'error': 'Plan no encontrado'}), 404
+            return jsonify({'error': 'rol no encontrado'}), 404
         
         cursor.execute(
-            "SELECT 1 FROM planes WHERE Descripcion = %s AND ID_Plan != %s",
-            (body['Descripcion'], id)
+            "SELECT 1 FROM roles WHERE tipo_rol = %s AND ID_rol != %s",
+            (body['tipo_rol'], id)
         )
         if cursor.fetchone():
-            return jsonify({'error': 'La descripcion ya existe en otro plan'}), 409
+            return jsonify({'error': 'El rol ya existe'}), 409
         
         set_clauses = []
         params = []
@@ -138,9 +131,9 @@ def put_plan(id):
         params.append(id) 
         
         query = f"""
-            UPDATE planes
+            UPDATE roles
             SET {', '.join(set_clauses)}
-            WHERE ID_Plan = %s
+            WHERE ID_rol = %s
         """
         
         cursor.execute(query, params)
@@ -152,7 +145,7 @@ def put_plan(id):
         return jsonify({'success': True}), 200
         
     except Exception as ex:
-        return devolver_error(ruta="planes", metodo="PUT", ex=ex)
+        return devolver_error(ruta="roles", metodo="PUT", ex=ex)
     finally:
         if cursor:
             cursor.close()
@@ -160,26 +153,26 @@ def put_plan(id):
             conn.close()
 
 
-@planes_bp.route("/<int:id>", methods=["DELETE"])
-def delete_plan(id):
+@roles_bp.route("/<int:id>", methods=["DELETE"])
+def delete_rol(id):
     try:
         conn = get_connection()
         cursor = conn.cursor()
         
-        cursor.execute("SELECT 1 FROM planes WHERE ID_Plan = %s", (id,))
+        cursor.execute("SELECT 1 FROM roles WHERE ID_rol = %s", (id,))
         if not cursor.fetchone():
-            return jsonify({'error': 'Plan no encontrado'}), 404
+            return jsonify({'error': 'rol no encontrado'}), 404
         
-        cursor.execute("DELETE FROM planes WHERE ID_Plan = %s", (id,))
+        cursor.execute("DELETE FROM roles WHERE ID_rol = %s", (id,))
         conn.commit()
         
         if cursor.rowcount == 0:
-            return jsonify({'error': 'No se pudo eliminar el plan'}), 500
+            return jsonify({'error': 'No se pudo eliminar el rol'}), 500
         
         return jsonify({'success': True}), 200
         
     except Exception as ex:
-        return devolver_error(ruta="planes", metodo="DELETE", ex=ex)
+        return devolver_error(ruta="roles", metodo="DELETE", ex=ex)
     finally: 
         if cursor:
             cursor.close()

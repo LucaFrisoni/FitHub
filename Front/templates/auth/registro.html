@@ -1,0 +1,243 @@
+{% extends "base.html" %} {% block navbar %}{% endblock %} {# esto anula el
+navbar #} {% block content %}
+<div
+  class="flex h-screen w-full font-inter bg-cover bg-center"
+  style="background-image: url('{{ url_for('static', filename='images/registro_imagen.jpg') }}')"
+>
+  <!-- logo -->
+  <div class="flex items-center justify-center w-1/2">
+    <img
+      class="min-w-[474px] max-h-[514px]"
+      src="{{ url_for('static',filename='images/logo.png')}}"
+      alt="logo"
+    />
+  </div>
+  <!-- form -->
+  <div class="w-1/2 flex justify-center items-center">
+    <div
+      class="w-[570px] h-[600px] bg-stone-100 rounded-lg shadow-md flex flex-col p-6 border"
+    >
+      <p class="font-bold text-2xl">Crear usuario</p>
+      <form
+        action=""
+        class="flex flex-col items-center justify-center pt-10 gap-y-4 overflow-y-auto"
+      >
+        <!-- Email -->
+        <div class="w-[70%] pt-70">
+          <label class="block mb-2 text-base text-black font-semibold">
+            Direccion Email
+          </label>
+          <div class="relative">
+            <input
+              id="email"
+              required
+              type="email"
+              class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <img
+              src="{{ url_for('static',filename='images/mail_icono.png')}}"
+              class="absolute w-5 h-4 top-3 left-2.5"
+            />
+            <div
+              class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
+            ></div>
+            <label
+              for="email"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+            >
+              Ingrese su email..
+            </label>
+          </div>
+        </div>
+        <!-- contraseña -->
+        <div class="w-[70%]">
+          <label class="block mb-2 text-base text-black font-semibold">
+            Contraseña
+          </label>
+          <div class="relative">
+            <input
+              id="contra"
+              required
+              type="password"
+              class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <img
+              src="{{ url_for('static',filename='images/candado_icono.png')}}"
+              class="absolute w-4 h-5 top-2.5 left-3"
+            />
+            <div
+              class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
+            ></div>
+            <label
+              for="contra"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+            >
+              Ingrese su contraseña..
+            </label>
+          </div>
+        </div>
+        <!-- usuario -->
+        <div class="w-[70%]">
+          <label class="block mb-2 text-base text-black font-semibold">
+            Usuario
+          </label>
+          <div class="relative">
+            <input
+              id="user"
+              required
+              type="text"
+              class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <img
+              src="{{ url_for('static',filename='images/user_icono.png')}}"
+              class="absolute w-6 h-6 top-2 left-2"
+            />
+            <div
+              class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
+            ></div>
+            <label
+              for="user"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+            >
+              Ingrese su usuario..
+            </label>
+          </div>
+        </div>
+        <!-- nombre -->
+        <div class="w-[70%]">
+          <label class="block mb-2 text-base text-black font-semibold">
+            Nombre
+          </label>
+          <div class="relative">
+            <input
+              id="nombre"
+              required
+              type="text"
+              class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <img
+              src="{{ url_for('static',filename='images/user_icono.png')}}"
+              class="absolute w-6 h-6 top-2 left-2"
+            />
+            <div
+              class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
+            ></div>
+            <label
+              for="nombre"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+            >
+              Ingrese su nombre..
+            </label>
+          </div>
+        </div>
+        <!-- apellido -->
+        <div class="w-[70%]">
+          <label class="block mb-2 text-base text-black font-semibold">
+            Apellido
+          </label>
+          <div class="relative">
+            <input
+              id="apellido"
+              required
+              type="text"
+              class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <img
+              src="{{ url_for('static',filename='images/user_icono.png')}}"
+              class="absolute w-6 h-6 top-2 left-2"
+            />
+            <div
+              class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
+            ></div>
+            <label
+              for="apellido"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+            >
+              Ingrese su apellido..
+            </label>
+          </div>
+        </div>
+        <!-- fecha de nacimiento -->
+        <div class="w-[70%]">
+          <label class="block mb-2 text-base text-black font-semibold">
+            Fecha de nacimiento
+          </label>
+          <div class="relative">
+            <input
+              id="nacimiento"
+              required
+              type="date"
+              class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <img
+              src="{{ url_for('static',filename='images/torta_icono.png')}}"
+              class="absolute w-5 h-5 top-2.5 left-2.5"
+            />
+            <div
+              class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
+            ></div>
+            <label
+              for="nacimiento"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+            >
+              Ingrese su fecha de nacimiento..
+            </label>
+          </div>
+        </div>
+        <!-- numero de telofono -->
+        <div class="w-[70%]">
+          <label class="block mb-2 text-base text-black font-semibold">
+            Numero de telefono
+          </label>
+          <div class="relative">
+            <input
+              id="telefono"
+              required
+              placeholder="e.g., +54 11-7604-8078"
+              class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <img
+              src="{{ url_for('static',filename='images/telefono_icono.png')}}"
+              class="absolute w-4 h-4 top-3 left-2.5"
+            />
+            <div
+              class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
+            ></div>
+            <label
+              for="telefono"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+            >
+              Ingrese su numero de telefono..
+            </label>
+          </div>
+          <p class="mt-2 text-xs text-slate-400">
+            Incluya el código de su país para números internacionales.
+          </p>
+        </div>
+
+        <!-- boton -->
+        <div class="flex items-center justify-center w-[70%] pt-6">
+          <button
+            type="submit"
+            class="cursor-pointer p-3 w-full bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition"
+          >
+            Continuar
+          </button>
+        </div>
+      </form>
+      <hr class="w-full text-black/20 mt-8" />
+      <!-- textos -->
+      <div class="flex flex-col items-center justify-center gap-y-4 mt-6">
+        <span class="text-slate-400"
+          >Ya tiene usuario? Iniciar sesion
+          <a
+            class="text-primary font-bold cursor-pointer"
+            href="{{ url_for('login') }}"
+            >aquí</a
+          ></span
+        >
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block footer %}{% endblock %}
