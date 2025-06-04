@@ -1,41 +1,41 @@
 {% extends "base.html" %} {% block content %}
 
 
-<section class="relative z-0 w-full h-full">
+<section class="relative w-full h-screen overflow-hidden">
 
     <img src="{{ url_for('static', filename='images/home1.png') }}"
     alt="Home1 deberia ir aca..."
-    class="object-cover"
+    class="absolute inset-0 w-full h-full object-cover"
     > 
 
     <div class="absolute inset-0 bg-black/30 z-1"></div>
-    <div class="z-2 absolute bottom-0 w-full h-[200px] bg-gradient-to-b from-transparent to-stone-100" > </div>
+    <div class="z-2 absolute bottom-0 w-full h-[21%] bg-gradient-to-b from-transparent to-stone-100" > </div>
 
     <!-- - - - -///TEXTO INICIAL HOME///- - - - -->
 
-    <header class="z-3 absolute inset-0 flex-col flex items-center pt-65">
+    <header class="z-3 absolute inset-0 flex-col flex items-center pt-[12.5%]">
         
         <img src="{{ url_for('static', filename='images/home2.png') }}" 
         alt="Home2 deberia ir aca..." 
-        class="min-w-[300px] max-h-[300px]"
+        class="min-w-[33%] max-h-[43%]"
         >
 
-        <p class="text-stone-100 text-2xl max-w-[1000px] pt-5 pb-8 text-center"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
+        <p class="text-stone-100 text-[150%] sm:text[50%] max-w-[50%] pt-[1.5%] pb-[1.8%] text-center"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
 
         <!-- Botones -->
-        <div>
-            <a>
+        <div class="flex flex-col justify-center sm:flex-row gap-[5%] w-full  min-w-[1000px]">
+            <a class="w-[12.5%]">
                 <button 
                     type="button"
-                    class="w-[195px] h-[72px] text-[30px] rounded-xl shadow-sm cursor-pointer mr-10 bg-transparent  border-[5px] border-black box-border   font-bold text-stone-100   hover:border-stone-100 transition"
+                    class="w-full h-[130%] text-[200%]  rounded-xl shadow-sm cursor-pointer  bg-transparent  border-[5px] border-black box-border   font-bold text-stone-100   hover:bg-black transition"
                 >
                         Saber mas
                 </button> 
             </a>
-            <a href="{{ url_for('user') }}">
+            <a class="w-[12.5%]" href="{{ url_for('user') }}">
                 <button
                     type="button"
-                    class="w-[195px] h-[72px] text-[30px] rounded-xl shadow-sm cursor-pointer ml-10 bg-primary  border-[5px] border-primary box-border  font-bold text-black   hover:bg-blue-950 transition hover:text-stone-100 hover:border-blue-950"
+                    class="w-full h-[130%] text-[200%] rounded-xl shadow-sm cursor-pointer  bg-primary  border-[5px] border-primary box-border  font-bold text-black   hover:bg-secondary transition hover:border-secondary"
                 >
                     Unirme ya
                 </button>
@@ -49,12 +49,12 @@
 
 
 <!-- - - - -///SECCION "NUESTRA HISTORIA"///- - - - -->
-<section class="pt-20">  
+<section class="pt-[5%] flex relative w-full overflow-hidden">  
 
     <!-- Texto -->
-    <article class="flex flex-col pl-30 ">
+    <article class="flex flex-col px-[8%]">
         <h2 
-        class="leading-none m-0 text-shadow-xl pl-1  text-[35px] italic  text-primary text-shadow-stone-600 font-bold" 
+        class="leading-none m-0 text-shadow-xl pl-[0.5%]  text-[220%] italic  text-primary text-shadow-stone-600 font-bold" 
         >
             Nuestra
         </h2>
@@ -65,12 +65,16 @@
         HISTORIA
         </h1> 
 
+        <p class="text-xl pt-[1%] max-w-[45%] min-w-[45%] line-clamp-4 overflow-x-auto"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
+
     </article>
     <!-- Texto -->
 
-
-    <article >
-    </article>
+    <!-- Cuadros -->
+    <article class="w-[5vw] translate-x-[-500%]">  <!-- Cuadro 1 -->
+         <div class="bg-stone-500 w-[10vw] h-[10vw] rounded-[15%] shadow-xl"> </div>
+    </article>                       <!-- Cuadro 1 -->
+    <!-- Cuadros -->
 
 </section>
 
