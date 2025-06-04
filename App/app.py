@@ -7,7 +7,7 @@ from Back.routes.usuarios import usuarios_bp
 from Back.routes.roles import roles_bp
 from Back.routes.docs import init_docs
 from Back.db.db import get_connection
-import requests
+#import requests
 
 # --------------------------------------------Rutas||Back--------------------------------------------
 app = Flask(__name__)
@@ -22,9 +22,9 @@ app.register_blueprint(roles_bp, url_prefix="/api/roles")
 try:
     conn = get_connection()
     conn.close()
-    print("✅ Conectado a la base de datos exitosamente.")
+    print(" Conectado a la base de datos exitosamente.")
 except Exception as e:
-    print("❌ Error al conectar con la base de datos:", e)
+    print(" Error al conectar con la base de datos:", e)
 
 # --------------------------------------------Rutas||Front--------------------------------------------
 
@@ -59,31 +59,31 @@ def user():
 def login():
     if request.method == "GET":
         return render_template("auth/login.html")
-    if request.method == "POST":
-        mail = request.form.get("email")
-        contraseña = request.form.get("contraseña")
-        if not mail or not contraseña:
-            return render_template(
-                "auth/login.html", error="No se completaron todos los campos"
-            )
-        try:
-            # Mandar los datos al backend
-            response = requests.post(
-                "http://localhost:3001/usuarios/login",
-                json={"email": mail, "password": contraseña},
-                timeout=5,  # evita que cuelgue si el back no responde
-            )
+    # if request.method == "POST":
+    #     mail = request.form.get("email")
+    #     contraseña = request.form.get("contraseña")
+    #     if not mail or not contraseña:
+    #         return render_template(
+    #             "auth/login.html", error="No se completaron todos los campos"
+    #         )
+    #     try:
+    #         # Mandar los datos al backend
+    #         response = requests.post(
+    #             "http://localhost:3001/usuarios/login",
+    #             json={"email": mail, "password": contraseña},
+    #             timeout=5,  # evita que cuelgue si el back no responde
+    #         )
 
-            if response.status_code == 200:
-                return redirect(url_for("home"))
-            else:
-                mensaje = response.json().get("error", "Error al iniciar sesión")
-                return render_template("auth/login.html", error=mensaje)
+    #         if response.status_code == 200:
+    #             return redirect(url_for("home"))
+    #         else:
+    #             mensaje = response.json().get("error", "Error al iniciar sesión")
+    #             return render_template("auth/login.html", error=mensaje)
 
-        except requests.exceptions.RequestException:
-            return render_template(
-                "auth/login.html", error="Error de conexión con el servidor"
-            )
+    #     except requests.exceptions.RequestException:
+    #         return render_template(
+    #             "auth/login.html", error="Error de conexión con el servidor"
+    #         )
 
 
 @app.route("/registro")
