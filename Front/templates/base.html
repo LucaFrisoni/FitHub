@@ -14,24 +14,17 @@
       rel="stylesheet"
     />
   </head>
-  <body class="bg-stone-100">
-    <nav class="bg-white w-full h-[90px] flex justify-between fixed z-100">
-=======
   <body class="bg-stone-100 min-h-screen w-full flex flex-col">
     {% block navbar %}
     <nav class="bg-white w-full h-[90px] flex justify-between fixed z-10">
       <!-- Logo -->
-      <div class="flex items-center pl-10">
-      <a class="flex items-center cursor-pointer hover:text-primary transition"
-      href="{{ url_for('home') }}"
-      >
+      <div class="flex items-center justify-center pl-10">
         <img
           class="min-w-[50px] max-h-[50px]"
           src="{{ url_for('static',filename='images/logo.png')}}"
           alt="logo"
         />
         <p class="pl-3 text-2xl font-bold tracking-wide">FITHUB</p>
-      </a>
       </div>
 
       <!-- Iconos -->
@@ -87,7 +80,7 @@
 
       <!-- Boton - Light/Dark mode - gradiente de colores -->
       <div
-        class="flex items-center justify-center bg-cover w-[253px] h-full"
+        class="flex items-center justify-center bg-cover w-[300px] h-full"
         style="background-image: url('{{ url_for('static', filename='images/gradiente.png') }}')"
       >
         <div
@@ -111,9 +104,6 @@
     </nav>
     {% endblock %}
 
-<<<<<<< HEAD
-    <main class="pt-[90px]">{% block content %} {% endblock %}</main>
-=======
     <main class="flex-grow">{% block content %} {% endblock %}</main>
     {% block footer %}
     <footer class="bg-gray-100 text-gray-800 py-10 mt-auto">
