@@ -1,5 +1,5 @@
 {% extends "base.html" %}{% block content %}
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 ml-8 mr-8 mt-30" style="background-image: url(images/fondo_reservas.png)">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 ml-8 mr-8 mt-30 background-image???">
     
     <!-- Left Column - Booking Form -->
     <div class="lg:col-span-2 space-y-6">
@@ -7,10 +7,10 @@
         <div class="bg-yellow-500 rounded-lg p-4">
             <h3 class="font-bold text-black mb-3">Disponibilidad</h3>
             <div class="flex flex-wrap gap-2">
-                <button class="day-btn bg-white hover:bg-2A2E34 text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Lun</button>
+                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Lun</button>
                 <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Ma</button>
                 <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Mi</button>
-                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Jue</button>
+                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105 ">Jue</button>
                 <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Vie</button>
                 <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Sab</button>
                 <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Dom</button>
@@ -42,25 +42,73 @@
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-black text-sm font-medium mb-1">Inicio</label>
-                        <input type="time" value="00:00" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                    </div>
+                        <select class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            <option>00</option>
+                            <option>01</option>
+                            <option>02</option>
+                            <option>03</option>
+                            <option>04</option>
+                            <option>05</option>
+                            <option>06</option>
+                            <option>07</option>
+                            <option>08</option>
+                            <option>09</option>
+                            <option>10</option>
+                            <option>11</option>
+                            <option>12</option>
+                            <option>13</option>
+                            <option>14</option>
+                            <option>15</option>
+                            <option>16</option>
+                            <option>17</option>
+                            <option>18</option>
+                            <option>19</option>
+                            <option>20</option>
+                            <option>21</option>
+                            <option>22</option>
+                            <option>23</option>
+                        </select></div>
                     <div>
                         <label class="block text-black text-sm font-medium mb-1">Fin</label>
-                        <input type="time" value="00:00" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-yellow-600">
-                    </div>
+                        <select class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            <option>00</option>
+                            <option>01</option>
+                            <option>02</option>
+                            <option>03</option>
+                            <option>04</option>
+                            <option>05</option>
+                            <option>06</option>
+                            <option>07</option>
+                            <option>08</option>
+                            <option>09</option>
+                            <option>10</option>
+                            <option>11</option>
+                            <option>12</option>
+                            <option>13</option>
+                            <option>14</option>
+                            <option>15</option>
+                            <option>16</option>
+                            <option>17</option>
+                            <option>18</option>
+                            <option>19</option>
+                            <option>20</option>
+                            <option>21</option>
+                            <option>22</option>
+                            <option>23</option>
+                        </select>                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Comments -->
-        <div class="bg-gray-800 bg-opacity-50 rounded-lg p-4">
-            <h3 class="font-bold text-white mb-3">Comentarios</h3>
+        <div class="bg-yellow-500 bg-opacity-50 rounded-lg p-4">
+            <h3 class="font-bold text-black mb-3">Comentarios</h3>
             <textarea class="w-full h-32 bg-white bg-opacity-90 border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-yellow-600 resize-none" placeholder="Añade comentarios adicionales..."></textarea>
         </div>
     </div>
 
     <!-- Right Column - Available Slots -->
-    <div class="bg-black bg-opacity-50 rounded-lg p-6">
+    <div class="bg-gray-900 bg-opacity-50 rounded-lg p-15">
         <h3 class="font-bold text-white mb-4 text-xl">Turnos Disponibles</h3>
         
         <div class="space-y-4">
@@ -181,7 +229,7 @@
               transition-all duration-300
               w-4/5 sm:w-auto
             ">
-              Botón Premium
+              RESERVAR
             </button>
           </div>
     </div>
