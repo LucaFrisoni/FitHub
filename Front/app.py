@@ -21,6 +21,19 @@ def tienda():
 @app.route('/user')
 def user():
    return render_template('user.html')
+# ----------------------Auth----------------------
+@app.route('/login')
+def login():
+   return render_template('auth/login.html')
+
+@app.route('/registro')
+def registro():
+   return render_template('auth/registro.html')
+
+@app.route('/cambiarcontra')
+def cambiarcontra():
+   return render_template('auth/cambiar_contra.html')
+
 
 if __name__ == '__main__':
    app.run("localhost", port=3000,debug=True)

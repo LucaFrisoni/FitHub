@@ -18,3 +18,4 @@ app.register_blueprint(roles_bp, url_prefix="/roles")
 
 if __name__ == "__main__":
     app.run(debug=True)
+
