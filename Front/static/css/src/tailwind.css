@@ -34,4 +34,10 @@
   .text-secondary {
     color: var(--color-secondary);
   }
+
+  .text-shadow-xl {
+  text-shadow: 2px 3px 2px var(--tw-text-shadow-color, rgb(0 0 0 / 0.4));
 }
+
+}
+
