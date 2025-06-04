@@ -1,136 +1,189 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 ml-8 mr-8 mt-30" style="background-image: url(images/fondo_reservas.png)">
+    
+    <!-- Left Column - Booking Form -->
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Availability -->
+        <div class="bg-yellow-500 rounded-lg p-4">
+            <h3 class="font-bold text-black mb-3">Disponibilidad</h3>
+            <div class="flex flex-wrap gap-2">
+                <button class="day-btn bg-white hover:bg-2A2E34 text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Lun</button>
+                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Ma</button>
+                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Mi</button>
+                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Jue</button>
+                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Vie</button>
+                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Sab</button>
+                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Dom</button>
+            </div>
+        </div>
 
-{% block content %}
-<div>
-    <div>
-        <p>Disponibilidad</p>
-
-
-        <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Choose technology:</h3>
-        <ul class="grid w-full gap-6 md:grid-cols-3">
-            <li>
-                <input type="checkbox" id="flowbite-option" value="" class="hidden peer">
-                <label for="flowbite-option" class="inline-flex items-center justify-between p-5 text-gray-500 bg-white 
-                    border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 
-                    dark:border-gray-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 
-                    hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
-                    hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
-                    <div class="block">
-                        <div class="w-full text-lg font-semibold">Lunes</div>
-                    </div>
-                </label>
-            </li>
-            <li>
-                <input type="checkbox" id="flowbite-option" value="" class="hidden peer">
-                <label for="flowbite-option" class="inline-flex items-center justify-between p-5 text-gray-500 bg-white 
-                    border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 
-                    dark:border-gray-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 
-                    hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
-                    hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
-                    <div class="block">
-                        <div class="w-full text-lg font-semibold">Martes</div>
-                    </div>
-                </label>
-            </li>
-            <li>
-                <input type="checkbox" id="flowbite-option" value="" class="hidden peer">
-                <label for="flowbite-option" class="inline-flex items-center justify-between p-5 text-gray-500 bg-white 
-                    border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 
-                    dark:border-gray-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 
-                    hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
-                    hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
-                    <div class="block">
-                        <div class="w-full text-lg font-semibold">Miercoles</div>
-                    </div>
-                </label>
-            </li>
-            <li>
-                <input type="checkbox" id="flowbite-option" value="" class="hidden peer">
-                <label for="flowbite-option" class="inline-flex items-center justify-between p-5 text-gray-500 bg-white 
-                    border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 
-                    dark:border-gray-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 
-                    hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
-                    hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
-                    <div class="block">
-                        <div class="w-full text-lg font-semibold">Jueves</div>
-                    </div>
-                </label>
-            </li>
-            <li>
-                <input type="checkbox" id="flowbite-option" value="" class="hidden peer">
-                <label for="flowbite-option" class="inline-flex items-center justify-between p-5 text-gray-500 bg-white 
-                    border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 
-                    dark:border-gray-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 
-                    hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
-                    hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
-                    <div class="block">
-                        <div class="w-full text-lg font-semibold">Viernes</div>
-                    </div>
-                </label>
-            </li>
-            <li>
-                <input type="checkbox" id="flowbite-option" value="" class="hidden peer">
-                <label for="flowbite-option" class="inline-flex items-center justify-between p-5 text-gray-500 bg-white 
-                    border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 
-                    dark:border-gray-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 
-                    hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
-                    hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
-                    <div class="block">
-                        <div class="w-full text-lg font-semibold">Sabado</div>
-                    </div>
-                </label>
-            </li>
-            <li>
-                <input type="checkbox" id="flowbite-option" value="" class="hidden peer">
-                <label for="flowbite-option" class="inline-flex items-center justify-between p-5 text-gray-500 bg-white 
-                    border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 
-                    dark:border-gray-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 
-                    hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
-                    hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
-                    <div class="block">
-                        <div class="w-full text-lg font-semibold">Domingo</div>
-                    </div>
-                </label>
-            </li>
-
-        </ul>
-
-
-    </div>
-    <div>
-        <p>Tipo de Entrenamiento</p>
-        <form class="max-w-sm mx-auto">
-            <label for="type_sport" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an
-                option</label>
-            <select id="type_sport" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
-                        focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
-                        dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                <option selected>Tipo...</option>
-                <option value="Body_B">Bodybuilding</option>
-                <option value="SP">Spinning</option>
-                <option value="SF">Sport-focus</option>
+        <!-- Training Type -->
+        <div class="bg-yellow-500 rounded-lg p-4">
+            <h3 class="font-bold text-black mb-3">Tipo de entrenamiento</h3>
+            <select class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                <option>Bodybuilding</option>
+                <option>Spinnig</option>
+                <option>Sport-Focus</option>
             </select>
+        </div>
+
+        <!-- Session Time -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-yellow-500 rounded-lg p-4">
+                <h3 class="font-bold text-black mb-3">Turno</h3>
+                <select class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                    <option>Mañana</option>
+                    <option>Tarde</option>
+                    <option>Noche</option>
+                </select>
+            </div>
+            <div class="bg-yellow-500 rounded-lg p-4">
+                <h3 class="font-bold text-black mb-3">Hora</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-black text-sm font-medium mb-1">Inicio</label>
+                        <input type="time" value="00:00" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                    </div>
+                    <div>
+                        <label class="block text-black text-sm font-medium mb-1">Fin</label>
+                        <input type="time" value="00:00" class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comments -->
+        <div class="bg-gray-800 bg-opacity-50 rounded-lg p-4">
+            <h3 class="font-bold text-white mb-3">Comentarios</h3>
+            <textarea class="w-full h-32 bg-white bg-opacity-90 border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-yellow-600 resize-none" placeholder="Añade comentarios adicionales..."></textarea>
+        </div>
     </div>
-    <div>
-        <p>Turno</p>
-    </div>
-    <div>
-        <p>Horario</p>
-    </div>
-    <div>
-        <p>Comentarios</p>
-        <input class="w-full bg-transparent placeholder:text-slate-400 text-slate-700
-                    text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300
-                    ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
-            placeholder="Type here..." />
-    </div>
-    <div>
-        <p>Turnos disponibles</p>
-    </div>
-    <div>
-        <button type="button" class="cursor-pointer focus:outline-none text-black
-                    bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium
-                    rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:focus:ring-yellow-900">RESERVAR</button>
+
+    <!-- Right Column - Available Slots -->
+    <div class="bg-black bg-opacity-50 rounded-lg p-6">
+        <h3 class="font-bold text-white mb-4 text-xl">Turnos Disponibles</h3>
+        
+        <div class="space-y-4">
+            <!-- Monday -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span class="text-white font-medium">Lunes</span>
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2L13.09 6.26L18 7L14 10.74L15.18 16.5L10 13.77L4.82 16.5L6 10.74L2 7L6.91 6.26L10 2Z"/>
+                    </svg>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="bg-gray-700 text-white px-3 py-1 rounded text-sm">0</span>
+                    <span class="bg-yellow-500 text-black px-3 py-1 rounded text-sm font-medium">15</span>
+                </div>
+            </div>
+
+            <!-- Tuesday -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span class="text-white font-medium">Martes</span>
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2L13.09 6.26L18 7L14 10.74L15.18 16.5L10 13.77L4.82 16.5L6 10.74L2 7L6.91 6.26L10 2Z"/>
+                    </svg>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="bg-gray-700 text-white px-3 py-1 rounded text-sm">0</span>
+                    <span class="bg-yellow-500 text-black px-3 py-1 rounded text-sm font-medium">15</span>
+                </div>
+            </div>
+
+            <!-- Wednesday -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span class="text-white font-medium">Miércoles</span>
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2L13.09 6.26L18 7L14 10.74L15.18 16.5L10 13.77L4.82 16.5L6 10.74L2 7L6.91 6.26L10 2Z"/>
+                    </svg>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="bg-gray-700 text-white px-3 py-1 rounded text-sm">0</span>
+                    <span class="bg-yellow-500 text-black px-3 py-1 rounded text-sm font-medium">15</span>
+                </div>
+            </div>
+
+            <!-- Thursday -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span class="text-white font-medium">Jueves</span>
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2L13.09 6.26L18 7L14 10.74L15.18 16.5L10 13.77L4.82 16.5L6 10.74L2 7L6.91 6.26L10 2Z"/>
+                    </svg>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="bg-gray-700 text-white px-3 py-1 rounded text-sm">0</span>
+                    <span class="bg-yellow-500 text-black px-3 py-1 rounded text-sm font-medium">15</span>
+                </div>
+            </div>
+
+            <!-- Friday -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span class="text-white font-medium">Viernes</span>
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2L13.09 6.26L18 7L14 10.74L15.18 16.5L10 13.77L4.82 16.5L6 10.74L2 7L6.91 6.26L10 2Z"/>
+                    </svg>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="bg-gray-700 text-white px-3 py-1 rounded text-sm">0</span>
+                    <span class="bg-yellow-500 text-black px-3 py-1 rounded text-sm font-medium">15</span>
+                </div>
+            </div>
+
+            <!-- Saturday -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span class="text-white font-medium">Sábado</span>
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2L13.09 6.26L18 7L14 10.74L15.18 16.5L10 13.77L4.82 16.5L6 10.74L2 7L6.91 6.26L10 2Z"/>
+                    </svg>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="bg-gray-700 text-white px-3 py-1 rounded text-sm">0</span>
+                    <span class="bg-yellow-500 text-black px-3 py-1 rounded text-sm font-medium">15</span>
+                </div>
+            </div>
+
+            <!-- Sunday -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span class="text-white font-medium">Domingo</span>
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2L13.09 6.26L18 7L14 10.74L15.18 16.5L10 13.77L4.82 16.5L6 10.74L2 7L6.91 6.26L10 2Z"/>
+                    </svg>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="bg-gray-700 text-white px-3 py-1 rounded text-sm">0</span>
+                    <span class="bg-yellow-500 text-black px-3 py-1 rounded text-sm font-medium">15</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reserve Button -->
+        <div class="mt-24 flex items-center justify-center">
+            <button class="
+              px-5 py-3 bg-gradient-to-r from-yellow-700 to-yellow-700 
+              text-white font-medium rounded-xl shadow-lg
+              text-sm sm:text-base md:text-lg
+              hover:from-black hover:to-yellow-700
+              transform hover:-translate-y-0.5
+              transition-all duration-300
+              w-4/5 sm:w-auto
+            ">
+              Botón Premium
+            </button>
+          </div>
     </div>
 </div>
 {% endblock %}
