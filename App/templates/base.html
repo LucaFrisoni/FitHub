@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fithub</title>
+    <!-- tailwind -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static',filename='css/main.css',_external=True) }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-stone-100 min-h-screen w-full flex flex-col">
+    {% block navbar %}
+    <nav class="bg-white w-full h-[90px] flex justify-between fixed z-10">
+      <!-- Logo -->
+      <div class="flex items-center justify-center pl-10">
+        <img
+          class="min-w-[50px] max-h-[50px]"
+          src="{{ url_for('static',filename='images/logo.png')}}"
+          alt="logo"
+        />
+        <p class="pl-3 text-2xl font-bold tracking-wide">FITHUB</p>
+      </div>
+
+      <!-- Iconos -->
+      <div class="flex items-center pt-2.5">
+        <a
+          class="flex flex-col items-center pl-10 pr-10 cursor-pointer hover:text-primary transition"
+          href="{{ url_for('home') }}"
+        >
+          <img
+            class="max-w-[40px] max-h-[40px]"
+            src="{{ url_for('static',filename='images/home.png')}}"
+            alt="logo"
+          />
+          <p class="font-medium">Home</p>
+        </a>
+
+        <a
+          class="flex flex-col items-center pl-10 pr-10 cursor-pointer hover:text-primary transition"
+          href="{{ url_for('reservas') }}"
+        >
+          <img
+            class="max-w-[40px] max-h-[40px]"
+            src="{{ url_for('static',filename='images/schedule.png')}}"
+            alt="logo"
+          />
+          <p class="font-medium">Reservas</p>
+        </a>
+
+        <a
+          class="flex flex-col items-center pl-10 pr-10 cursor-pointer hover:text-primary transition"
+          href="{{ url_for('tienda') }}"
+        >
+          <img
+            class="min-w-[40px] min-h-[40px]"
+            src="{{ url_for('static',filename='images/store.svg')}}"
+            alt="logo"
+          />
+          <p class="font-medium">Tienda</p>
+        </a>
+
+        <a
+          class="flex flex-col items-center pl-10 pr-10 cursor-pointer hover:text-primary transition"
+          href="{{ url_for('planes') }}"
+        >
+          <img
+            class="min-w-[40px] min-h-[40px]"
+            src="{{ url_for('static',filename='images/planes.svg')}}"
+            alt="logo"
+          />
+          <p class="font-medium">Planes</p>
+        </a>
+      </div>
+
+      <!-- Boton - Light/Dark mode - gradiente de colores -->
+      <div
+        class="flex items-center justify-center bg-cover w-[300px] h-full"
+        style="background-image: url('{{ url_for('static', filename='images/gradiente.png') }}')"
+      >
+        <div
+          class="hover:bg-slate-200/40 transition rounded-2xl p-2 cursor-pointer"
+        >
+          <img
+            class="min-w-[40px] min-h-[40px]"
+            src="{{ url_for('static',filename='images/sun.svg')}}"
+            alt="logo"
+          />
+        </div>
+        <a href="{{ url_for('login') }}">
+          <button
+            type="button"
+            class="cursor-pointer p-3 ml-6 bg-black hover:bg-black/90 transition font-bold text-stone-100 rounded-xl shadow-sm"
+          >
+            Iniciar sesion
+          </button></a
+        >
+      </div>
+    </nav>
+    {% endblock %}
+
+    <main class="flex-grow">{% block content %} {% endblock %}</main>
+    {% block footer %}
+    <footer class="bg-gray-100 text-gray-800 py-10 mt-auto">
+      <div class="max-w-7xl mx-auto px-6 flex justify-between items-start">
+        <!-- Logo y nombre -->
+        <div class="flex items-center space-x-4 w-1/2">
+          <img
+            src="{{ url_for('static', filename='images/Logo.png') }}"
+            alt="logo"
+            class="h-12 w-auto"
+          />
+          <h2 class="text-2xl font-bold">FITHUB</h2>
+        </div>
+
+        <!-- Información de contacto -->
+        <div class="text-right w-1/2 pr-10">
+          <h3 class="text-lg font-bold text-yellow-600 mb-2">
+            Contact Information
+          </h3>
+          <p>Argentina, CABA, Av. Sta Fe, 3223</p>
+          <p>fithub.com.ar</p>
+          <p>WhatsApp: 123432456</p>
+        </div>
+      </div>
+
+      <!-- Redes sociales -->
+      <div class="flex justify-center items-center gap-6 mt-10">
+        <a href="https://twitter.com" target="_blank" aria-label="Twitter">
+          <img
+            src="{{ url_for('static', filename='images/x-twitter.png') }}"
+            alt="Twitter"
+            class="h-8 w-8 hover:opacity-70 transition-opacity"
+          />
+        </a>
+        <a href="https://instagram.com" target="_blank" aria-label="Instagram">
+          <img
+            src="{{ url_for('static', filename='images/Instagram.svg') }}"
+            alt="Instagram"
+            class="h-8 w-8 hover:opacity-70 transition-opacity"
+          />
+        </a>
+        <a href="https://youtube.com" target="_blank" aria-label="YouTube">
+          <img
+            src="{{ url_for('static', filename='images/youtube.svg') }}"
+            alt="YouTube"
+            class="h-8 w-8 hover:opacity-70 transition-opacity"
+          />
+        </a>
+        <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn">
+          <img
+            src="{{ url_for('static', filename='images/linkedin.svg') }}"
+            alt="LinkedIn"
+            class="h-8 w-8 hover:opacity-70 transition-opacity"
+          />
+        </a>
+      </div>
+
+      <!-- Copyright -->
+      <div class="text-center text-sm mt-6 text-gray-600">
+        © 2025 Programando.sh, Inc. All rights reserved.
+      </div>
+    </footer>
+    {% endblock %}
+
+    <script
+      async
+      defer
+      src="https://unpkg.com/@material-tailwind/html@latest/scripts/ripple.js"
+    ></script>
+  </body>
+</html>
