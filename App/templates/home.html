@@ -1,47 +1,51 @@
 {% extends "base.html" %} {% block content %}
 
+        <img src="{{ url_for('static', filename='images/fondo.png') }}" 
+        alt="fondo deberia ir aca..." 
+        class="absolute h-[120vw] z-0 mt-[40vw] translate-x-[-55vw]"
+        >
 
-<section class="relative z-0 w-full h-full">
+<section class="relative w-full h-screen overflow-hidden">
 
     <img src="{{ url_for('static', filename='images/home1.png') }}"
     alt="Home1 deberia ir aca..."
-    class="object-cover"
+    class="absolute inset-0 w-full h-full object-cover"
     > 
 
     <div class="absolute inset-0 bg-black/30 z-1"></div>
-    <div class="z-2 absolute bottom-0 w-full h-[200px] bg-gradient-to-b from-transparent to-stone-100" > </div>
+    <div class="z-2 absolute bottom-0 w-full h-[21%] bg-gradient-to-b from-transparent to-stone-100" > </div>
 
     <!-- - - - -///TEXTO INICIAL HOME///- - - - -->
 
-    <header class="z-3 absolute inset-0 flex-col flex items-center pt-65">
+    <header class="z-3 absolute inset-0 flex-col flex items-center pt-[12.5%]">
         
         <img src="{{ url_for('static', filename='images/home2.png') }}" 
         alt="Home2 deberia ir aca..." 
-        class="min-w-[300px] max-h-[300px]"
+        class="min-w-[33%] max-h-[43%]"
         >
 
-        <p class="text-stone-100 text-2xl max-w-[1000px] pt-5 pb-8 text-center"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
+        <p class="text-stone-100 text-[150%] sm:text[50%] max-w-[50%] pt-[1.5%] pb-[1.8%] text-center"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
 
         <!-- Botones -->
-        <div>
-            <a>
+        <div class="flex flex-col justify-center sm:flex-row gap-[5%] w-full  min-w-[1000px]">
+            <a class="w-[12.5%]" href="#HISTORIA">
                 <button 
                     type="button"
-                    class="w-[195px] h-[72px] text-[30px] rounded-xl shadow-sm cursor-pointer mr-10 bg-transparent  border-[5px] border-black box-border   font-bold text-stone-100   hover:border-stone-100 transition"
+                    class="w-full h-[130%] text-[200%]  rounded-xl shadow-sm cursor-pointer  bg-transparent  border-[5px] border-black box-border   font-bold text-stone-100   hover:bg-black transition"
                 >
                         Saber mas
                 </button> 
             </a>
-            <a href="{{ url_for('user') }}">
+            <a class="w-[12.5%]" href="{{ url_for('registro') }}">
                 <button
                     type="button"
-                    class="w-[195px] h-[72px] text-[30px] rounded-xl shadow-sm cursor-pointer ml-10 bg-primary  border-[5px] border-primary box-border  font-bold text-black   hover:bg-blue-950 transition hover:text-stone-100 hover:border-blue-950"
+                    class="w-full h-[130%] text-[200%] rounded-xl shadow-sm cursor-pointer  bg-primary  border-[5px] border-primary box-border  font-bold text-black   hover:bg-secondary transition hover:border-secondary"
                 >
                     Unirme ya
                 </button>
             </a>
         </div>
-        <!-- Botones -->
+        <!-- Botones FIN -->
     </header>
 </section>
 <!-- - - - -///TEXTO INICIAL HOME///- - - - -->
@@ -49,33 +53,207 @@
 
 
 <!-- - - - -///SECCION "NUESTRA HISTORIA"///- - - - -->
-<section class="pt-20">  
+<section class="pt-[5%] flex relative w-full overflow-visible px-[10vw] items-start justify-between" id="HISTORIA">  
 
     <!-- Texto -->
-    <article class="flex flex-col pl-30 ">
+    <article class="flex flex-col pt-[4%]">
         <h2 
-        class="leading-none m-0 text-shadow-xl pl-1  text-[35px] italic  text-primary text-shadow-stone-600 font-bold" 
+        class="leading-none m-0 text-shadow-xl pl-[0.5%]  text-[2vw] italic  text-primary text-shadow-stone-600 font-bold" 
         >
             Nuestra
         </h2>
 
         <h1 
-        class="leading-none  text-[100px] text-shadow-xl   text-black text-shadow-stone-600 font-bold"
+        class="leading-none  text-[6vw] text-shadow-xl   text-black text-shadow-stone-600 font-bold"
         >
         HISTORIA
         </h1> 
 
+        <p class="text-[1.10vw] pt-[1%] max-w-[40vw] min-w-[40vw] line-clamp-3 overflow-x-auto"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
+
     </article>
     <!-- Texto -->
 
+    <!-- Cuadros -->
+    <section class="translate-x-[-10vw] items-center flex flex-col">
 
-    <article >
-    </article>
+        <!-- Cuadro 1 y 2 -->
+        <div class="flex gap-[6.5vw]"> 
+
+            <!-- Cuadro 1 -->
+            <article class="w-[5vw] hover:translate-y-[-0.5vw] transition">  <!-- Cuadro 1 -->
+                <div class="flex bg-stone-100 w-[10vw] h-[10vw] rounded-[15%] shadow-pr justify-center items-center"> 
+                    
+                    <div class="flex bg-transparent border-black border-[0.25vw] w-[9vw] h-[9vw] rounded-[15%] justify-center items-center"> 
+                        
+                        <h1 class="translate-y-[2.3vw] translate-x-[-0.8vw]  text-black font-bold text-[0.9vw] text-center"> Planes de entrenamiento </h1>
+
+                        <img src="{{ url_for('static', filename='images/corazon.png') }}" alt="corazon deberia ir aca..." 
+                        class=" w-[5vw] h-[5vw] translate-y-[-1.5vw] translate-x-[1.5vw] absolute"
+                        > 
+
+                    </div>
+
+                </div>
+            </article>           
+            <!-- Cuadro 1 FIN -->
+
+            <!-- Cuadro 2 -->
+            <article class="w-[5vw]">  
+                <div class="flex bg-stone-100 w-[10vw] h-[10vw] rounded-[15%] shadow-pr justify-center items-center hover:translate-y-[-0.5vw] transition"> 
+                    
+                    <div class="flex  bg-transparent border-black border-[0.25vw] w-[9vw] h-[9vw] rounded-[15%] justify-center items-center"> 
+                        
+                        <h1 class="translate-y-[-2.1vw]  text-black font-bold text-center text-[0.9vw]"> Couching <u>siempre</u> disponible </h1>
+                        <img src="{{ url_for('static', filename='images/musculo.png') }}" alt="musculo deberia ir aca..." 
+                        class=" w-[4.5vw] h-[4.5vw] translate-y-[1.7vw] absolute"
+                        > 
+
+                    </div>
+
+                </div>
+            </article>   
+            <!-- Cuadro 2 FIN -->              
+
+        </div>
+        <!-- Cuadro 1 y 2 FIN -->
+
+        <!-- Cuadro 3 -->
+        <article class="w-[5vw] mt-[1.5vw] hover:translate-y-[-0.5vw] transition">  
+                <div class="flex bg-stone-100 w-[10vw] h-[10vw] rounded-[15%] shadow-pr justify-center items-center"> 
+                    
+                    <div class="flex  bg-transparent border-black border-[0.25vw] w-[9vw] h-[9vw] rounded-[15%] justify-center items-center"> 
+                    
+                        <h2 class="text-black font-bold text-center translate-y-[-2.8vw] text-[0.9vw]"> Abierto </h2>
+                        <h1 class="text-black text-center translate-y-[1vw] text-[3.5vw] leading-[2.8vw] absolute"> 24<br>/7 </h1>
+
+                    </div>
+
+                </div>
+        </article>                 
+        <!-- Cuadro 3 FIN -->
+
+    </section>
+    <!-- Cuadros FIN -->
 
 </section>
 
 
-<!-- - - - -///SECCION "NUESTRA HISTORIA"///- - - - -->
+<!-- - - - -///SECCION "NUESTRA HISTORIA" FIN///- - - - -->
 
+
+<!-- - - - -///SECCION PLANES///- - - - -->
+
+<section class="pt-[15%] flex relative w-full px-[10vw]">
+
+     <!-- Texto -->
+    <article class="flex flex-col pt-[10%] ">
+
+        <div class="absolute z-5 translate-y-[-14vw] translate-x-[5vw]">
+            <h2 
+            class="leading-none m-0 text-shadow-2xs pl-[10%]  text-[1.5vw] italic  text-black font-bold" > Que... </h2>
+
+            <h1 
+            class="leading-none  text-[6vw] drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] z-5  text-primary  
+            font-bold"
+            >
+            OFRECEMOS
+            </h1>  
+        </div>
+    </article>
+    <!-- Texto FIN -->
+
+        <div class="flex flex-col justify-center items-center mx-auto">
+            <!-- CUADRO -->
+            <div class="flex bg-stone-700 w-[70vw] h-[34vw] rounded-[2%] shadow-pr justify-center items-center">
+            
+                <div class="flex bg-stone-200 w-[97.5%] h-[95%] rounded-[2%] justify-center items-center mx-auto"
+                
+                style="background-image: url('{{ url_for('static', filename='images/home3.png') }}'); alt="home3 deberia ir aca..."">
+
+                    <!-- PLANES -->
+                    <div class="flex bg-stone-100/90 w-[100%] h-[100%] rounded-[2%] justify-center items-center mx-auto">
+
+                        <!-- PLAN 1 -->
+                        <div class="z-5 pt-[2%] flex flex-col bg-secondary w-[27%] h-[90%] hover:h-[110%] transition-all duration-300 
+                        rounded-[1%] hover:shadow-[inset_0_0_100px_rgba(255,255,255,0.6)] items-center overflow-hidden">
+
+                                <h2 class="leading-none m-0 text-shadow-2xs pb-[15%] z-100 text-[1.5vw] font-bold text-shadow-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary" > BODYBUILDING </h2>
+                                <img src="{{ url_for('static', filename='images/plan1.png') }}" alt="plan1 deberia ir aca..."
+                                class="rounded-[2%] border-primary border-[0.3vw] h-[16.5vw] w-[16.5vw] translate-y-[-2vw]"> 
+
+                                <p class="text-[200%] mr-[50%] font-bold text-shadow-xl text-shadow-primary translate-y-[-2vw]"> ● Dato 1 <br> ● Dato 2 <br> ● Dato 3 <br> ● Dato 4 <br> ● Dato 5 <br> ● Dato 6 </p>
+
+                        </div>
+                        <!-- PLAN 1 FIN -->
+
+                        <!-- PLAN 2 -->
+                        <div class="z-5 pt-[2%] ml-[5%] hover:shadow-[inset_0_0_100px_rgba(255,255,255,0.6)] flex flex-col bg-secondary w-[27%] h-[90%] 
+                        rounded-[1%] items-center overflow-hidden hover:h-[110%] transition-all duration-300">
+
+                                <h2 class="leading-none m-0 text-shadow-2xs pb-[15%] z-100 text-[1.5vw] font-bold text-shadow-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary" > SPINNING </h2>
+                                <img src="{{ url_for('static', filename='images/plan2.png') }}" alt="plan2 deberia ir aca..."
+                                class="rounded-[2%] border-primary border-[0.3vw] h-[16.5vw] w-[16.5vw] translate-y-[-2vw]"> 
+
+                                <p class="text-[200%] mr-[50%] font-bold text-shadow-xl text-shadow-primary translate-y-[-2vw]"> ● Dato 1 <br> ● Dato 2 <br> ● Dato 3 <br> ● Dato 4 <br> ● Dato 5 <br> ● Dato 6 </p>
+
+                        </div>
+                        <!-- PLAN 2 FIN -->
+
+                        <!-- PLAN 3 -->
+                        <div class="z-5 pt-[2%] ml-[5%] hover:shadow-[inset_0_0_100px_rgba(255,255,255,0.6)] flex flex-col bg-secondary w-[27%] h-[90%] rounded-[1%] 
+                         items-center overflow-hidden hover:h-[110%] transition-all duration-300">
+
+                                <h2 class="leading-none m-0 text-shadow-2xs pb-[15%] z-100 text-[1.5vw] font-bold text-shadow-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary" > SPORT-FOCUSED </h2>
+                                <img src="{{ url_for('static', filename='images/plan3.png') }}" alt="plan3 deberia ir aca..."
+                                class="rounded-[2%] border-primary border-[0.3vw] h-[16.5vw] w-[16.5vw] translate-y-[-2vw]"> 
+
+                                <p class="text-[200%] mr-[50%] font-bold text-shadow-xl text-shadow-primary translate-y-[-2vw]"> ● Dato 1 <br> ● Dato 2 <br> ● Dato 3 <br> ● Dato 4 <br> ● Dato 5 <br> ● Dato 6 </p>
+
+                        </div>
+                        <!-- PLAN 3 FIN -->
+                        
+                    </div>
+                    <!-- PLANES FIN -->
+
+                </div>
+            </div>
+            <!-- CUADRO FIN -->
+
+                <a href="{{ url_for('planes') }}" 
+                class="z-6 absolute h-[5vw] w-[15vw] text-[1.7vw] mt-[35%] ml-[60%] rounded-xl shadow-sm cursor-pointer bg-primary border-[5px] border-primary box-border font-bold text-black hover:bg-secondary hover:border-secondary transition flex items-center justify-center text-center"
+                >
+                    Más información
+                </a>
+
+        </div>
+        
+
+    </article>
+
+
+</section>
+    
+<section class="pt-[15%] flex flex-col relative w-full px-[10vw] items-center justify-center pb-[8vw]">
+
+    <h1 
+    class="leading-none text-[6vw] drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] z-40 text-primary  
+    font-bold"
+    >
+    Visitanos!
+    </h1>
+
+    <div class="flex bg-stone-700 w-[35vw] h-[30vw] rounded-[2%] shadow-pr justify-center items-center">
+        <a href="https://www.google.com.ar/maps/place/fithub+Parque+93/@4.6759321,-74.0506914,16.46z/data=!4m6!3m5!1s0x8e3f9b650a130811:0x4d4df635bf5ce1a2!8m2!3d4.6759089!4d-74.0473958!16s%2Fg%2F11px0vcnkv?hl=es&entry=ttu&g_ep=EgoyMDI1MDYwMi4wIKXMDSoASAFQAw%3D%3D" class="w-[95%] h-[95%]">
+            <div 
+                class="flex w-full h-full rounded-[2%] bg-cover bg-center" 
+                style="background-image: url('{{ url_for('static', filename='images/mapa.png') }}');"
+                title="Mapa debería ir acá..."
+            >
+            </div>
+        </a>
+    </div>
+
+</section>
 
 {% endblock %}
