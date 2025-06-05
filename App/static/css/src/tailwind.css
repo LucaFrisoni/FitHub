@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+/* Aplicamos globalmente la tipografia Inter */
+@theme {
+  --font-inter: "Inter", sans-serif;
+}
+@theme inline {
+  --font-sans: var(--font-inter);
+}
+@layer base {
+  body {
+    @apply font-sans;
+  }
+}
+/* ------------------------------------------ */
+@theme {
+  --color-primary: rgb(228, 182, 26);
+  --color-secondary: rgb(251, 225, 52);
+  --color-terciary: rgb(42, 46, 52)
+  --color-cuaternary: rgb(26, 19, 99)
+}
+
+@layer utilities {
+  .bg-primary {
+    background-color: var(--color-primary);
+  }
+
+  .bg-secondary {
+    background-color: var(--color-secondary);
+  }
+
+  .text-primary {
+    color: var(--color-primary);
+  }
+
+  .text-secondary {
+    color: var(--color-secondary);
+  }
+<<<<<<< HEAD:Front/static/css/src/tailwind.css
+
+  .text-shadow-xl {
+  text-shadow: 2px 3px 2px var(--tw-text-shadow-color, rgb(0 0 0 / 0.4));
+  }
+
+  .shadow-pr {
+    --tw-shadow: 0px 9px 3px var(--tw-shadow-color, rgb(0 0 0 / 0.25));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+
+}
+
+=======
+}
+>>>>>>> c66f1c7d71da8c473a19f63fbfbfc4050cfc12e6:App/static/css/src/tailwind.css
