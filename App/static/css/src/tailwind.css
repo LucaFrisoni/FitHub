@@ -36,7 +36,6 @@
   .text-secondary {
     color: var(--color-secondary);
   }
-<<<<<<< HEAD:Front/static/css/src/tailwind.css
 
   .text-shadow-xl {
   text-shadow: 2px 3px 2px var(--tw-text-shadow-color, rgb(0 0 0 / 0.4));
@@ -48,7 +47,3 @@
   }
 
 }
-
-=======
-}
->>>>>>> c66f1c7d71da8c473a19f63fbfbfc4050cfc12e6:App/static/css/src/tailwind.css

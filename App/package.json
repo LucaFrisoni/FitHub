@@ -12,7 +12,9 @@
   "type": "commonjs",
   "dependencies": {
     "@tailwindcss/cli": "^4.1.8",
-    "concurrently": "^9.1.2",
     "tailwindcss": "^4.1.8"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }

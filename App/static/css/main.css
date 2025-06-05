@@ -357,8 +357,14 @@
   .h-30 {
     height: calc(var(--spacing) * 30);
   }
-  .h-\[10px\] {
-    height: 10px;
+  .h-\[4\.5vw\] {
+    height: 4.5vw;
+  }
+  .h-\[5vw\] {
+    height: 5vw;
+  }
+  .h-\[9vw\] {
+    height: 9vw;
   }
   .h-\[10vw\] {
     height: 10vw;
@@ -432,11 +438,14 @@
   .w-30 {
     width: calc(var(--spacing) * 30);
   }
+  .w-\[4\.5vw\] {
+    width: 4.5vw;
+  }
   .w-\[5vw\] {
     width: 5vw;
   }
-  .w-\[10px\] {
-    width: 10px;
+  .w-\[9vw\] {
+    width: 9vw;
   }
   .w-\[10vw\] {
     width: 10vw;
@@ -516,8 +525,40 @@
   .origin-left {
     transform-origin: left;
   }
+  .translate-x-\[-0\.8vw\] {
+    --tw-translate-x: -0.8vw;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
   .translate-x-\[-10vw\] {
     --tw-translate-x: -10vw;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .translate-x-\[1\.5vw\] {
+    --tw-translate-x: 1.5vw;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .translate-y-\[-1\.5vw\] {
+    --tw-translate-y: -1.5vw;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .translate-y-\[-2\.1vw\] {
+    --tw-translate-y: -2.1vw;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .translate-y-\[-2\.8vw\] {
+    --tw-translate-y: -2.8vw;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .translate-y-\[1\.7vw\] {
+    --tw-translate-y: 1.7vw;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .translate-y-\[1vw\] {
+    --tw-translate-y: 1vw;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .translate-y-\[2\.3vw\] {
+    --tw-translate-y: 2.3vw;
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
   .transform {
@@ -624,6 +665,10 @@
     border-style: var(--tw-border-style);
     border-width: 2px;
   }
+  .border-\[0\.25vw\] {
+    border-style: var(--tw-border-style);
+    border-width: 0.25vw;
+  }
   .border-\[5px\] {
     border-style: var(--tw-border-style);
     border-width: 5px;
@@ -657,9 +702,6 @@
   }
   .bg-stone-100 {
     background-color: var(--color-stone-100);
-  }
-  .bg-stone-600 {
-    background-color: var(--color-stone-600);
   }
   .bg-transparent {
     background-color: transparent;
@@ -831,11 +873,17 @@
     font-size: var(--text-xs);
     line-height: var(--tw-leading, var(--text-xs--line-height));
   }
+  .text-\[0\.9vw\] {
+    font-size: 0.9vw;
+  }
   .text-\[1\.10vw\] {
     font-size: 1.10vw;
   }
   .text-\[2vw\] {
     font-size: 2vw;
+  }
+  .text-\[3\.5vw\] {
+    font-size: 3.5vw;
   }
   .text-\[6vw\] {
     font-size: 6vw;
@@ -845,6 +893,10 @@
   }
   .text-\[200\%\] {
     font-size: 200%;
+  }
+  .leading-\[2\.8vw\] {
+    --tw-leading: 2.8vw;
+    line-height: 2.8vw;
   }
   .leading-none {
     --tw-leading: 1;
@@ -1003,6 +1055,14 @@
       }
     }
   }
+  .hover\:translate-y-\[-0\.5vw\] {
+    &:hover {
+      @media (hover: hover) {
+        --tw-translate-y: -0.5vw;
+        translate: var(--tw-translate-x) var(--tw-translate-y);
+      }
+    }
+  }
   .hover\:border-secondary {
     &:hover {
       @media (hover: hover) {
@@ -1156,7 +1216,6 @@
   .text-secondary {
     color: var(--color-secondary);
   }
-<<<<<<< HEAD:Front/static/css/main.css
   .text-shadow-xl {
     text-shadow: 2px 3px 2px var(--tw-text-shadow-color, rgb(0 0 0 / 0.4));
   }
@@ -1179,8 +1238,6 @@
   syntax: "*";
   inherits: false;
   initial-value: 0;
-=======
->>>>>>> c66f1c7d71da8c473a19f63fbfbfc4050cfc12e6:App/static/css/main.css
 }
 @property --tw-rotate-x {
   syntax: "*";
