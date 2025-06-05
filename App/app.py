@@ -37,7 +37,40 @@ def home():
 
 @app.route("/planes")
 def planes():
-    return render_template("planes.html")
+    planes = [
+        {
+            "id": "bodybuilding",
+            "nombre": "Body-Building",
+            "dias_elegidos": 3,
+            "imagen": url_for("static", filename="images/bodybuilding.png"),
+            "precio_dias": {
+                3: 46900,
+                5: 63000
+            }
+        },
+        {
+            "id": "spinning",
+            "nombre": "Spinning",
+            "dias_elegidos": 3,
+            "imagen": url_for("static", filename="images/spinning.png"), 
+            "precio_dias": {
+                3: 29500,
+                5: 42000
+            }
+        },
+        {
+            "id": "sport",
+            "nombre": "Sport-Focused Training",
+            "dias_elegidos": 3,
+            "imagen": url_for("static", filename="images/sport.png"),
+            "precio_dias": {
+                3: 49500,
+                5: 65000
+            },
+            "deportes": ["futbol sala", "boxeo", "rugby"]
+        }
+    ]
+    return render_template("planes.html", planes=planes)
 
 
 @app.route("/reservas")
