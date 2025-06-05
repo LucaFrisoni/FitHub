@@ -1,5 +1,9 @@
 {% extends "base.html" %} {% block content %}
 
+        <img src="{{ url_for('static', filename='images/fondo.png') }}" 
+        alt="fondo deberia ir aca..." 
+        class="absolute h-[120vw] z-0 mt-[40vw] translate-x-[-55vw]"
+        >
 
 <section class="relative w-full h-screen overflow-hidden">
 
@@ -24,7 +28,7 @@
 
         <!-- Botones -->
         <div class="flex flex-col justify-center sm:flex-row gap-[5%] w-full  min-w-[1000px]">
-            <a class="w-[12.5%]">
+            <a class="w-[12.5%]" href="#HISTORIA">
                 <button 
                     type="button"
                     class="w-full h-[130%] text-[200%]  rounded-xl shadow-sm cursor-pointer  bg-transparent  border-[5px] border-black box-border   font-bold text-stone-100   hover:bg-black transition"
@@ -32,7 +36,7 @@
                         Saber mas
                 </button> 
             </a>
-            <a class="w-[12.5%]" href="{{ url_for('user') }}">
+            <a class="w-[12.5%]" href="{{ url_for('registro') }}">
                 <button
                     type="button"
                     class="w-full h-[130%] text-[200%] rounded-xl shadow-sm cursor-pointer  bg-primary  border-[5px] border-primary box-border  font-bold text-black   hover:bg-secondary transition hover:border-secondary"
@@ -49,7 +53,7 @@
 
 
 <!-- - - - -///SECCION "NUESTRA HISTORIA"///- - - - -->
-<section class="pt-[5%] flex relative w-full overflow-visible px-[10vw] items-start justify-between">  
+<section class="pt-[5%] flex relative w-full overflow-visible px-[10vw] items-start justify-between" id="HISTORIA">  
 
     <!-- Texto -->
     <article class="flex flex-col pt-[4%]">
@@ -140,14 +144,116 @@
 
 <!-- - - - -///SECCION PLANES///- - - - -->
 
-<section>
+<section class="pt-[15%] flex relative w-full px-[10vw]">
 
      <!-- Texto -->
+    <article class="flex flex-col pt-[10%] ">
 
-    <!-- Texto -->
+        <div class="absolute z-5 translate-y-[-14vw] translate-x-[5vw]">
+            <h2 
+            class="leading-none m-0 text-shadow-2xs pl-[10%]  text-[1.5vw] italic  text-black font-bold" > Que... </h2>
+
+            <h1 
+            class="leading-none  text-[6vw] drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] z-5  text-primary  
+            font-bold"
+            >
+            OFRECEMOS
+            </h1>  
+        </div>
+    </article>
+    <!-- Texto FIN -->
+
+        <div class="flex flex-col justify-center items-center mx-auto">
+            <!-- CUADRO -->
+            <div class="flex bg-stone-700 w-[70vw] h-[34vw] rounded-[2%] shadow-pr justify-center items-center">
+            
+                <div class="flex bg-stone-200 w-[97.5%] h-[95%] rounded-[2%] justify-center items-center mx-auto"
+                
+                style="background-image: url('{{ url_for('static', filename='images/home3.png') }}'); alt="home3 deberia ir aca..."">
+
+                    <!-- PLANES -->
+                    <div class="flex bg-stone-100/90 w-[100%] h-[100%] rounded-[2%] justify-center items-center mx-auto">
+
+                        <!-- PLAN 1 -->
+                        <div class="z-5 pt-[2%] flex flex-col bg-secondary w-[27%] h-[90%] hover:h-[110%] transition-all duration-300 
+                        rounded-[1%] hover:shadow-[inset_0_0_100px_rgba(255,255,255,0.6)] items-center overflow-hidden">
+
+                                <h2 class="leading-none m-0 text-shadow-2xs pb-[15%] z-100 text-[1.5vw] font-bold text-shadow-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary" > BODYBUILDING </h2>
+                                <img src="{{ url_for('static', filename='images/plan1.png') }}" alt="plan1 deberia ir aca..."
+                                class="rounded-[2%] border-primary border-[0.3vw] h-[16.5vw] w-[16.5vw] translate-y-[-2vw]"> 
+
+                                <p class="text-[200%] mr-[50%] font-bold text-shadow-xl text-shadow-primary translate-y-[-2vw]"> ● Dato 1 <br> ● Dato 2 <br> ● Dato 3 <br> ● Dato 4 <br> ● Dato 5 <br> ● Dato 6 </p>
+
+                        </div>
+                        <!-- PLAN 1 FIN -->
+
+                        <!-- PLAN 2 -->
+                        <div class="z-5 pt-[2%] ml-[5%] hover:shadow-[inset_0_0_100px_rgba(255,255,255,0.6)] flex flex-col bg-secondary w-[27%] h-[90%] 
+                        rounded-[1%] items-center overflow-hidden hover:h-[110%] transition-all duration-300">
+
+                                <h2 class="leading-none m-0 text-shadow-2xs pb-[15%] z-100 text-[1.5vw] font-bold text-shadow-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary" > SPINNING </h2>
+                                <img src="{{ url_for('static', filename='images/plan2.png') }}" alt="plan2 deberia ir aca..."
+                                class="rounded-[2%] border-primary border-[0.3vw] h-[16.5vw] w-[16.5vw] translate-y-[-2vw]"> 
+
+                                <p class="text-[200%] mr-[50%] font-bold text-shadow-xl text-shadow-primary translate-y-[-2vw]"> ● Dato 1 <br> ● Dato 2 <br> ● Dato 3 <br> ● Dato 4 <br> ● Dato 5 <br> ● Dato 6 </p>
+
+                        </div>
+                        <!-- PLAN 2 FIN -->
+
+                        <!-- PLAN 3 -->
+                        <div class="z-5 pt-[2%] ml-[5%] hover:shadow-[inset_0_0_100px_rgba(255,255,255,0.6)] flex flex-col bg-secondary w-[27%] h-[90%] rounded-[1%] 
+                         items-center overflow-hidden hover:h-[110%] transition-all duration-300">
+
+                                <h2 class="leading-none m-0 text-shadow-2xs pb-[15%] z-100 text-[1.5vw] font-bold text-shadow-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary" > SPORT-FOCUSED </h2>
+                                <img src="{{ url_for('static', filename='images/plan3.png') }}" alt="plan3 deberia ir aca..."
+                                class="rounded-[2%] border-primary border-[0.3vw] h-[16.5vw] w-[16.5vw] translate-y-[-2vw]"> 
+
+                                <p class="text-[200%] mr-[50%] font-bold text-shadow-xl text-shadow-primary translate-y-[-2vw]"> ● Dato 1 <br> ● Dato 2 <br> ● Dato 3 <br> ● Dato 4 <br> ● Dato 5 <br> ● Dato 6 </p>
+
+                        </div>
+                        <!-- PLAN 3 FIN -->
+                        
+                    </div>
+                    <!-- PLANES FIN -->
+
+                </div>
+            </div>
+            <!-- CUADRO FIN -->
+
+        <button type="button" 
+            class="z-6 absolute h-[5vw] w-[15vw] text-[1.7vw] mt-[35%] ml-[60%]  rounded-xl shadow-sm cursor-pointer  bg-primary  border-[5px] border-primary box-border   
+            font-bold text-black   hover:bg-secondary hover:border-secondary transition">
+            Más información
+        </button> 
+
+        </div>
+        
+
+    </article>
 
 
 </section>
     
+<section class="pt-[15%] flex flex-col relative w-full px-[10vw] items-center justify-center pb-[8vw]">
+
+    <h1 
+    class="leading-none text-[6vw] drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] z-40 text-primary  
+    font-bold"
+    >
+    Visitanos!
+    </h1>
+
+    <div class="flex bg-stone-700 w-[35vw] h-[30vw] rounded-[2%] shadow-pr justify-center items-center">
+        <a href="https://www.google.com.ar/maps/place/fithub+Parque+93/@4.6759321,-74.0506914,16.46z/data=!4m6!3m5!1s0x8e3f9b650a130811:0x4d4df635bf5ce1a2!8m2!3d4.6759089!4d-74.0473958!16s%2Fg%2F11px0vcnkv?hl=es&entry=ttu&g_ep=EgoyMDI1MDYwMi4wIKXMDSoASAFQAw%3D%3D" class="w-[95%] h-[95%]">
+            <div 
+                class="flex w-full h-full rounded-[2%] bg-cover bg-center" 
+                style="background-image: url('{{ url_for('static', filename='images/mapa.png') }}');"
+                title="Mapa debería ir acá..."
+            >
+            </div>
+        </a>
+    </div>
+
+</section>
 
 {% endblock %}
