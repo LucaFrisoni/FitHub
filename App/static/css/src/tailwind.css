@@ -37,6 +37,14 @@
     color: var(--color-secondary);
   }
 
+  .text-terciary {
+    color: var(--color-terciary);
+  }
+
+  .text-cuaternary {
+    color: var(--color-cuaternary);
+  }
+
   .text-shadow-xl {
   text-shadow: 2px 3px 2px var(--tw-text-shadow-color, rgb(0 0 0 / 0.4));
   }
