@@ -41,7 +41,7 @@
                 </button>
             </a>
         </div>
-        <!-- Botones -->
+        <!-- Botones FIN -->
     </header>
 </section>
 <!-- - - - -///TEXTO INICIAL HOME///- - - - -->
@@ -73,37 +73,96 @@
     <!-- Cuadros -->
     <section class="translate-x-[-10vw] items-center flex flex-col">
 
-        <div class="flex gap-[6.5vw]"> <!-- Cuadro 1 y 2 -->
-            <article class="w-[5vw]">  <!-- Cuadro 1 -->
-                <div class="bg-stone-100 w-[10vw] h-[10vw] rounded-[15%] shadow-pr"> 
+        <!-- Cuadro 1 y 2 -->
+        <div class="flex gap-[6.5vw]"> 
+
+            <!-- Cuadro 1 -->
+            <article class="w-[5vw] hover:translate-y-[-0.5vw] transition">  <!-- Cuadro 1 -->
+                <div class="flex bg-stone-100 w-[10vw] h-[10vw] rounded-[15%] shadow-pr justify-center items-center"> 
                     
-                <div class="bg-stone-600 w-[10px] h-[10px]"> </div>
+                    <div class="flex bg-transparent border-black border-[0.25vw] w-[9vw] h-[9vw] rounded-[15%] justify-center items-center"> 
+                        
+                        <h1 class="translate-y-[2.3vw] translate-x-[-0.8vw]  text-black font-bold text-[0.9vw] text-center"> Planes de entrenamiento </h1>
+
+                        <img src="{{ url_for('static', filename='images/corazon.png') }}" alt="corazon deberia ir aca..." 
+                        class=" w-[5vw] h-[5vw] translate-y-[-1.5vw] translate-x-[1.5vw] absolute"
+                        > 
+
+                    </div>
 
                 </div>
-            </article>                 <!-- Cuadro 1 -->
+            </article>           
+            <!-- Cuadro 1 FIN -->
 
-            <article class="w-[5vw]">  <!-- Cuadro 2 -->
-                <div class="bg-stone-100 w-[10vw] h-[10vw] rounded-[15%] shadow-pr"> 
+            <!-- Cuadro 2 -->
+            <article class="w-[5vw]">  
+                <div class="flex bg-stone-100 w-[10vw] h-[10vw] rounded-[15%] shadow-pr justify-center items-center hover:translate-y-[-0.5vw] transition"> 
                     
+                    <div class="flex  bg-transparent border-black border-[0.25vw] w-[9vw] h-[9vw] rounded-[15%] justify-center items-center"> 
+                        
+                        <h1 class="translate-y-[-2.1vw]  text-black font-bold text-center text-[0.9vw]"> Couching <u>siempre</u> disponible </h1>
+                        <img src="{{ url_for('static', filename='images/musculo.png') }}" alt="musculo deberia ir aca..." 
+                        class=" w-[4.5vw] h-[4.5vw] translate-y-[1.7vw] absolute"
+                        > 
+
+                    </div>
 
                 </div>
-            </article>                 <!-- Cuadro 2 -->
+            </article>   
+            <!-- Cuadro 2 FIN -->              
+
         </div>
+        <!-- Cuadro 1 y 2 FIN -->
 
-        <article class="w-[5vw] mt-[1.5vw]">  <!-- Cuadro 3 -->
-            <div class="bg-stone-100 w-[10vw] h-[10vw] rounded-[15%] shadow-pr "> 
-                
+        <!-- Cuadro 3 -->
+        <article class="w-[5vw] mt-[1.5vw] hover:translate-y-[-0.5vw] transition">  
+                <div class="flex bg-stone-100 w-[10vw] h-[10vw] rounded-[15%] shadow-pr justify-center items-center"> 
+                    
+                    <div class="flex  bg-transparent border-black border-[0.25vw] w-[9vw] h-[9vw] rounded-[15%] justify-center items-center"> 
+                    
+                        <h2 class="text-black font-bold text-center translate-y-[-2.8vw] text-[0.9vw]"> Abierto </h2>
+                        <h1 class="text-black text-center translate-y-[1vw] text-[3.5vw] leading-[2.8vw] absolute"> 24<br>/7 </h1>
 
-            </div>
-        </article>                 <!-- Cuadro 3 -->
-         
+                    </div>
+
+                </div>
+        </article>                 
+        <!-- Cuadro 3 FIN -->
+
     </section>
-    <!-- Cuadros -->
+    <!-- Cuadros FIN -->
 
 </section>
 
 
-<!-- - - - -///SECCION "NUESTRA HISTORIA"///- - - - -->
+<!-- - - - -///SECCION "NUESTRA HISTORIA" FIN///- - - - -->
 
+
+<!-- - - - -///SECCION PLANES///- - - - -->
+
+<section>
+
+     <!-- Texto -->
+    <article class="flex flex-col pt-[4%]">
+        <h2 
+        class="leading-none m-0 text-shadow-xl pl-[0.5%]  text-[2vw] italic  text-primary text-shadow-stone-600 font-bold" 
+        >
+            Nuestra
+        </h2>
+
+        <h1 
+        class="leading-none  text-[6vw] text-shadow-xl   text-black text-shadow-stone-600 font-bold"
+        >
+        HISTORIA
+        </h1> 
+
+        <p class="text-[1.10vw] pt-[1%] max-w-[40vw] min-w-[40vw] line-clamp-3 overflow-x-auto"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
+
+    </article>
+    <!-- Texto -->
+
+
+</section>
+    
 
 {% endblock %}
