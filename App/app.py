@@ -7,7 +7,8 @@ from Back.routes.usuarios import usuarios_bp
 from Back.routes.roles import roles_bp
 from Back.routes.docs import init_docs
 from Back.db.db import get_connection
-#import requests
+
+# import requests
 
 # --------------------------------------------Rutas||Back--------------------------------------------
 app = Flask(__name__)
@@ -22,9 +23,9 @@ app.register_blueprint(roles_bp, url_prefix="/api/roles")
 try:
     conn = get_connection()
     conn.close()
-    print(" Conectado a la base de datos exitosamente.")
+    print("\033[92m------Conectado a la base de datos exitosamente.\033[0m")
 except Exception as e:
-    print(" Error al conectar con la base de datos:", e)
+    print("\033[91mError al conectar con la base de datos:", e, "\033[0m")
 
 # --------------------------------------------Rutas||Front--------------------------------------------
 
