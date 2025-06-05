@@ -11,6 +11,7 @@ python-dotenv = "*"
 bcrypt = "*"
 mysql-connector-python = "*"
 flask = "*"
+requests = "*"
 
 [dev-packages]
 
