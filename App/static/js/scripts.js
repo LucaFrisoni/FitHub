@@ -14,17 +14,19 @@ function updateprice(plan, dias) {
   nuevoprecio.textContent = "$" + precio;
   plandiv.dataset.diaselegidos = dias;
 }
+
 document.addEventListener("DOMContentLoaded", () => {
+  // Código del primer bloque...
+  // updateprice y botones .button-dias
   const botonesdias = document.querySelectorAll(".button-dias");
   botonesdias.forEach((boton) => {
     boton.addEventListener("click", () => {
       const plan = boton.closest(".plan").id;
-      const dias = parseInt(boton.dataset.dias); // segun la cantidad de dias que se elegio y del plan al que estan asociados esos dias se actualiza el precio con la funcion
+      const dias = parseInt(boton.dataset.dias);
       updateprice(plan, dias);
       const botonesplan = boton
         .closest(".dias-buttons")
         .querySelectorAll(".button-dias");
-      // aca creo 2 clases activo e inactivo, segun el dia que este seleccionado pasa a ser activo uno e inactivo el otro
       botonesplan.forEach((b) => {
         b.classList.remove(
           "activo",
@@ -47,19 +49,20 @@ document.addEventListener("DOMContentLoaded", () => {
         "opacity-100"
       );
     });
-    // cambio la imagen segun el deporte que elija en sport-focused training
-    const selectdeporte = document.querySelector("select[id^='deporte-']");
-    const imagen = document.getElementById("imagen-deporte");
-    if (selectdeporte && imagen) {
-      const imagenes = {
-        "futbol sala": "static/images/sport.png",
-        boxeo: "static/images/boxeo.png",
-        rugby: "static/images/rugby.png",
-      };
-      selectdeporte.addEventListener("change", (e) => {
-        const deporte = e.target.value;
-        imagen.src = imagenes[deporte];
-      });
-    }
   });
+
+  // Cambio de imagen según el deporte
+  const selectdeporte = document.querySelector("select[id^='deporte-']");
+  const imagen = document.getElementById("imagen-deporte");
+  if (selectdeporte && imagen) {
+    const imagenes = {
+      "futbol sala": "static/images/sport.png",
+      boxeo: "static/images/boxeo.png",
+      rugby: "static/images/rugby.png",
+    };
+    selectdeporte.addEventListener("change", (e) => {
+      const deporte = e.target.value;
+      imagen.src = imagenes[deporte];
+    });
+  }
 });
