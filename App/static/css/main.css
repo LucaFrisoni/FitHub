@@ -1656,6 +1656,23 @@
     display: none;
   }
 }
+@layer components {
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    left: 25%;
+    height: 4px;
+    width: 50%;
+    background-color: #fde047;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+  .nav-link.active::after, .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+}
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;

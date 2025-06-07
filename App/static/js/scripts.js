@@ -64,11 +64,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const deporte = e.target.value;
       imagen.src = imagenes[deporte];
     });
-
-    // Funcionalidad alertas
   }
 
-  // Funcionalidad alertas: cerrar al click en la X
+  // Funcionalidad toast: cerrar al click en la X
   const botonCerrar = document.getElementById("button_alert_login");
   if (botonCerrar) {
     botonCerrar.onclick = () => {
@@ -77,11 +75,36 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // Ocultar alerta después de 8 segundos
+  // Ocultar toast después de 8 segundos
   setTimeout(() => {
     const alertBox = document.getElementById("alert-login");
     if (alertBox) {
       alertBox.classList.add("hidden");
     }
   }, 3000);
+
+  // funcion para que aparezca la barra amarilla debajo del logo de la ruta actual
+  const links = document.querySelectorAll(".nav-link");
+  const actualruta = window.location.pathname;
+  let linkactivo = null;
+  links.forEach((link) => {
+    // para que quede la barra debajo del logo de la ruta actual
+    const linkbarra = new URL(link.href).pathname;
+    if (linkbarra == actualruta) {
+      linkactivo = link;
+      link.classList.add("active");
+    }
+    // para cuando el mouse pasa por encima de un logo que cambie a ese
+    link.addEventListener("mouseenter", () => {
+      links.forEach((link) => link.classList.remove("active"));
+      link.classList.add("active");
+    });
+    //  para cuando el mouse sale de un logo que vuelva al de la ruta actual
+    link.addEventListener("mouseleave", () => {
+      links.forEach((link) => link.classList.remove("active"));
+      if (linkactivo) {
+        linkactivo.classList.add("active");
+      }
+    });
+  });
 });
