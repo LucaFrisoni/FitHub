@@ -1,1 +1,237 @@
-{% extends "base.html" %} {% block content %} {% endblock %}
+{% extends "base.html" %}{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 ml-8 mr-8 mt-30 background-image???">
+
+    <!-- Left Column - Booking Form -->
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Availability -->
+        <div class="bg-yellow-500 rounded-lg p-4">
+            <h3 class="font-bold text-black mb-3">Disponibilidad</h3>
+            <div class="flex flex-wrap gap-2">
+                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Lun</button>
+                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Ma</button>
+                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Mi</button>
+                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105 ">Jue</button>
+                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Vie</button>
+                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Sab</button>
+                <button class="day-btn bg-white hover:bg-white text-black px-3 py-1 rounded text-sm font-medium transition-all duration-200 transform hover:scale-105">Dom</button>
+            </div>
+        </div>
+
+        <!-- Training Type -->
+        <div class="bg-yellow-500 rounded-lg p-4">
+            <h3 class="font-bold text-black mb-3">Tipo de entrenamiento</h3>
+            <select class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                <option>Bodybuilding</option>
+                <option>Spinnig</option>
+                <option>Sport-Focus</option>
+            </select>
+        </div>
+
+        <!-- Session Time -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-yellow-500 rounded-lg p-4">
+                <h3 class="font-bold text-black mb-3">Turno</h3>
+                <select class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                    <option>Mañana</option>
+                    <option>Tarde</option>
+                    <option>Noche</option>
+                </select>
+            </div>
+            <div class="bg-yellow-500 rounded-lg p-4">
+                <h3 class="font-bold text-black mb-3">Hora</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-black text-sm font-medium mb-1">Inicio</label>
+                        <select class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            <option>00</option>
+                            <option>01</option>
+                            <option>02</option>
+                            <option>03</option>
+                            <option>04</option>
+                            <option>05</option>
+                            <option>06</option>
+                            <option>07</option>
+                            <option>08</option>
+                            <option>09</option>
+                            <option>10</option>
+                            <option>11</option>
+                            <option>12</option>
+                            <option>13</option>
+                            <option>14</option>
+                            <option>15</option>
+                            <option>16</option>
+                            <option>17</option>
+                            <option>18</option>
+                            <option>19</option>
+                            <option>20</option>
+                            <option>21</option>
+                            <option>22</option>
+                            <option>23</option>
+                        </select></div>
+                    <div>
+                        <label class="block text-black text-sm font-medium mb-1">Fin</label>
+                        <select class="w-full bg-white border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                            <option>00</option>
+                            <option>01</option>
+                            <option>02</option>
+                            <option>03</option>
+                            <option>04</option>
+                            <option>05</option>
+                            <option>06</option>
+                            <option>07</option>
+                            <option>08</option>
+                            <option>09</option>
+                            <option>10</option>
+                            <option>11</option>
+                            <option>12</option>
+                            <option>13</option>
+                            <option>14</option>
+                            <option>15</option>
+                            <option>16</option>
+                            <option>17</option>
+                            <option>18</option>
+                            <option>19</option>
+                            <option>20</option>
+                            <option>21</option>
+                            <option>22</option>
+                            <option>23</option>
+                        </select>                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comments -->
+        <div class="bg-yellow-500 bg-opacity-50 rounded-lg p-4">
+            <h3 class="font-bold text-black mb-3">Comentarios</h3>
+            <textarea class="w-full h-32 bg-white bg-opacity-90 border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-yellow-600 resize-none" placeholder="Añade comentarios adicionales..."></textarea>
+        </div>
+    </div>
+
+    <!-- Right Column - Available Slots -->
+    <div class="bg-gray-900 bg-opacity-50 rounded-lg p-15">
+        <h3 class="font-bold text-white mb-4 text-xl">CTurnos Disponibles</h3>
+
+        <div class="space-y-4">
+            <!-- Monday -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span class="text-white font-medium">Lunes</span>
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2L13.09 6.26L18 7L14 10.74L15.18 16.5L10 13.77L4.82 16.5L6 10.74L2 7L6.91 6.26L10 2Z"/>
+                    </svg>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="bg-gray-700 text-white px-3 py-1 rounded text-sm">0</span>
+                    <span class="bg-yellow-500 text-black px-3 py-1 rounded text-sm font-medium">15</span>
+                </div>
+            </div>
+
+            <!-- Tuesday -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span class="text-white font-medium">Martes</span>
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2L13.09 6.26L18 7L14 10.74L15.18 16.5L10 13.77L4.82 16.5L6 10.74L2 7L6.91 6.26L10 2Z"/>
+                    </svg>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="bg-gray-700 text-white px-3 py-1 rounded text-sm">0</span>
+                    <span class="bg-yellow-500 text-black px-3 py-1 rounded text-sm font-medium">15</span>
+                </div>
+            </div>
+
+            <!-- Wednesday -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span class="text-white font-medium">Miércoles</span>
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2L13.09 6.26L18 7L14 10.74L15.18 16.5L10 13.77L4.82 16.5L6 10.74L2 7L6.91 6.26L10 2Z"/>
+                    </svg>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="bg-gray-700 text-white px-3 py-1 rounded text-sm">0</span>
+                    <span class="bg-yellow-500 text-black px-3 py-1 rounded text-sm font-medium">15</span>
+                </div>
+            </div>
+
+            <!-- Thursday -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span class="text-white font-medium">Jueves</span>
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2L13.09 6.26L18 7L14 10.74L15.18 16.5L10 13.77L4.82 16.5L6 10.74L2 7L6.91 6.26L10 2Z"/>
+                    </svg>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="bg-gray-700 text-white px-3 py-1 rounded text-sm">0</span>
+                    <span class="bg-yellow-500 text-black px-3 py-1 rounded text-sm font-medium">15</span>
+                </div>
+            </div>
+
+            <!-- Friday -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span class="text-white font-medium">Viernes</span>
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2L13.09 6.26L18 7L14 10.74L15.18 16.5L10 13.77L4.82 16.5L6 10.74L2 7L6.91 6.26L10 2Z"/>
+                    </svg>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="bg-gray-700 text-white px-3 py-1 rounded text-sm">0</span>
+                    <span class="bg-yellow-500 text-black px-3 py-1 rounded text-sm font-medium">15</span>
+                </div>
+            </div>
+
+            <!-- Saturday -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span class="text-white font-medium">Sábado</span>
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2L13.09 6.26L18 7L14 10.74L15.18 16.5L10 13.77L4.82 16.5L6 10.74L2 7L6.91 6.26L10 2Z"/>
+                    </svg>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="bg-gray-700 text-white px-3 py-1 rounded text-sm">0</span>
+                    <span class="bg-yellow-500 text-black px-3 py-1 rounded text-sm font-medium">15</span>
+                </div>
+            </div>
+
+            <!-- Sunday -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span class="text-white font-medium">Domingo</span>
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2L13.09 6.26L18 7L14 10.74L15.18 16.5L10 13.77L4.82 16.5L6 10.74L2 7L6.91 6.26L10 2Z"/>
+                    </svg>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="bg-gray-700 text-white px-3 py-1 rounded text-sm">0</span>
+                    <span class="bg-yellow-500 text-black px-3 py-1 rounded text-sm font-medium">15</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reserve Button -->
+        <div class="mt-24 flex items-center justify-center">
+            <button class="
+              px-5 py-3 bg-gradient-to-r from-yellow-700 to-yellow-700
+              text-white font-medium rounded-xl shadow-lg
+              text-sm sm:text-base md:text-lg
+              hover:from-black hover:to-yellow-700
+              transform hover:-translate-y-0.5
+              transition-all duration-300
+              w-4/5 sm:w-auto
+            ">
+              RESERVAR
+            </button>
+          </div>
+    </div>
+</div>
+{% endblock %}
