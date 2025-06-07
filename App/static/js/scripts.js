@@ -64,5 +64,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const deporte = e.target.value;
       imagen.src = imagenes[deporte];
     });
+
+    // Funcionalidad alertas
   }
+
+  // Funcionalidad alertas: cerrar al click en la X
+  const botonCerrar = document.getElementById("button_alert_login");
+  if (botonCerrar) {
+    botonCerrar.onclick = () => {
+      const alertLogin = document.getElementById("alert-login");
+      if (alertLogin) alertLogin.classList.add("hidden");
+    };
+  }
+
+  // Ocultar alerta después de 8 segundos
+  setTimeout(() => {
+    const alertBox = document.getElementById("alert-login");
+    if (alertBox) {
+      alertBox.classList.add("hidden");
+    }
+  }, 3000);
 });
