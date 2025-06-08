@@ -17,7 +17,7 @@ function updateprice(plan, dias) {
 
 document.addEventListener("DOMContentLoaded", () => {
   // Código del primer bloque...
-  // updateprice y botones .button-dias
+  // -------------------updateprice y botones .button-dias
   const botonesdias = document.querySelectorAll(".button-dias");
   botonesdias.forEach((boton) => {
     boton.addEventListener("click", () => {
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Cambio de imagen según el deporte
+  //------------------- Cambio de imagen según el deporte
   const selectdeporte = document.querySelector("select[id^='deporte-']");
   const imagen = document.getElementById("imagen-deporte");
   if (selectdeporte && imagen) {
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Funcionalidad toast: cerrar al click en la X
+  //------------------- Funcionalidad toast: cerrar al click en la X
   const botonCerrar = document.getElementById("button_alert_login");
   if (botonCerrar) {
     botonCerrar.onclick = () => {
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, 3000);
 
-  // funcion para que aparezca la barra amarilla debajo del logo de la ruta actual
+  //------------------- Funcion para que aparezca la barra amarilla debajo del logo de la ruta actual
   const links = document.querySelectorAll(".nav-link");
   const actualruta = window.location.pathname;
   let linkactivo = null;
@@ -107,4 +107,39 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
+  //------------------- Funcionalidad del Menu
+  const avatar = document.getElementById("menu-user-avatar");
+  const menu = document.getElementById("menu-ul");
+  const miPerfil = document.getElementById("menu-item-miperfil");
+  const cerrarSesion = document.getElementById("menu-item-cerrarsesion");
+
+  function mostrarMenu() {
+    menu.classList.remove("opacity-0", "scale-95", "pointer-events-none");
+    menu.classList.add("opacity-100", "scale-100");
+  }
+  function ocultarMenu() {
+    menu.classList.remove("opacity-100", "scale-100");
+    menu.classList.add("opacity-0", "scale-95", "pointer-events-none");
+  }
+
+  avatar.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (menu.classList.contains("opacity-0")) {
+      mostrarMenu();
+    } else {
+      ocultarMenu();
+    }
+  });
+
+  // Cierra el menú si se hace clic fuera
+  document.addEventListener("click", (e) => {
+    if (!menu.contains(e.target) && !avatar.contains(e.target)) {
+      ocultarMenu();
+    }
+  });
+
+  // Cierra el menú al hacer clic en los ítems
+  miPerfil.addEventListener("click", ocultarMenu);
+  cerrarSesion.addEventListener("click", ocultarMenu);
 });
