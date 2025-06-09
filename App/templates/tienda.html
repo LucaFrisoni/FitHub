@@ -1,1 +1,53 @@
-{% extends "base.html" %} {% block content %} {% endblock %}
+{% extends "base.html" %} 
+{% block content %} <div class="flex min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-gray-100 pt-24">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white text-gray-800 p-6">
+    <h2 class="text-xl font-bold mb-4">Filtros</h2>
+    <ul class="space-y-2">
+      <li><input type="checkbox" id="proteinas" /> <label for="proteinas">Proteínas</label></li>
+      <li><input type="checkbox" id="suplementos" /> <label for="suplementos">Suplementos</label></li>
+      <li><input type="checkbox" id="accesorios" /> <label for="accesorios">Accesorios</label></li>
+    </ul>
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-1 p-10 pt-24">
+    <h1 class="text-3xl font-bold mb-6">Productos</h1>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      
+      <!-- Producto 1 -->
+      <div class="bg-white text-gray-900 rounded-lg shadow-md p-4 flex flex-col  hover:-translate-y-2 transition-transform duration-300 ease-in-out">
+            <img src="{{ url_for('static',filename='images/milkshake.png')}}"
+                alt="Milkshake" 
+                class="h-40 object-contain mb-4" />
+            <h3 class="font-semibold text-lg">Bomba de Proteína</h3>
+            <p class="text-sm">Milkshake sabor chocolate alto en proteína</p>
+            <span class="font-bold mt-2">$4500</span>
+            <button class="bg-yellow-500 text-white font-semibold py-1 mt-auto hover:bg-yellow-600">Agregar</button>
+      </div>
+
+      <!-- Producto 2 -->
+      <div class="bg-white text-gray-900 rounded-lg shadow-md p-4 flex flex-col  hover:-translate-y-2 transition-transform duration-300 ease-in-out">
+        <img src="{{ url_for('static',filename='images/proteina.png') }}" 
+            alt="Proteína en Polvo" 
+            class="h-40 object-contain mb-4" />
+        <h3 class="font-semibold text-lg">Proteína en Polvo</h3>
+        <p class="text-sm">Suplemento concentrado de suero</p>
+        <span class="font-bold mt-2">$8500</span>
+        <button class="bg-yellow-500 text-white font-semibold py-1 mt-auto hover:bg-yellow-600">Agregar</button>
+      </div>
+
+      <!-- Producto 3 -->
+      <div class="bg-white text-gray-900 rounded-lg shadow-md p-4 flex flex-col  hover:-translate-y-2 transition-transform duration-300 ease-in-out">
+      
+        <img src="{{ url_for('static', filename='images/mancuernas.jpg') }}" alt="Mancuernas" class="h-40 object-contain mb-4" />
+        <h3 class="font-semibold text-lg">Mancuernas 5kg</h3>
+        <p class="text-sm">Accesorio esencial para entrenamiento</p>
+        <span class="font-bold mt-2">$6200</span>
+        <button class="bg-yellow-500 text-white font-semibold py-1 mt-auto hover:bg-yellow-600">Agregar</button>
+      </div>
+
+    </div>
+  </main>
+</div> 
+{% endblock %}

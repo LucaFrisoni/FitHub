@@ -78,9 +78,29 @@ def reservas():
     return render_template("reservas.html")
 
 
-@app.route("/tienda")
+@app.route('/tienda', methods=['GET'])
 def tienda():
-    return render_template("tienda.html")
+    productos = [
+        {
+            'nombre': 'Bomba de Proteína',
+            'descripcion': 'Milkshake sabor chocolate alto en proteína',
+            'precio': 4500,
+            'imagen': 'milkshake.png'
+        },
+        {
+            'nombre': 'Proteína en Polvo',
+            'descripcion': 'Suplemento concentrado de suero',
+            'precio': 8500,
+            'imagen': 'proteina.png'
+        },
+        {
+            'nombre': 'Mancuernas 5kg',
+            'descripcion': 'Accesorio esencial para entrenamiento',
+            'precio': 6200,
+            'imagen': 'mancuernas.png'
+        }
+    ]
+    return render_template('tienda.html', productos=productos)
 
 
 @app.route("/user")
