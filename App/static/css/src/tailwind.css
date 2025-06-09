@@ -35,4 +35,8 @@
   .nav-link:hover::after {
     transform: scaleX(1);
   }
+  .nav-link.active {
+    @apply text-yellow-400;
+  }
 }
+

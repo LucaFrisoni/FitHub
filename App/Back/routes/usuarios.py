@@ -76,8 +76,8 @@ def post_usuario():
         "Email": str,
         "FechaNacimiento": str,
         "Usuario": str,
-        "Contraseña": str,
-        "Telefono": str,
+        "Contrasena": str,
+        "Telefono": int,
     }
 
     missing = [r for r in required if r not in body]
@@ -103,13 +103,14 @@ def post_usuario():
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             """,
             (
-                body["Nombre"],
-                body["Apellido"],
-                body["Email"],
-                obtener_fecha(body["FechaNacimiento"]),
-                body["Usuario"],
-                encryptar_pwd(body["Contraseña"]),
-                body["Telefono"],
+                body.get("Nombre"),
+                body.get("Apellido"),
+                body.get("Email"),
+                obtener_fecha(body.get("FechaNacimiento")),
+                body.get("Usuario"),
+                encryptar_pwd(body.get("Contrasena")),
+                2,
+                body.get("Telefono"),
             ),
         )
         conn.commit()
