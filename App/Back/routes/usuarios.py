@@ -127,24 +127,34 @@ def post_usuario():
 
 @usuarios_bp.route("/cambiar-contra", methods=["POST"])
 def change_password():
-    data = request.get_json()
-    email = data.get("email")
-    nueva_contra = data.get("nueva_contra")
+    body = request.get_json()
 
+    email = body.get("Email")
+    nueva_contra = body.get("Contraseña")
+
+    if not email:
+        return jsonify({"error": "Email no proporcionado"}), 400
     if not nueva_contra:
         return jsonify({"error": "Contraseña no proporcionada"}), 400
-    if not email:
-        return jsonify({"error": "email no proporcionado"}), 400
+
     try:
         conn = get_connection()
         cursor = conn.cursor()
 
+        # Verificar si el email existe
+        cursor.execute("SELECT 1 FROM usuarios WHERE Email = %s", (email,))
+        if cursor.fetchone() is None:
+            return jsonify({"error": "El email no existe"}), 404
+
+        # Actualizar la contraseña
         cursor.execute(
             "UPDATE usuarios SET Contrasenia = %s WHERE Email = %s",
             (encryptar_pwd(nueva_contra), email),
         )
         conn.commit()
-        return jsonify({"success": True, "message": "Contraseña actualizada"})
+
+        return jsonify({"success": True, "message": "Contraseña actualizada"}), 200
+
     except Exception as ex:
         return devolver_error(ruta="usuario/cambiar-contra", metodo="POST", ex=ex)
     finally:

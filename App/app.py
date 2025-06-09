@@ -190,13 +190,17 @@ def user():
 def login():
     # si existe la session login, la devuelve y luego la borra, sino usa False
     usuario_creado = session.pop("usuario_creado", False)
+    contraseña_cambiada = session.pop("contraseña_cambiada", False)
     if request.method == "GET":
-        return render_template("auth/login.html", usuario_creado=usuario_creado)
+        return render_template(
+            "auth/login.html",
+            usuario_creado=usuario_creado,
+            contraseña_cambiada=contraseña_cambiada,
+        )
 
     # Obtener datos del formulario
     email = request.form.get("email")
     contraseña = request.form.get("contraseña")
-
     # Validaciones básicas
     if not email or not contraseña:
         return render_template(
@@ -324,9 +328,58 @@ def logout():
     return redirect("/")
 
 
-@app.route("/cambiarcontra")
+@app.route("/cambiarcontra", methods=["GET", "POST"])
 def cambiarcontra():
-    return render_template("auth/cambiar_contra.html")
+    if request.method == "GET":
+        return render_template("auth/cambiar_contra.html")
+
+    # Obtener datos
+    email = request.form.get("email")
+    nueva_contraseña = request.form.get("nueva_contraseña")
+    nueva_contraseña2 = request.form.get("nueva_contraseña2")
+
+    # Validaciones
+    if not email or not nueva_contraseña or not nueva_contraseña2:
+        return render_template(
+            "auth/cambiar_contra.html", error="Todos los campos son obligatorios."
+        )
+
+    if nueva_contraseña != nueva_contraseña2:
+        return render_template(
+            "auth/cambiar_contra.html", error="Las contraseñas no coinciden."
+        )
+
+    if not re.match(r"^(?=.*[A-Z])(?=.*\d).{8,}$", nueva_contraseña):
+        return render_template(
+            "auth/cambiar_contra.html",
+            error="La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.",
+        )
+
+    try:
+        payload = {
+            "Email": email,
+            "Contraseña": nueva_contraseña,
+        }
+
+        response = requests.post(
+            "http://localhost:3000/api/usuarios/cambiar-contra", json=payload
+        )
+
+        if response.status_code == 200:
+            session["contraseña_cambiada"] = True
+            return redirect("/login")
+        else:
+            try:
+                error_msg = response.json().get("error", "Error desconocido")
+            except:
+                error_msg = "Error en el servidor. Intentalo más tarde."
+            return render_template("auth/cambiar_contra.html", error=error_msg)
+
+    except Exception as e:
+        return render_template(
+            "auth/cambiar_contra.html",
+            error="Error en el servidor. Intentalo más tarde.",
+        )
 
 
 if __name__ == "__main__":
