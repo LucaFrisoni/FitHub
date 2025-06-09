@@ -2,10 +2,10 @@ CREATE DATABASE IF NOT EXISTS fithub_db;
 USE fithub_db;
 
 -- Tabla de roles
-CREATE TABLE roles (
-    ID_rol INT PRIMARY KEY AUTO_INCREMENT,
-    Tipo_rol VARCHAR(50)
-);
+-- CREATE TABLE roles (
+--     ID_rol INT PRIMARY KEY AUTO_INCREMENT,
+--     Tipo_rol VARCHAR(50)
+-- );
 
 -- Tabla de usuarios
 CREATE TABLE usuarios (
@@ -13,12 +13,13 @@ CREATE TABLE usuarios (
     Nombre VARCHAR(50),
     Apellido VARCHAR(50),
     Email VARCHAR(100),
-    Telefono INT,
+    Telefono VARCHAR(30),
     FechaNacimiento DATE,
     Usuario VARCHAR(50),
+    Imagen VARCHAR(255) DEFAULT NULL,
     Contrasenia VARCHAR(100),
-    ID_rol INT,
-    FOREIGN KEY (ID_rol) REFERENCES roles(ID_rol)
+    -- ID_rol INT DEFAULT 1,
+    -- FOREIGN KEY (ID_rol) REFERENCES roles(ID_rol)
 );
 
 -- Tabla de planes

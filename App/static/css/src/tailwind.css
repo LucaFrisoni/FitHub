@@ -1,18 +1,13 @@
 @import "tailwindcss";
 
-/* Aplicamos globalmente la tipografia Inter */
-@theme {
-  --font-inter: "Inter", sans-serif;
+/* Css global */
+:root {
+  font-family: Inter;
 }
-@theme inline {
-  --font-sans: var(--font-inter);
-}
-@layer base {
-  body {
-    @apply font-sans;
-  }
-}
+
 /* ------------------------------------------ */
+/* Creamos clase de tawilwind */
+/* --nombreProp-_comoLlamasLaClase_ */
 @theme {
   --color-primary: rgb(228, 182, 26);
   --color-secondary: rgb(251, 225, 52);
@@ -20,49 +15,9 @@
   --color-cuaternary: rgb(26, 19, 99);
   --shadow-pr: 0px 9px 3px rgb(0 0 0 / 0.25);
   --text-shadow-xl: 2px 3px 2px rgb(0 0 0 / 0.4);
+  --text-shadow-xl: 2px 3px 2px rgb(0 0 0 / 0.4);
 }
 
-@layer utilities {
-  .bg-primary {
-    background-color: var(--color-primary);
-  }
-
-  .bg-secondary {
-    background-color: var(--color-secondary);
-  }
-
-  .text-primary {
-    color: var(--color-primary);
-  }
-
-  .text-secondary {
-    color: var(--color-secondary);
-  }
-
-  .text-terciary {
-    color: var(--color-terciary);
-  }
-
-  .text-cuaternary {
-    color: var(--color-cuaternary);
-  }
-
-  .shadow-pr {
-    box-shadow: var(--shadow-pr);
-  }
-  .text-shadow-xl {
-    text-shadow: var(--text-shadow-xl);
-  }
-
-  .scrollbar-hidden {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-
-  .scrollbar-hidden::-webkit-scrollbar {
-    display: none;
-  }
-}
 @layer components {
   .nav-link::after {
     content: "";
