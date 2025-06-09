@@ -80,3 +80,11 @@ CREATE TABLE detallecompras (
     FOREIGN KEY (ID_Producto) REFERENCES productos(ID_Producto),
     FOREIGN KEY (ID_Compra) REFERENCES compras(ID_Compra)
 );
+
+-- Insert de roles
+INSERT INTO roles (Tipo_rol) VALUES ('admin'); 
+INSERT INTO roles (Tipo_rol) VALUES ('user');  
+
+-- Insert de administrador
+INSERT INTO usuarios (Nombre, Apellido, Email, Telefono, FechaNacimiento, Usuario, Contrasenia, ID_rol)
+VALUES ('aa', 'aa', 'admin@ejemplo.com', 123456789, '2000-01-01', 'admin', '$2b$12$7TppS8uD4mYf92MN7MFMvOITn3HkMXEyTln0hQUN/05aNLF8tGEiS', 1);
