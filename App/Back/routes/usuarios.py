@@ -1,7 +1,9 @@
 from flask import Blueprint, jsonify, request
+from Back.models.user import User
 from Back.db.db import get_connection
 from Back.util.log import devolver_error
 from Back.util.util import *
+
 
 usuarios_bp = Blueprint("usuarios", __name__)
 
@@ -54,15 +56,20 @@ def get_usuario(id):
 # Telefono INT,
 # FechaNacimiento DATE,
 # Usuario VARCHAR(50),
+# imagen VARCHAR(100),
 # Contrasenia VARCHAR(100),
 # ID_rol INT,
 # FOREIGN KEY (ID_rol) REFERENCES roles(ID_rol)
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-@usuarios_bp.route("/", methods=["POST"])
+# --------------------------------------------Auth--------------------------------------------
+
+
+@usuarios_bp.route("/registro", methods=["POST"])
 def post_usuario():
     body = request.get_json()
+
     required = {
         "Nombre": str,
         "Apellido": str,
@@ -72,19 +79,28 @@ def post_usuario():
         "Contrasena": str,
         "Telefono": int,
     }
+
     missing = [r for r in required if r not in body]
-    if len(missing) > 0:
+    if missing:
         return jsonify({"error": "bad request", "missing": missing}), 400
+
     badtype = [r for r in required if not isinstance(body.get(r), required[r])]
-    if len(badtype) > 0:
-        return jsonify({"error": "bad request", "type error": badtype})
+    if badtype:
+        return jsonify({"error": "bad request", "type error": badtype}), 400
+
     try:
         conn = get_connection()
         cursor = conn.cursor()
+
+        # Verifica si el email ya está registrado
+        cursor.execute("SELECT * FROM usuarios WHERE Email = %s", (body["Email"],))
+        if cursor.fetchone():
+            return jsonify({"error": "Email ya registrado"}), 409
+
         cursor.execute(
             """
-            INSERT INTO usuarios (Nombre,Apellido,Email,FechaNacimiento,Usuario,Contrasenia,ID_rol,Telefono)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+            INSERT INTO usuarios (Nombre, Apellido, Email, FechaNacimiento, Usuario, Contrasenia, Telefono)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
             """,
             (
                 body.get("Nombre"),
@@ -97,11 +113,40 @@ def post_usuario():
                 body.get("Telefono"),
             ),
         )
-        new_id = cursor.fetchone()[0]
         conn.commit()
-        return jsonify({"success": True, "id": new_id}), 201
+        return jsonify({"success": True}), 201
+
     except Exception as ex:
         return devolver_error(ruta="usuarios", metodo="POST", ex=ex)
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+@usuarios_bp.route("/cambiar-contra", methods=["POST"])
+def change_password():
+    data = request.get_json()
+    email = data.get("email")
+    nueva_contra = data.get("nueva_contra")
+
+    if not nueva_contra:
+        return jsonify({"error": "Contraseña no proporcionada"}), 400
+    if not email:
+        return jsonify({"error": "email no proporcionado"}), 400
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "UPDATE usuarios SET Contrasenia = %s WHERE Email = %s",
+            (encryptar_pwd(nueva_contra), email),
+        )
+        conn.commit()
+        return jsonify({"success": True, "message": "Contraseña actualizada"})
+    except Exception as ex:
+        return devolver_error(ruta="usuario/cambiar-contra", metodo="POST", ex=ex)
     finally:
         if cursor:
             cursor.close()

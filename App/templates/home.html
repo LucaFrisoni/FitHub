@@ -1,5 +1,53 @@
 {% extends "base.html" %} {% block content %}
 <div class="w-full h-full">
+  <!-- toast -->
+  {% if login %}
+
+  <div
+    id="alert-login"
+    role="alert"
+    class="fixed bottom-4 right-4 mb-4 flex w-[10%] p-3 text-sm text-white bg-emerald-500 rounded-md z-10"
+  >
+    <div class="flex items-center justify-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-8 w-8 p-1 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <p class="font-bold">Login exitoso</p>
+      <button
+        id="button_alert_login"
+        class="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute right-1"
+        type="button"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          class="h-5 w-5"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  {% endif %}
+
   <img
     src="{{ url_for('static', filename='images/fondo.png') }}"
     alt="fondo deberia ir aca..."
@@ -312,7 +360,7 @@
     class="pt-[15%] flex flex-col relative w-full px-[10vw] items-center justify-center pb-[8vw]"
   >
     <h1
-      class="leading-none text-[6vw] drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] z-40 text-primary font-bold"
+      class="leading-none text-[6vw] drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary font-bold"
     >
       Visitanos!
     </h1>
