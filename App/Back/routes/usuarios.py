@@ -70,7 +70,6 @@ def post_usuario():
         "FechaNacimiento": str,
         "Usuario": str,
         "Contrasena": str,
-        "ID_rol": int,
         "Telefono": int,
     }
     missing = [r for r in required if r not in body]
@@ -94,7 +93,7 @@ def post_usuario():
                 obtener_fecha(body.get("FechaNacimiento")),
                 body.get("Usuario"),
                 encryptar_pwd(body.get("Contrasena")),
-                body.get("ID_rol"),
+                2,
                 body.get("Telefono"),
             ),
         )
