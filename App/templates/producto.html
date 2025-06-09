@@ -1,29 +1,39 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-white pt-24 px-6">
-
+{% extends "base.html" %} {% block content %}
+<div
+  class="min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-white pt-24 px-6"
+>
   <!-- Barra superior con botón atrás y carrito -->
   <div class="flex justify-between items-center mb-8">
     <!-- Botón atrás -->
-    <a href="{{ url_for('tienda') }}" class="inline-flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white w-10 h-10 rounded-full shadow-lg">
+    <a
+      href="{{ url_for('tienda') }}"
+      class="inline-flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white w-10 h-10 rounded-full shadow-lg"
+    >
       ←
     </a>
 
     <!-- Carrito (con imagen personalizada) -->
-    <a href=# class="inline-block p-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white shadow-lg">
-      <img src="{{ url_for('static', filename='images/carrito.png') }}" alt="Carrito" class="h-6 w-6 object-contain" />
+    <a
+      href="#"
+      class="inline-block p-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white shadow-lg"
+    >
+      <img
+        src="{{ url_for('static', filename='images/carrito.png') }}"
+        alt="Carrito"
+        class="h-6 w-6 object-contain"
+      />
     </a>
   </div>
 
   <!-- Contenido principal -->
   <div class="flex flex-col md:flex-row items-center md:items-start gap-10">
-    
     <!-- Imagen del producto -->
     <div class="w-full md:w-1/2">
-      <img src="{{ url_for('static', filename=producto.imagen) }}" 
-     alt="{{ producto.nombre }}" 
-     class="w-full h-auto object-contain rounded-lg shadow-lg bg-white p-4" />
+      <img
+        src="{{ url_for('static', filename=producto.imagen) }}"
+        alt="{{ producto.nombre }}"
+        class="w-full h-auto object-contain rounded-lg shadow-lg bg-white p-4"
+      />
     </div>
 
     <!-- Detalles del producto -->
@@ -31,7 +41,11 @@
       <h1 class="text-4xl font-bold mb-4">{{ producto.nombre }}</h1>
       <p class="text-lg mb-4">{{ producto.descripcion }}</p>
       <span class="text-3xl font-bold block mb-6">${{ producto.precio }}</span>
-      <button class="bg-yellow-500 text-white px-6 py-2 rounded-lg hover:bg-yellow-600 transition">Agregar al carrito</button>
+      <button
+        class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/95 transition cursor-pointer"
+      >
+        Agregar al carrito
+      </button>
     </div>
   </div>
 </div>

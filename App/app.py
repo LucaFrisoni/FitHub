@@ -6,7 +6,8 @@ from Back.util.util import check_pwd
 from Back.models.user import User
 from Back.routes.planes import planes_bp
 from Back.routes.productos import productos_bp
-from Back.routes.reservas import reservas_bp
+
+# from Back.routes.reservas import reservas_bp
 from Back.routes.usuarios import usuarios_bp
 from Back.routes.roles import roles_bp
 from Back.routes.docs import init_docs
@@ -32,7 +33,7 @@ init_docs(app)
 
 app.register_blueprint(planes_bp, url_prefix="/api/planes")
 app.register_blueprint(productos_bp, url_prefix="/api/productos")
-app.register_blueprint(reservas_bp, url_prefix="/api/reservas")
+# app.register_blueprint(reservas_bp, url_prefix="/api/reservas")
 app.register_blueprint(usuarios_bp, url_prefix="/api/usuarios")
 app.register_blueprint(roles_bp, url_prefix="/api/roles")
 
@@ -120,63 +121,64 @@ def reservas():
     return render_template("reservas.html", user=current_user)
 
 
-@app.route('/tienda', methods=['GET'])
+@app.route("/tienda", methods=["GET"])
 def tienda():
     productos = [
         {
-            'id': 1,
-            'nombre': 'Bomba de Proteína',
-            'descripcion': 'Milkshake sabor chocolate alto en proteína',
-            'precio': 4500,
-            'imagen': 'milkshake.png'
+            "id": 1,
+            "nombre": "Bomba de Proteína",
+            "descripcion": "Milkshake sabor chocolate alto en proteína",
+            "precio": 4500,
+            "imagen": "milkshake.png",
         },
         {
-            'id': 2,
-            'nombre': 'Proteína en Polvo',
-            'descripcion': 'Suplemento concentrado de suero',
-            'precio': 8500,
-            'imagen': 'proteina.png'
+            "id": 2,
+            "nombre": "Proteína en Polvo",
+            "descripcion": "Suplemento concentrado de suero",
+            "precio": 8500,
+            "imagen": "proteina.png",
         },
         {
-            'id': 3,
-            'nombre': 'Mancuernas 5kg',
-            'descripcion': 'Accesorio esencial para entrenamiento',
-            'precio': 6200,
-            'imagen': 'mancuernas.jpg'
-        }
+            "id": 3,
+            "nombre": "Mancuernas 5kg",
+            "descripcion": "Accesorio esencial para entrenamiento",
+            "precio": 6200,
+            "imagen": "mancuernas.jpg",
+        },
     ]
-    return render_template('tienda.html', productos=productos)
+    return render_template("tienda.html", productos=productos, user=current_user)
 
 
-@app.route('/producto/<int:id>')
+@app.route("/producto/<int:id>")
 def producto(id):
     productos = [
         {
-            'id': 1,
-            'nombre': 'Bomba de Proteína',
-            'descripcion': 'Milkshake sabor chocolate alto en proteína',
-            'precio': 4500,
-            'imagen': 'images/milkshake.png'
+            "id": 1,
+            "nombre": "Bomba de Proteína",
+            "descripcion": "Milkshake sabor chocolate alto en proteína",
+            "precio": 4500,
+            "imagen": "images/milkshake.png",
         },
         {
-            'id': 2,
-            'nombre': 'Proteína en Polvo',
-            'descripcion': 'Suplemento concentrado de suero',
-            'precio': 8500,
-            'imagen': 'images/proteina.png'
+            "id": 2,
+            "nombre": "Proteína en Polvo",
+            "descripcion": "Suplemento concentrado de suero",
+            "precio": 8500,
+            "imagen": "images/proteina.png",
         },
         {
-            'id': 3,
-            'nombre': 'Mancuernas 5kg',
-            'descripcion': 'Accesorio esencial para entrenamiento',
-            'precio': 6200,
-            'imagen': 'images/mancuernas.jpg'
-        }
+            "id": 3,
+            "nombre": "Mancuernas 5kg",
+            "descripcion": "Accesorio esencial para entrenamiento",
+            "precio": 6200,
+            "imagen": "images/mancuernas.jpg",
+        },
     ]
     producto = next((p for p in productos if p["id"] == id), None)
     if producto is None:
         return "Producto no encontrado", 404
-    return render_template('producto.html', producto=producto)
+    return render_template("producto.html", producto=producto, user=current_user)
+
 
 @app.route("/user")
 @login_required

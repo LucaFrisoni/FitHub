@@ -28,12 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .closest(".dias-buttons")
         .querySelectorAll(".button-dias");
       botonesplan.forEach((b) => {
-        b.classList.remove(
-          "activo",
-          "bg-[#c4a300]",
-          "text-black",
-          "opacity-100"
-        );
+        b.classList.remove("activo", "bg-primary", "text-black", "opacity-100");
         b.classList.add("inactivo", "bg-gray-600", "text-white", "opacity-70");
       });
       boton.classList.remove(
@@ -42,12 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "text-white",
         "opacity-70"
       );
-      boton.classList.add(
-        "activo",
-        "bg-[#c4a300]",
-        "text-black",
-        "opacity-100"
-      );
+      boton.classList.add("activo", "bg-primary", "text-black", "opacity-100");
     });
   });
 
