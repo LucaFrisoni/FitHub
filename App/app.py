@@ -120,10 +120,63 @@ def reservas():
     return render_template("reservas.html", user=current_user)
 
 
-@app.route("/tienda")
+@app.route('/tienda', methods=['GET'])
 def tienda():
-    return render_template("tienda.html", user=current_user)
+    productos = [
+        {
+            'id': 1,
+            'nombre': 'Bomba de Proteína',
+            'descripcion': 'Milkshake sabor chocolate alto en proteína',
+            'precio': 4500,
+            'imagen': 'milkshake.png'
+        },
+        {
+            'id': 2,
+            'nombre': 'Proteína en Polvo',
+            'descripcion': 'Suplemento concentrado de suero',
+            'precio': 8500,
+            'imagen': 'proteina.png'
+        },
+        {
+            'id': 3,
+            'nombre': 'Mancuernas 5kg',
+            'descripcion': 'Accesorio esencial para entrenamiento',
+            'precio': 6200,
+            'imagen': 'mancuernas.jpg'
+        }
+    ]
+    return render_template('tienda.html', productos=productos)
 
+
+@app.route('/producto/<int:id>')
+def producto(id):
+    productos = [
+        {
+            'id': 1,
+            'nombre': 'Bomba de Proteína',
+            'descripcion': 'Milkshake sabor chocolate alto en proteína',
+            'precio': 4500,
+            'imagen': 'images/milkshake.png'
+        },
+        {
+            'id': 2,
+            'nombre': 'Proteína en Polvo',
+            'descripcion': 'Suplemento concentrado de suero',
+            'precio': 8500,
+            'imagen': 'images/proteina.png'
+        },
+        {
+            'id': 3,
+            'nombre': 'Mancuernas 5kg',
+            'descripcion': 'Accesorio esencial para entrenamiento',
+            'precio': 6200,
+            'imagen': 'images/mancuernas.jpg'
+        }
+    ]
+    producto = next((p for p in productos if p["id"] == id), None)
+    if producto is None:
+        return "Producto no encontrado", 404
+    return render_template('producto.html', producto=producto)
 
 @app.route("/user")
 @login_required
