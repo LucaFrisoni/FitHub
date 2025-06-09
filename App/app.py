@@ -7,7 +7,8 @@ from Back.routes.usuarios import usuarios_bp
 from Back.routes.roles import roles_bp
 from Back.routes.docs import init_docs
 from Back.db.db import get_connection
-#import requests
+
+# import requests
 
 # --------------------------------------------Rutas||Back--------------------------------------------
 app = Flask(__name__)
@@ -22,9 +23,9 @@ app.register_blueprint(roles_bp, url_prefix="/api/roles")
 try:
     conn = get_connection()
     conn.close()
-    print(" Conectado a la base de datos exitosamente.")
+    print("\033[92m------Conectado a la base de datos exitosamente.\033[0m")
 except Exception as e:
-    print(" Error al conectar con la base de datos:", e)
+    print("\033[91mError al conectar con la base de datos:", e, "\033[0m")
 
 # --------------------------------------------Rutas||Front--------------------------------------------
 
@@ -36,7 +37,40 @@ def home():
 
 @app.route("/planes")
 def planes():
-    return render_template("planes.html")
+    planes = [
+        {
+            "id": "bodybuilding",
+            "nombre": "Body-Building",
+            "dias_elegidos": 3,
+            "imagen": url_for("static", filename="images/bodybuilding.png"),
+            "precio_dias": {
+                3: 46900,
+                5: 63000
+            }
+        },
+        {
+            "id": "spinning",
+            "nombre": "Spinning",
+            "dias_elegidos": 3,
+            "imagen": url_for("static", filename="images/spinning.png"), 
+            "precio_dias": {
+                3: 29500,
+                5: 42000
+            }
+        },
+        {
+            "id": "sport",
+            "nombre": "Sport-Focused Training",
+            "dias_elegidos": 3,
+            "imagen": url_for("static", filename="images/sport.png"),
+            "precio_dias": {
+                3: 49500,
+                5: 65000
+            },
+            "deportes": ["futbol sala", "boxeo", "rugby"]
+        }
+    ]
+    return render_template("planes.html", planes=planes)
 
 
 @app.route("/reservas")
