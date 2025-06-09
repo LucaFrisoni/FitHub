@@ -12,6 +12,7 @@ bcrypt = "*"
 mysql-connector-python = "*"
 flask = "*"
 requests = "*"
+flask-login = "*"
 
 [dev-packages]
 

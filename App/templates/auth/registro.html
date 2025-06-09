@@ -4,6 +4,50 @@ navbar #} {% block content %}
   class="flex h-screen w-full font-inter bg-cover bg-center"
   style="background-image: url('{{ url_for('static', filename='images/registro_imagen.jpg') }}')"
 >
+  {% if error %}
+  <div
+    id="alert-login"
+    role="alert"
+    class="fixed bottom-4 right-4 mb-4 flex w-fit p-3 text-sm text-white bg-red-500 rounded-md z-10"
+  >
+    <div class="flex items-center justify-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-8 w-8 p-1 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <p class="font-bold pr-6">{{ error }}</p>
+      <button
+        id="button_alert_login"
+        class="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute right-1"
+        type="button"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          class="h-5 w-5"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+  {% endif %}
   <!-- logo -->
   <div class="flex items-center justify-center w-1/2">
     <img
@@ -19,7 +63,8 @@ navbar #} {% block content %}
     >
       <p class="font-bold text-2xl">Crear usuario</p>
       <form
-        action=""
+        method="POST"
+        action="{{ url_for('registro') }}"
         class="flex flex-col items-center justify-center pt-10 gap-y-4 overflow-y-auto"
       >
         <!-- Email -->
@@ -29,8 +74,10 @@ navbar #} {% block content %}
           </label>
           <div class="relative">
             <input
+              placeholder=" "
               id="email"
               required
+              name="email"
               type="email"
               class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
             />
@@ -43,7 +90,7 @@ navbar #} {% block content %}
             ></div>
             <label
               for="email"
-              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 text-slate-400 text-sm transition-all transform origin-left peer-placeholder-shown:top-2.5 peer-placeholder-shown:left-10 peer-placeholder-shown:text-sm peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:scale-90 peer-not-placeholder-shown:-top-2 peer-not-placeholder-shown:left-2.5 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:scale-90"
             >
               Ingrese su email..
             </label>
@@ -56,6 +103,8 @@ navbar #} {% block content %}
           </label>
           <div class="relative">
             <input
+              name="contraseña"
+              placeholder=" "
               id="contra"
               required
               type="password"
@@ -70,11 +119,27 @@ navbar #} {% block content %}
             ></div>
             <label
               for="contra"
-              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 text-slate-400 text-sm transition-all transform origin-left peer-placeholder-shown:top-2.5 peer-placeholder-shown:left-10 peer-placeholder-shown:text-sm peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:scale-90 peer-not-placeholder-shown:-top-2 peer-not-placeholder-shown:left-2.5 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:scale-90"
             >
               Ingrese su contraseña..
             </label>
           </div>
+          <p class="flex items-start mt-2 text-xs text-slate-400">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-5 h-5 mr-1.5"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+
+            Use al menos 8 caracteres, una mayuscula, una minuscula y un número.
+          </p>
         </div>
         <!-- usuario -->
         <div class="w-[70%]">
@@ -83,6 +148,8 @@ navbar #} {% block content %}
           </label>
           <div class="relative">
             <input
+              placeholder=" "
+              name="nombre_usuario"
               id="user"
               required
               type="text"
@@ -97,7 +164,7 @@ navbar #} {% block content %}
             ></div>
             <label
               for="user"
-              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 text-slate-400 text-sm transition-all transform origin-left peer-placeholder-shown:top-2.5 peer-placeholder-shown:left-10 peer-placeholder-shown:text-sm peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:scale-90 peer-not-placeholder-shown:-top-2 peer-not-placeholder-shown:left-2.5 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:scale-90"
             >
               Ingrese su usuario..
             </label>
@@ -110,6 +177,8 @@ navbar #} {% block content %}
           </label>
           <div class="relative">
             <input
+              name="nombre"
+              placeholder=" "
               id="nombre"
               required
               type="text"
@@ -124,7 +193,7 @@ navbar #} {% block content %}
             ></div>
             <label
               for="nombre"
-              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 text-slate-400 text-sm transition-all transform origin-left peer-placeholder-shown:top-2.5 peer-placeholder-shown:left-10 peer-placeholder-shown:text-sm peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:scale-90 peer-not-placeholder-shown:-top-2 peer-not-placeholder-shown:left-2.5 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:scale-90"
             >
               Ingrese su nombre..
             </label>
@@ -137,6 +206,8 @@ navbar #} {% block content %}
           </label>
           <div class="relative">
             <input
+              name="apellido"
+              placeholder=" "
               id="apellido"
               required
               type="text"
@@ -151,7 +222,7 @@ navbar #} {% block content %}
             ></div>
             <label
               for="apellido"
-              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 text-slate-400 text-sm transition-all transform origin-left peer-placeholder-shown:top-2.5 peer-placeholder-shown:left-10 peer-placeholder-shown:text-sm peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:scale-90 peer-not-placeholder-shown:-top-2 peer-not-placeholder-shown:left-2.5 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:scale-90"
             >
               Ingrese su apellido..
             </label>
@@ -164,6 +235,8 @@ navbar #} {% block content %}
           </label>
           <div class="relative">
             <input
+              name="nacimiento"
+              placeholder=" "
               id="nacimiento"
               required
               type="date"
@@ -178,7 +251,7 @@ navbar #} {% block content %}
             ></div>
             <label
               for="nacimiento"
-              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 text-slate-400 text-sm transition-all transform origin-left peer-placeholder-shown:top-2.5 peer-placeholder-shown:left-10 peer-placeholder-shown:text-sm peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:scale-90 peer-not-placeholder-shown:-top-2 peer-not-placeholder-shown:left-2.5 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:scale-90"
             >
               Ingrese su fecha de nacimiento..
             </label>
@@ -191,6 +264,7 @@ navbar #} {% block content %}
           </label>
           <div class="relative">
             <input
+              name="telefono"
               id="telefono"
               required
               placeholder="e.g., +54 11-7604-8078"
@@ -205,7 +279,7 @@ navbar #} {% block content %}
             ></div>
             <label
               for="telefono"
-              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 text-slate-400 text-sm transition-all transform origin-left peer-placeholder-shown:top-2.5 peer-placeholder-shown:left-10 peer-placeholder-shown:text-sm peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:scale-90 peer-not-placeholder-shown:-top-2 peer-not-placeholder-shown:left-2.5 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:scale-90"
             >
               Ingrese su numero de telefono..
             </label>
