@@ -135,19 +135,17 @@ def post_usuario():
     print("Body recibido:", body)
     required = {
         "Email": str,
-        "Contrasena": str,
         "Usuario": str,
         "Nombre": str,
         "Apellido": str,
         "FechaNacimiento": str,
-        "Usuario": str,
         "Contrasenia": str,
         "Telefono": str,
     }
 
     missing = [r for r in required if r not in body]
     if missing:
-        print("Campos faltantes:", missing)
+      
         return jsonify({"error": "bad request", "missing": missing}), 400
 
     badtype = [r for r in required if not isinstance(body.get(r), required[r])]
