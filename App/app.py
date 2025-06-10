@@ -554,5 +554,145 @@ def eliminar_producto(id):
     except Exception as e:
         return redirect("/admin")
 
+
+@app.route("/admin/planes")
+@login_required
+@admin_required
+def admin_planes():
+    try:
+        # Obtener planes desde la API
+        response = requests.get("http://localhost:3000/api/planes/")
+        if response.status_code == 200:
+            planes = response.json()
+        else:
+            planes = []
+    except Exception as e:
+        print(f"Error al obtener planes: {e}")
+        planes = []
+    
+    plan_editado = session.pop("plan_editado", False)
+    plan_creado = session.pop("plan_creado", False)
+    plan_eliminado = session.pop("plan_eliminado", False)
+    
+    return render_template("admin/admin_planes.html", 
+                         planes=planes, 
+                         user=current_user,
+                         plan_editado=plan_editado,
+                         plan_creado=plan_creado,
+                         plan_eliminado=plan_eliminado)
+
+@app.route("/admin/plan/nuevo", methods=["GET", "POST"])
+@login_required
+@admin_required
+def nuevo_plan():
+    if request.method == "GET":
+        return render_template("admin/nuevo_plan.html", user=current_user)
+    
+    # Obtener datos del formulario
+    descripcion = request.form.get("descripcion")
+    duracion = request.form.get("duracion")
+    precio = request.form.get("precio")
+    
+    # Validaciones básicas
+    if not all([descripcion, duracion, precio]):
+        return render_template("admin/nuevo_plan.html", 
+                             error="Todos los campos son obligatorios.", 
+                             user=current_user)
+    
+    try:
+        payload = {
+            "Descripcion": descripcion,
+            "DuracionPlan": duracion,
+            "Precio": int(precio)
+        }
+        
+        response = requests.post("http://localhost:3000/api/planes/", json=payload)
+        
+        if response.status_code == 201:
+            session["plan_creado"] = True
+            return redirect("/admin/planes")
+        else:
+            error_msg = response.json().get("error", "Error al crear plan")
+            return render_template("admin/nuevo_plan.html", 
+                                 error=error_msg, 
+                                 user=current_user)
+    except Exception as e:
+        return render_template("admin/nuevo_plan.html", 
+                             error="Error en el servidor. Inténtalo más tarde.", 
+                             user=current_user)
+
+@app.route("/admin/plan/<int:id>/editar", methods=["GET", "POST"])
+@login_required
+@admin_required
+def editar_plan(id):
+    if request.method == "GET":
+        try:
+            response = requests.get(f"http://localhost:3000/api/planes/{id}")
+            if response.status_code == 200:
+                plan = response.json()
+                return render_template("admin/editar_plan.html", 
+                                     plan=plan, 
+                                     user=current_user)
+            else:
+                return "Plan no encontrado", 404
+        except Exception as e:
+            return "Error del servidor", 500
+    
+    # POST - Actualizar plan
+    descripcion = request.form.get("descripcion")
+    duracion = request.form.get("duracion")
+    precio = request.form.get("precio")
+    
+    if not all([descripcion, duracion, precio]):
+        try:
+            response = requests.get(f"http://localhost:3000/api/planes/{id}")
+            plan = response.json() if response.status_code == 200 else {}
+            return render_template("admin/editar_plan.html", 
+                                 plan=plan,
+                                 error="Todos los campos son obligatorios.", 
+                                 user=current_user)
+        except:
+            return "Error del servidor", 500
+    
+    try:
+        payload = {
+            "Descripcion": descripcion,
+            "DuracionPlan": duracion,
+            "Precio": int(precio)
+        }
+        
+        response = requests.put(f"http://localhost:3000/api/planes/{id}", json=payload)
+        
+        if response.status_code == 200:
+            session["plan_editado"] = True
+            return redirect("/admin/planes")
+        else:
+            error_msg = response.json().get("error", "Error al actualizar plan")
+            # Obtener plan actual para mostrar en caso de error
+            plan_response = requests.get(f"http://localhost:3000/api/planes/{id}")
+            plan = plan_response.json() if plan_response.status_code == 200 else {}
+            return render_template("admin/editar_plan.html", 
+                                 plan=plan,
+                                 error=error_msg, 
+                                 user=current_user)
+    except Exception as e:
+        return render_template("admin/editar_plan.html", 
+                             error="Error en el servidor. Inténtalo más tarde.", 
+                             user=current_user)
+
+@app.route("/admin/plan/<int:id>/eliminar", methods=["POST"])
+@login_required
+@admin_required
+def eliminar_plan(id):
+    try:
+        response = requests.delete(f"http://localhost:3000/api/planes/{id}")
+        
+        if response.status_code == 200:
+            session["plan_eliminado"] = True
+        
+        return redirect("/admin/planes")
+    except Exception as e:
+        return redirect("/admin/planes")
+
 if __name__ == "__main__":
-    app.run("localhost", port=3000, debug=True)
+    app.run("localhost", port=3000, debug=True, threaded=True)
