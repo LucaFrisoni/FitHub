@@ -308,7 +308,12 @@ def registro():
     apellido = request.form.get("apellido")
     nacimiento = request.form.get("nacimiento")
     telefono = request.form.get("telefono")
-
+    print(email)
+    print(contraseña)
+    print(nombre_usuario)
+    print(nombre)
+    print(apellido)
+    print(telefono)
     # Validar campos
     campos = [email, contraseña, nombre_usuario, nombre, apellido, nacimiento, telefono]
     nombres_campos = [
@@ -336,7 +341,7 @@ def registro():
     try:
         payload = {
             "Email": email,
-            "Contraseña": contraseña,
+            "Contrasena": contraseña,
             "Usuario": nombre_usuario,
             "Nombre": nombre,
             "Apellido": apellido,

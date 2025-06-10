@@ -9,11 +9,6 @@
       rel="stylesheet"
       href="{{ url_for('static',filename='css/main.css',_external=True) }}"
     />
-    <!-- Css que no puede aplicar Tailwinds -->
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static',filename='css/personalizado.css',_external=True) }}"
-    />
     <!-- Font Inter -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
@@ -102,10 +97,10 @@
 
         {% if user.is_authenticated %}
         <div
+          id="menu-user-avatar"
           class="hover:bg-slate-200/40 transition duration-300 ease-in-out rounded-full p-2 cursor-pointer ml-15 relative"
         >
           <img
-            id="menu-user-avatar"
             alt="user-image"
             src="{{ url_for('static',filename='images/user2_icono.png')}}"
             class="relative inline-block h-8 w-8 cursor-pointer rounded-full"
@@ -246,12 +241,6 @@
       </div>
     </footer>
     {% endblock %}
-
-    <!-- TailwindScripts -->
-    <script
-      type="module"
-      src="node_modules/@material-tailwind/html@latest/scripts/popover.js"
-    ></script>
     <!------------------->
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
   </body>
