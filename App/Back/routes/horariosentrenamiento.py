@@ -3,7 +3,7 @@ from Back.db.db import get_connection
 from Back.util.log import devolver_error
 from Back.util.util import *
 
-horariosentrenamiento_bp = Blueprint("horariosentrenamiento", __name__)
+horarios_bp = Blueprint("horariosentrenamiento", __name__)
 
 @horarios_bp.route("/")
 def get_horarios():
