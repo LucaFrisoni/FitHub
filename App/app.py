@@ -64,12 +64,12 @@ def load_user(user_id):
     if user:
         return User(
             user["ID_usuario"],
-            user["Usuario"],
-            user["Email"],
             user["Nombre"],
             user["Apellido"],
+            user["Email"],
             user["Telefono"],
             user["FechaNacimiento"],
+            user["Usuario"],
             user.get("Imagen") or None,
             # user["ID_rol"],
         )
@@ -121,68 +121,113 @@ def reservas():
     return render_template("reservas.html", user=current_user)
 
 
-@app.route('/tienda', methods=['GET'])
+@app.route("/tienda", methods=["GET"])
 def tienda():
     productos = [
         {
-            'id': 1,
-            'nombre': 'Bomba de Proteína',
-            'descripcion': 'Milkshake sabor chocolate alto en proteína',
-            'precio': 4500,
-            'imagen': 'milkshake.png'
+            "id": 1,
+            "nombre": "Bomba de Proteína",
+            "descripcion": "Milkshake sabor chocolate alto en proteína",
+            "precio": 4500,
+            "imagen": "milkshake.png",
         },
         {
-            'id': 2,
-            'nombre': 'Proteína en Polvo',
-            'descripcion': 'Suplemento concentrado de suero',
-            'precio': 8500,
-            'imagen': 'proteina.png'
+            "id": 2,
+            "nombre": "Proteína en Polvo",
+            "descripcion": "Suplemento concentrado de suero",
+            "precio": 8500,
+            "imagen": "proteina.png",
         },
         {
-            'id': 3,
-            'nombre': 'Mancuernas 5kg',
-            'descripcion': 'Accesorio esencial para entrenamiento',
-            'precio': 6200,
-            'imagen': 'mancuernas.jpg'
-        }
+            "id": 3,
+            "nombre": "Mancuernas 5kg",
+            "descripcion": "Accesorio esencial para entrenamiento",
+            "precio": 6200,
+            "imagen": "mancuernas.jpg",
+        },
     ]
-    return render_template('tienda.html', productos=productos)
+    return render_template("tienda.html", productos=productos, user=current_user)
 
 
-@app.route('/producto/<int:id>')
+@app.route("/producto/<int:id>")
 def producto(id):
     productos = [
         {
-            'id': 1,
-            'nombre': 'Bomba de Proteína',
-            'descripcion': 'Milkshake sabor chocolate alto en proteína',
-            'precio': 4500,
-            'imagen': 'images/milkshake.png'
+            "id": 1,
+            "nombre": "Bomba de Proteína",
+            "descripcion": "Milkshake sabor chocolate alto en proteína",
+            "precio": 4500,
+            "imagen": "images/milkshake.png",
         },
         {
-            'id': 2,
-            'nombre': 'Proteína en Polvo',
-            'descripcion': 'Suplemento concentrado de suero',
-            'precio': 8500,
-            'imagen': 'images/proteina.png'
+            "id": 2,
+            "nombre": "Proteína en Polvo",
+            "descripcion": "Suplemento concentrado de suero",
+            "precio": 8500,
+            "imagen": "images/proteina.png",
         },
         {
-            'id': 3,
-            'nombre': 'Mancuernas 5kg',
-            'descripcion': 'Accesorio esencial para entrenamiento',
-            'precio': 6200,
-            'imagen': 'images/mancuernas.jpg'
-        }
+            "id": 3,
+            "nombre": "Mancuernas 5kg",
+            "descripcion": "Accesorio esencial para entrenamiento",
+            "precio": 6200,
+            "imagen": "images/mancuernas.jpg",
+        },
     ]
     producto = next((p for p in productos if p["id"] == id), None)
     if producto is None:
         return "Producto no encontrado", 404
-    return render_template('producto.html', producto=producto)
+    return render_template("producto.html", producto=producto, user=current_user)
 
-@app.route("/user")
+
+@app.route("/user", methods=["GET", "POST"])
 @login_required
 def user():
-    return render_template("user.html", user=current_user)
+    if request.method == "GET":
+        # si existe la session login, la devuelve y luego la borra, sino usa False
+        usuario_editado = session.pop("usuario_editado", False)
+        return render_template(
+            "user.html", user=current_user, usuario_editado=usuario_editado
+        )
+
+    payload = {
+        "Email": current_user.email,  # fijo, para identificar al usuario
+        "Nombre": request.form.get("nombre"),
+        "Apellido": request.form.get("apellido"),
+        "Usuario": request.form.get("usuario"),
+        "Telefono": request.form.get("telefono"),
+        "FechaNacimiento": request.form.get("nacimiento"),
+    }
+
+    try:
+        response = requests.put(
+            "http://localhost:3000/api/usuarios/editar-usuario", json=payload
+        )
+        if response.status_code == 200:
+            data = response.json()
+            usuario = data["usuario"]
+
+            nuevo_usuario = User(
+                usuario["ID_usuario"],
+                usuario["Nombre"],
+                usuario["Apellido"],
+                usuario["Email"],
+                usuario["Telefono"],
+                usuario["FechaNacimiento"],
+                usuario["Usuario"],
+                usuario.get("Imagen") or None,
+            )
+            # Guardar en session si querés mostrar algo en el User
+            session["usuario_editado"] = True
+            login_user(nuevo_usuario)
+            return redirect("/user")
+        else:
+            error_msg = response.json().get("error", "Error inesperado")
+            return render_template("user.html", user=current_user, error=error_msg)
+    except Exception as ex:
+        return render_template(
+            "user.html", error="Error en el servidor. Intentalo más tarde."
+        )
 
 
 # ----------------------Rutas||Auth----------------------
@@ -190,13 +235,17 @@ def user():
 def login():
     # si existe la session login, la devuelve y luego la borra, sino usa False
     usuario_creado = session.pop("usuario_creado", False)
+    contraseña_cambiada = session.pop("contraseña_cambiada", False)
     if request.method == "GET":
-        return render_template("auth/login.html", usuario_creado=usuario_creado)
+        return render_template(
+            "auth/login.html",
+            usuario_creado=usuario_creado,
+            contraseña_cambiada=contraseña_cambiada,
+        )
 
     # Obtener datos del formulario
     email = request.form.get("email")
     contraseña = request.form.get("contraseña")
-
     # Validaciones básicas
     if not email or not contraseña:
         return render_template(
@@ -220,12 +269,12 @@ def login():
         # Crear objeto User y loguear
         usuario = User(
             user["ID_usuario"],
-            user["Usuario"],
-            user["Email"],
             user["Nombre"],
             user["Apellido"],
+            user["Email"],
             user["Telefono"],
             user["FechaNacimiento"],
+            user["Usuario"],
             user.get("Imagen") or None,
             # user["ID_rol"],
         )
@@ -324,9 +373,58 @@ def logout():
     return redirect("/")
 
 
-@app.route("/cambiarcontra")
+@app.route("/cambiarcontra", methods=["GET", "POST"])
 def cambiarcontra():
-    return render_template("auth/cambiar_contra.html")
+    if request.method == "GET":
+        return render_template("auth/cambiar_contra.html")
+
+    # Obtener datos
+    email = request.form.get("email")
+    nueva_contraseña = request.form.get("nueva_contraseña")
+    nueva_contraseña2 = request.form.get("nueva_contraseña2")
+
+    # Validaciones
+    if not email or not nueva_contraseña or not nueva_contraseña2:
+        return render_template(
+            "auth/cambiar_contra.html", error="Todos los campos son obligatorios."
+        )
+
+    if nueva_contraseña != nueva_contraseña2:
+        return render_template(
+            "auth/cambiar_contra.html", error="Las contraseñas no coinciden."
+        )
+
+    if not re.match(r"^(?=.*[A-Z])(?=.*\d).{8,}$", nueva_contraseña):
+        return render_template(
+            "auth/cambiar_contra.html",
+            error="La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.",
+        )
+
+    try:
+        payload = {
+            "Email": email,
+            "Contraseña": nueva_contraseña,
+        }
+
+        response = requests.post(
+            "http://localhost:3000/api/usuarios/cambiar-contra", json=payload
+        )
+
+        if response.status_code == 200:
+            session["contraseña_cambiada"] = True
+            return redirect("/login")
+        else:
+            try:
+                error_msg = response.json().get("error", "Error desconocido")
+            except:
+                error_msg = "Error en el servidor. Intentalo más tarde."
+            return render_template("auth/cambiar_contra.html", error=error_msg)
+
+    except Exception as e:
+        return render_template(
+            "auth/cambiar_contra.html",
+            error="Error en el servidor. Intentalo más tarde.",
+        )
 
 
 if __name__ == "__main__":

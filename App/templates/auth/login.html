@@ -92,6 +92,50 @@
     </div>
   </div>
 
+  {% endif %} {% if contraseña_cambiada %}
+  <div
+    id="alert-login"
+    role="alert"
+    class="fixed bottom-4 right-4 mb-4 flex w-fit p-3 text-sm text-white bg-emerald-500 rounded-md z-10"
+  >
+    <div class="flex items-center justify-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-8 w-8 p-1 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <p class="font-bold pr-6">Contraseña actualizada</p>
+      <button
+        id="button_alert_login"
+        class="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute right-1"
+        type="button"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          class="h-5 w-5"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
   {% endif %}
 
   <!-- logo -->
@@ -188,15 +232,15 @@
         <div class="w-[70%] flex justify-between pt-8">
           <img
             src="{{ url_for('static',filename='images/google_icono.png')}}"
-            class="cursor-pointer p-2 hover:bg-slate-200 rounded-2xl transition"
+            class="cursor-pointer p-2 hover:bg-slate-200 rounded-2xl transition duration-300 ease-in-out"
           />
           <img
             src="{{ url_for('static',filename='images/github_icono.png')}}"
-            class="cursor-pointer p-2 hover:bg-slate-200 rounded-2xl transition"
+            class="cursor-pointer p-2 hover:bg-slate-200 rounded-2xl transition duration-300 ease-in-out"
           />
           <img
             src="{{ url_for('static',filename='images/facebook_icono.png')}}"
-            class="cursor-pointer p-2 hover:bg-slate-200 rounded-2xl transition"
+            class="cursor-pointer p-2 hover:bg-slate-200 rounded-2xl transition duration-300 ease-in-out"
           />
         </div>
       </form>
