@@ -1,0 +1,20 @@
+{
+  "name": "fithub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npx tailwindcss -i ./static/css/src/tailwind.css -o ./static/css/main.css --watch\" \"python app.py\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.8"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "tailwindcss": "^4.1.8"
+  }
+}

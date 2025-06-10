@@ -1,0 +1,9 @@
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge */
+}
+/* Para navegadores WebKit */
+html::-webkit-scrollbar {
+  display: none;
+}

@@ -1,0 +1,370 @@
+{% extends "base.html" %} {% block content %}
+<div class="w-full h-full">
+  <!-- toast -->
+  {% if login %}
+
+  <div
+    id="alert-login"
+    role="alert"
+    class="fixed bottom-4 right-4 mb-4 flex w-[10%] p-3 text-sm text-white bg-emerald-500 rounded-md z-10"
+  >
+    <div class="flex items-center justify-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-8 w-8 p-1 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <p class="font-bold">Login exitoso</p>
+      <button
+        id="button_alert_login"
+        class="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute right-1"
+        type="button"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          class="h-5 w-5"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  {% endif %}
+
+  <img
+    src="{{ url_for('static', filename='images/fondo.png') }}"
+    alt="fondo deberia ir aca..."
+    class="absolute h-[120vw] z-0 mt-[40vw] translate-x-[-55vw]"
+  />
+
+  <section class="relative w-full h-screen overflow-hidden">
+    <img
+      src="{{ url_for('static', filename='images/home1.png') }}"
+      alt="Home1 deberia ir aca..."
+      class="absolute inset-0 w-full h-full object-cover"
+    />
+
+    <div class="absolute inset-0 bg-black/30 z-1"></div>
+    <div
+      class="z-2 absolute bottom-0 w-full h-[21%] bg-gradient-to-b from-transparent to-stone-100"
+    ></div>
+
+    <!-- - - - -///TEXTO INICIAL HOME///- - - - -->
+
+    <header class="z-3 absolute inset-0 flex-col flex items-center pt-[12.5%]">
+      <img
+        src="{{ url_for('static', filename='images/home2.png') }}"
+        alt="Home2 deberia ir aca..."
+        class="min-w-[33%] max-h-[43%]"
+      />
+
+      <p
+        class="text-stone-100 text-[150%] max-w-[50%] pt-[1.5%] pb-[1.8%] text-center"
+      >
+      En Fithub, el entrenamiento no es un reto ni una meta a corto plazo. Creemos que superarse día a día y mejorar 
+      la salud a través del deporte debe ser parte natural de tu rutina. Por eso, nos enfocamos en ayudarte a
+      encontrar un estilo de vida saludable que puedas sostener en el tiempo, disfrutando el proceso, celebrando 
+      cada paso y construyendo algo que te haga sentir bien, hoy y siempre.
+      </p>
+
+      <!-- Botones -->
+      <div
+        class="flex flex-col justify-center sm:flex-row gap-[5%] w-full min-w-[1000px]"
+      >
+        <a class="w-[12.5%]" href="#HISTORIA">
+          <button
+            type="button"
+            class="w-full h-[130%] text-[200%] rounded-xl shadow-sm cursor-pointer bg-transparent border-[5px] border-black box-border font-bold text-stone-100 hover:bg-black transition"
+          >
+            Saber mas
+          </button>
+        </a>
+        <a class="w-[12.5%]" href="{{ url_for('registro') }}">
+          <button
+            type="button"
+            class="w-full h-[130%] text-[200%] rounded-xl shadow-sm cursor-pointer bg-primary border-[5px] border-primary box-border font-bold text-black hover:bg-secondary transition hover:border-secondary"
+          >
+            Unirme ya
+          </button>
+        </a>
+      </div>
+      <!-- Botones FIN -->
+    </header>
+  </section>
+  <!-- - - - -///TEXTO INICIAL HOME///- - - - -->
+
+  <!-- - - - -///SECCION "NUESTRA HISTORIA"///- - - - -->
+  <section
+    class="pt-[5%] flex relative w-full overflow-visible px-[10vw] items-start justify-between"
+    id="HISTORIA"
+  >
+    <!-- Texto -->
+    <article class="flex flex-col pt-[4%]">
+      <h2
+        class="leading-none m-0 text-shadow-xl pl-[0.5%] text-[2vw] italic text-primary text-shadow-stone-600 font-bold"
+      >
+        Nuestra
+      </h2>
+
+      <h1
+        class="leading-none text-[6vw] text-shadow-xl text-black text-shadow-stone-600 font-bold"
+      >
+        HISTORIA
+      </h1>
+
+      <p
+        class="text-[1.10vw] pt-[1%] max-w-[40vw] min-w-[40vw] line-clamp-5 overflow-x-auto"
+      >
+      Desde nuestros humildes inicios en una pequeña sala equipada con pasión y dedicación, hemos crecido gracias a la confianza de nuestra comunidad. 
+      Cada persona a la cual le cambiamos su vida nos inspira a seguir 
+      innovando y mejorando para brindarte un lugar donde entrenar, 
+      conectar y crecer disfrutando del proceso.
+      </p>
+    </article>
+    <!-- Texto -->
+
+    <!-- Cuadros -->
+    <section class="translate-x-[-10vw] items-center flex flex-col">
+      <!-- Cuadro 1 y 2 -->
+      <div class="flex gap-[6.5vw]">
+        <!-- Cuadro 1 -->
+        <article class="w-[5vw] hover:translate-y-[-0.5vw] transition">
+          <!-- Cuadro 1 -->
+          <div
+            class="flex bg-stone-100 w-[10vw] h-[10vw] rounded-[15%] shadow-pr justify-center items-center"
+          >
+            <div
+              class="flex bg-transparent border-black border-[0.25vw] w-[9vw] h-[9vw] rounded-[15%] justify-center items-center"
+            >
+              <h1
+                class="translate-y-[2.3vw] translate-x-[-0.8vw] text-black font-bold text-[0.9vw] text-center"
+              >
+                Planes de entrenamiento
+              </h1>
+
+              <img
+                src="{{ url_for('static', filename='images/corazon.png') }}"
+                alt="corazon deberia ir aca..."
+                class="w-[5vw] h-[5vw] translate-y-[-1.5vw] translate-x-[1.5vw] absolute"
+              />
+            </div>
+          </div>
+        </article>
+        <!-- Cuadro 1 FIN -->
+
+        <!-- Cuadro 2 -->
+        <article class="w-[5vw]">
+          <div
+            class="flex bg-stone-100 w-[10vw] h-[10vw] rounded-[15%] shadow-pr justify-center items-center hover:translate-y-[-0.5vw] transition"
+          >
+            <div
+              class="flex bg-transparent border-black border-[0.25vw] w-[9vw] h-[9vw] rounded-[15%] justify-center items-center"
+            >
+              <h1
+                class="translate-y-[-2.1vw] text-black font-bold text-center text-[0.9vw]"
+              >
+                Coaching <u>siempre</u> disponible
+              </h1>
+              <img
+                src="{{ url_for('static', filename='images/musculo.png') }}"
+                alt="musculo deberia ir aca..."
+                class="w-[4.5vw] h-[4.5vw] translate-y-[1.7vw] absolute"
+              />
+            </div>
+          </div>
+        </article>
+        <!-- Cuadro 2 FIN -->
+      </div>
+      <!-- Cuadro 1 y 2 FIN -->
+
+      <!-- Cuadro 3 -->
+      <article class="w-[5vw] mt-[1.5vw] hover:translate-y-[-0.5vw] transition">
+        <div
+          class="flex bg-stone-100 w-[10vw] h-[10vw] rounded-[15%] shadow-pr justify-center items-center"
+        >
+          <div
+            class="flex bg-transparent border-black border-[0.25vw] w-[9vw] h-[9vw] rounded-[15%] justify-center items-center"
+          >
+            <h2
+              class="text-black font-bold text-center translate-y-[-2.8vw] text-[0.9vw]"
+            >
+              Abierto
+            </h2>
+            <h1
+              class="text-black text-center translate-y-[1vw] text-[3.5vw] leading-[2.8vw] absolute"
+            >
+              24<br />/7
+            </h1>
+          </div>
+        </div>
+      </article>
+      <!-- Cuadro 3 FIN -->
+    </section>
+    <!-- Cuadros FIN -->
+  </section>
+
+  <!-- - - - -///SECCION "NUESTRA HISTORIA" FIN///- - - - -->
+
+  <!-- - - - -///SECCION PLANES///- - - - -->
+
+  <section class="pt-[15%] flex relative w-full px-[10vw]">
+    <!-- Texto -->
+    <article class="flex flex-col pt-[10%]">
+      <div class="absolute z-5 translate-y-[-14vw] translate-x-[5vw]">
+        <h2
+          class="leading-none m-0 pl-[10%] text-[1.5vw] italic text-black font-bold"
+        >
+          Que...
+        </h2>
+
+        <h1
+          class="leading-none text-[6vw] drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] z-5 text-primary font-bold"
+        >
+          OFRECEMOS
+        </h1>
+      </div>
+    </article>
+    <!-- Texto FIN -->
+    <article>
+      <div class="flex flex-col justify-center items-center mx-auto">
+        <!-- CUADRO -->
+        <div
+          class="flex bg-stone-700 w-[70vw] h-[34vw] rounded-[2%] shadow-pr justify-center items-center"
+        >
+          <div
+            class="flex bg-stone-200 w-[97.5%] h-[95%] rounded-[2%] justify-center items-center mx-auto"
+            style="background-image: url('{{ url_for('static', filename='images/home3.png') }}');"
+          >
+            <!-- PLANES -->
+            <div
+              class="flex bg-stone-100/90 w-[100%] h-[100%] rounded-[2%] justify-center items-center mx-auto"
+            >
+              <!-- PLAN 1 -->
+              <div
+              class="z-5 pt-[2%] ml-[5%] hover:shadow-[inset_0_0_100px_rgba(255,255,255,0.6)] flex flex-col bg-secondary w-[27%] h-[90%] rounded-[1%] items-center overflow-hidden hover:h-[100%] transition-all duration-300"              
+              >
+                <h2
+                class="leading-none m-0 pb-[15%] z-100 text-[1.5vw] font-bold text-shadow-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary"                
+                >
+                  BODYBUILDING
+                </h2>
+                <img
+                  src="{{ url_for('static', filename='images/plan1.png') }}"
+                  alt="plan1 deberia ir aca..."
+                  class="rounded-[2%] border-primary border-[0.3vw] h-[16.5vw] w-[16.5vw] translate-y-[-2vw]"
+                />
+                <ul class="list-disc list-outside font-semi-bold pl-8 text-gray-900 text-base text-left leading-relaxed">
+                  <li>Rutina de entrenamiento</li>
+                  <li>Plan de alimentación</li>
+                  <li>Videos con la técnica de todos los ejercicios</li>
+                  <li>Contacto por WhatsApp con un coach 24/7</li>
+                  <li>Revisión cada 15 días</li>
+                </ul>
+              </div>
+              <!-- PLAN 1 FIN -->
+
+              <!-- PLAN 2 -->
+              <div
+              class="z-5 pt-[2%] ml-[5%] hover:shadow-[inset_0_0_100px_rgba(255,255,255,0.6)] flex flex-col bg-secondary w-[27%] h-[90%] rounded-[1%] items-center overflow-hidden hover:h-[100%] transition-all duration-300"              
+              >
+                <h2
+                class="leading-none m-0 pb-[15%] z-100 text-[1.5vw] font-bold text-shadow-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary"                
+                >
+                  SPINNING
+                </h2>
+                <img
+                  src="{{ url_for('static', filename='images/plan2.png') }}"
+                  alt="plan2 deberia ir aca..."
+                  class="rounded-[2%] border-primary border-[0.3vw] h-[16.5vw] w-[16.5vw] translate-y-[-2vw]"
+                />
+                <ul class="list-disc list-outside font-semi-bold pl-8 text-gray-900 text-base text-left leading-relaxed">
+                  <li>Clases dinámicas semanales</li>
+                  <li>Plan de alimentación</li>
+                  <li>Videos mostrando todas las posiciones correctas para andar según <br>tu postura ideal</li>
+                  <li>Programa de objetivos mensuales ajustados a tu nivel</li>
+                </ul>
+              
+              </div>
+              <!-- PLAN 2 FIN -->
+
+              <!-- PLAN 3 -->
+              <div
+              class="z-5 pt-[2%] ml-[5%] hover:shadow-[inset_0_0_100px_rgba(255,255,255,0.6)] flex flex-col bg-secondary w-[27%] h-[90%] rounded-[1%] items-center overflow-hidden hover:h-[100%] transition-all duration-300"              >
+                <h2
+                class="leading-none m-0 pb-[15%] z-100 text-[1.5vw] font-bold text-shadow-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary"                
+                >
+                  SPORT-FOCUSED
+                </h2>
+                <img
+                  src="{{ url_for('static', filename='images/plan3.png') }}"
+                  alt="plan3 deberia ir aca..."
+                  class="rounded-[2%] border-primary border-[0.3vw] h-[16.5vw] w-[16.5vw] translate-y-[-2vw]"
+                />
+                <ul class="list-disc list-outside font-semi-bold pl-8 text-gray-900 text-base text-left leading-relaxed">
+                  <li>Plan de entrenamiento específico <br> para tu deporte</li>
+                  <li>Plan nutricional optimizado para un alto rendimiento deportivo</li>
+                  <li>Evaluación y ajuste según tus necesidades deportivas</li>
+                </ul>
+              </div>
+              <!-- PLAN 3 FIN -->
+            </div>
+            <!-- PLANES FIN -->
+          </div>
+        </div>
+        <!-- CUADRO FIN -->
+
+        <a
+          href="{{ url_for('planes') }}"
+          class="z-6 absolute h-[5vw] w-[15vw] text-[1.7vw] mt-[35%] ml-[60%] rounded-xl shadow-sm cursor-pointer bg-primary border-[5px] border-primary box-border font-bold text-black hover:bg-secondary hover:border-secondary transition flex items-center justify-center text-center"
+        >
+          Más información
+        </a>
+      </div>
+    </article>
+  </section>
+
+  <!-- - - - -///Mapa///- - - - -->
+  <section
+    class="pt-[15%] flex flex-col relative w-full px-[10vw] items-center justify-center pb-[8vw]"
+  >
+    <h1
+      class="leading-none text-[6vw] drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary font-bold"
+    >
+      Visitanos!
+    </h1>
+
+    <div
+      class="flex bg-stone-700 w-[35vw] h-[30vw] rounded-[2%] shadow-pr justify-center items-center"
+    >
+      <a
+        href="https://www.google.com.ar/maps/place/fithub+Parque+93/@4.6759321,-74.0506914,16.46z/data=!4m6!3m5!1s0x8e3f9b650a130811:0x4d4df635bf5ce1a2!8m2!3d4.6759089!4d-74.0473958!16s%2Fg%2F11px0vcnkv?hl=es&entry=ttu&g_ep=EgoyMDI1MDYwMi4wIKXMDSoASAFQAw%3D%3D"
+        class="w-[95%] h-[95%]"
+        target="_blank"
+      >
+        <div
+          class="flex w-full h-full rounded-[2%] bg-cover bg-center"
+          style="background-image: url('{{ url_for('static', filename='images/mapa.png') }}');"
+          title="Mapa debería ir acá..."
+        ></div>
+      </a>
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,270 @@
+{% extends "base.html" %} {% block navbar %}{% endblock %} {% block content %}
+<div
+  class="flex h-screen w-full font-inter bg-cover bg-center"
+  style="background-image: url('{{ url_for('static', filename='images/login_imagen.jpeg') }}')"
+>
+  <!-- toast -->
+  {% if error %}
+  <div
+    id="alert-login"
+    role="alert"
+    class="fixed bottom-4 right-4 mb-4 flex w-fit p-3 text-sm text-white bg-red-500 rounded-md z-10"
+  >
+    <div class="flex items-center justify-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-8 w-8 p-1 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <p class="font-bold pr-6">{{ error }}</p>
+      <button
+        id="button_alert_login"
+        class="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute right-1"
+        type="button"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          class="h-5 w-5"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  {% endif %} {% if usuario_creado %}
+  <div
+    id="alert-login"
+    role="alert"
+    class="fixed bottom-4 right-4 mb-4 flex w-fit p-3 text-sm text-white bg-emerald-500 rounded-md z-10"
+  >
+    <div class="flex items-center justify-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-8 w-8 p-1 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <p class="font-bold pr-6">Usuario creado exitosamente</p>
+      <button
+        id="button_alert_login"
+        class="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute right-1"
+        type="button"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          class="h-5 w-5"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  {% endif %} {% if contraseña_cambiada %}
+  <div
+    id="alert-login"
+    role="alert"
+    class="fixed bottom-4 right-4 mb-4 flex w-fit p-3 text-sm text-white bg-emerald-500 rounded-md z-10"
+  >
+    <div class="flex items-center justify-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-8 w-8 p-1 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <p class="font-bold pr-6">Contraseña actualizada</p>
+      <button
+        id="button_alert_login"
+        class="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute right-1"
+        type="button"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          class="h-5 w-5"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  {% endif %}
+
+  <!-- logo -->
+  <div class="flex items-center justify-center w-1/2">
+    <img
+      class="min-w-[474px] max-h-[514px]"
+      src="{{ url_for('static',filename='images/logo.png')}}"
+      alt="logo"
+    />
+  </div>
+  <!-- form -->
+  <div class="w-1/2 flex justify-center items-center">
+    <div
+      class="w-[570px] h-[600px] bg-stone-100 rounded-lg shadow-md flex flex-col p-6 border"
+    >
+      <p class="font-bold text-2xl">Iniciar sesión</p>
+      <form
+        method="POST"
+        action="{{ url_for('login') }}"
+        class="flex flex-col items-center justify-center pt-10 gap-y-4"
+      >
+        <!-- Email -->
+        <div class="w-[70%]">
+          <label class="block mb-2 text-base text-black font-semibold">
+            Dirección Email
+          </label>
+          <div class="relative">
+            <input
+              required
+              id="email"
+              name="email"
+              type="email"
+              placeholder=" "
+              class="peer input-field w-full bg-transparent text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <img
+              src="{{ url_for('static', filename='images/mail_icono.png') }}"
+              class="absolute w-5 h-4 top-3 left-2.5"
+            />
+            <div
+              class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
+            ></div>
+
+            <label
+              for="email"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 text-slate-400 text-sm transition-all transform origin-left peer-placeholder-shown:top-2.5 peer-placeholder-shown:left-10 peer-placeholder-shown:text-sm peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:scale-90 peer-not-placeholder-shown:-top-2 peer-not-placeholder-shown:left-2.5 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:scale-90"
+            >
+              Ingrese su email..
+            </label>
+          </div>
+        </div>
+        <!-- contraseña -->
+        <div class="w-[70%]">
+          <label class="block mb-2 text-base text-black font-semibold">
+            Contraseña
+          </label>
+          <div class="relative">
+            <input
+              required
+              placeholder=" "
+              name="contraseña"
+              id="contra"
+              type="password"
+              class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <img
+              src="{{ url_for('static',filename='images/candado_icono.png')}}"
+              class="absolute w-4 h-5 top-2.5 left-3"
+            />
+
+            <div
+              class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
+            ></div>
+            <label
+              for="contra"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 text-slate-400 text-sm transition-all transform origin-left peer-placeholder-shown:top-2.5 peer-placeholder-shown:left-10 peer-placeholder-shown:text-sm peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:scale-90 peer-not-placeholder-shown:-top-2 peer-not-placeholder-shown:left-2.5 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:scale-90"
+            >
+              Ingrese su contraseña..
+            </label>
+          </div>
+        </div>
+
+        <!-- boton -->
+        <div class="flex items-center justify-center w-[70%] pt-6">
+          <button
+            type="submit"
+            class="cursor-pointer p-3 w-full bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition"
+          >
+            Continuar
+          </button>
+        </div>
+
+        <!-- botones auth terceros -->
+        <div class="w-[70%] flex justify-between pt-8">
+          <img
+            src="{{ url_for('static',filename='images/google_icono.png')}}"
+            class="cursor-pointer p-2 hover:bg-slate-200 rounded-2xl transition duration-300 ease-in-out"
+          />
+          <img
+            src="{{ url_for('static',filename='images/github_icono.png')}}"
+            class="cursor-pointer p-2 hover:bg-slate-200 rounded-2xl transition duration-300 ease-in-out"
+          />
+          <img
+            src="{{ url_for('static',filename='images/facebook_icono.png')}}"
+            class="cursor-pointer p-2 hover:bg-slate-200 rounded-2xl transition duration-300 ease-in-out"
+          />
+        </div>
+      </form>
+      <hr class="w-full text-black/20 mt-8" />
+      <!-- textos -->
+      <div class="flex flex-col items-center justify-center gap-y-4 mt-6">
+        <span class="text-slate-400"
+          >No tienes cuenta? Registrese
+          <a
+            class="text-primary font-bold cursor-pointer"
+            href="{{ url_for('registro') }}"
+            >aquí</a
+          ></span
+        >
+        <span class="text-slate-400"
+          >No recuerda su contraseña? Haga click
+          <a
+            class="text-primary font-bold cursor-pointer"
+            href="{{ url_for('cambiarcontra') }}"
+            >aquí</a
+          ></span
+        >
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block footer %}{% endblock %}
