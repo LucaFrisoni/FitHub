@@ -8,16 +8,60 @@ productos_bp = Blueprint("productos", __name__)
 # aca las rutas
 
 
+# Un diccionario para facilitar las keys de las queries
 @productos_bp.route("/")
 def get_productos():
     conn = None
     cursor = None
+    args = request.args
+
+    possible_queries = {
+        'id': { 'rename': 'ID_Producto', 'type': int },
+        'nombre': { 'type': str },
+        'descripcion': { 'type': str },
+        'codigo': { 'type': str },
+        'cantidad': { 'type': int },
+        'precio': { 'type': int },
+        'categoria': { 'type': str }
+    }
 
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM productos")
+        query = "SELECT * FROM productos"
+        values = []
+
+        if len(args) > 0: 
+            nombre_invalid = []
+            type_invalid = []
+            queries = []
+            conditions = ""
+            
+            for req_query in args:
+
+                if req_query == 'orderBy':
+                    continue
+                if req_query not in possible_queries:
+                    nombre_invalid.append(req_query)
+                    continue
+
+                requirements = possible_queries[req_query]
+                actual_name = req_query
+                if 'rename' in requirements:
+                    actual_name = requirements['rename']
+
+                queries.append(f"{actual_name} = %s")
+                values.append(args.get(req_query))
+
+            if len(type_invalid) > 0 or len(nombre_invalid) > 0:
+                return jsonify({'error': 'datos mal ingresados', 'nombres_invalidos': nombre_invalid, 'valor_erroneo': type_invalid}),400
+            
+            conditions += " AND ".join(queries)
+            query += f" WHERE {conditions}"
+
+        cursor.execute(query, values)
         productos = cursor.fetchall()
+
         return jsonify(productos)
     except Exception as ex:
         return devolver_error(ruta="productos", ex=ex)

@@ -55,6 +55,7 @@ CREATE TABLE horariosentrenamiento (
 CREATE TABLE productos (
     ID_Producto INT PRIMARY KEY AUTO_INCREMENT,
     Nombre VARCHAR(100),
+    Categoria VARCHAR(100),
     Descripcion VARCHAR(255),
     Codigo VARCHAR(50),
     Cantidad INT,
