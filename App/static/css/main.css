@@ -147,6 +147,7 @@
   }
   img, svg, video, canvas, audio, iframe, embed, object {
     display: block;
+    vertical-align: middle;
   }
   img, video {
     max-width: 100%;
@@ -400,7 +401,6 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 5;
-    line-clamp: 5;
   }
   .block {
     display: block;
@@ -419,10 +419,6 @@
   }
   .inline-flex {
     display: inline-flex;
-
-  .table {
-    display: table;
-
   }
   .h-4 {
     height: calc(var(--spacing) * 4);
@@ -1385,11 +1381,6 @@
   .italic {
     font-style: italic;
   }
-  .underline {
-    text-decoration-line: underline;
-  }
-
-
   .opacity-0 {
     opacity: 0%;
   }

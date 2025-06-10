@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import re
 from flask import Flask, render_template, request, redirect, session, url_for, jsonify
@@ -25,7 +26,7 @@ import requests
 app = Flask(__name__)
 
 APP_SECRET_KEY = os.getenv("APP_SECRET_KEY")
-app.secret_key = APP_SECRET_KEY
+app.secret_key = 'APP_SECRET_KEY'
 
 init_docs(app)
 
