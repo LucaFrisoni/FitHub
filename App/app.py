@@ -76,7 +76,9 @@ def load_user(user_id):
 
 
 # --------------------------------------------Rutas||Front--------------------------------------------
-
+@app.errorhandler(404)
+def pagina_error(error):
+    return render_template('404.html', user=current_user), 404
 
 @app.route("/")
 def home():
