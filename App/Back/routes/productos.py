@@ -34,8 +34,7 @@ def get_productos():
         if len(args) > 0: 
             nombre_invalid = []
             type_invalid = []
-            queries = []
-            conditions = ""
+            conditions = []
             
             for req_query in args:
 
@@ -50,14 +49,13 @@ def get_productos():
                 if 'rename' in requirements:
                     actual_name = requirements['rename']
 
-                queries.append(f"{actual_name} = %s")
+                conditions.append(f"{actual_name} = %s")
                 values.append(args.get(req_query))
 
             if len(type_invalid) > 0 or len(nombre_invalid) > 0:
                 return jsonify({'error': 'datos mal ingresados', 'nombres_invalidos': nombre_invalid, 'valor_erroneo': type_invalid}),400
             
-            conditions += " AND ".join(queries)
-            query += f" WHERE {conditions}"
+            query += f" WHERE {" AND ".join(conditions)}"
 
         cursor.execute(query, values)
         productos = cursor.fetchall()
@@ -100,6 +98,7 @@ def post_producto():
         "Codigo": str,
         "Cantidad": int,
         "Precio": int,
+        "Categoria": str
     }
 
     missing = [r for r in required if r not in body]
@@ -125,8 +124,8 @@ def post_producto():
 
         cursor.execute(
             """
-            INSERT INTO productos (Nombre, Descripcion, Codigo, Cantidad, Precio)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO productos (Nombre, Descripcion, Codigo, Cantidad, Precio, Categoria)
+            VALUES (%s, %s, %s, %s, %s, %s)
             """,
             (
                 body["Nombre"],
@@ -134,6 +133,7 @@ def post_producto():
                 body["Codigo"],
                 body["Cantidad"],
                 body["Precio"],
+                body["Categoria"],
             ),
         )
 
@@ -164,6 +164,7 @@ def put_producto(id):
         "Codigo": str,
         "Cantidad": int,
         "Precio": int,
+        "Categoria": str
     }
 
     missing = [r for r in required if r not in body]

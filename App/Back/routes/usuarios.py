@@ -33,7 +33,7 @@ def get_usuario(id):
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM usuarios WHERE id = %s", (id,))
+        cursor.execute("SELECT * FROM usuarios WHERE ID_Usuario = %s", (id,))
         usuario = cursor.fetchone()
         if usuario:
             return jsonify(usuario)

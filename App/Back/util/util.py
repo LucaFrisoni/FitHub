@@ -24,3 +24,27 @@ def is_type(obj, required_type) -> bool:
         return True
     except Exception as e:
         return False
+
+def convert_value(value, target_type):
+    """Convierte el valor al tipo especificado"""
+    from datetime import datetime
+    
+    try:
+        if target_type == int:
+            return int(value)
+        elif target_type == str:
+            return str(value)
+        elif target_type == datetime:
+            # Solo formato ISO: 2024-12-25T14:30:00 o 2024-12-25T14:30:00Z
+            try:
+                # Primero intentar con Z (UTC)
+                if value.endswith('Z'):
+                    return datetime.strptime(value, '%Y-%m-%dT%H:%M:%SZ')
+                else:
+                    return datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
+            except ValueError:
+                return None
+        else:
+            return value
+    except (ValueError, TypeError):
+        return None

@@ -65,7 +65,6 @@ CREATE TABLE productos (
 -- Tabla de compras
 CREATE TABLE compras (
     ID_Compra INT PRIMARY KEY AUTO_INCREMENT,
-    NroCompra INT,
     ID_Usuario INT,
     FechaCompra DATE,
     Total INT,
