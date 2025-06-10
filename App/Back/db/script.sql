@@ -81,3 +81,7 @@ CREATE TABLE detallecompras (
     FOREIGN KEY (ID_Producto) REFERENCES productos(ID_Producto),
     FOREIGN KEY (ID_Compra) REFERENCES compras(ID_Compra)
 );
+
+
+INSERT INTO roles (ID_rol, Tipo_rol) VALUES (1, 'Admin');
+INSERT INTO roles (ID_rol, Tipo_rol) VALUES (2, 'Usuario');

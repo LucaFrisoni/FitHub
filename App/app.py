@@ -2,6 +2,7 @@ import os
 import re
 from flask import Flask, render_template, request, redirect, session, url_for, jsonify
 from flask_cors import CORS
+from functools import wraps
 from Back.util.util import check_pwd
 from Back.models.user import User
 from Back.routes.planes import planes_bp
@@ -71,7 +72,7 @@ def load_user(user_id):
             user["FechaNacimiento"],
             user["Usuario"],
             user.get("Imagen") or None,
-            # user["ID_rol"],
+            user["ID_rol"],
         )
     return None
 
@@ -123,61 +124,31 @@ def reservas():
 
 @app.route("/tienda", methods=["GET"])
 def tienda():
-    productos = [
-        {
-            "id": 1,
-            "nombre": "Bomba de Proteína",
-            "descripcion": "Milkshake sabor chocolate alto en proteína",
-            "precio": 4500,
-            "imagen": "milkshake.png",
-        },
-        {
-            "id": 2,
-            "nombre": "Proteína en Polvo",
-            "descripcion": "Suplemento concentrado de suero",
-            "precio": 8500,
-            "imagen": "proteina.png",
-        },
-        {
-            "id": 3,
-            "nombre": "Mancuernas 5kg",
-            "descripcion": "Accesorio esencial para entrenamiento",
-            "precio": 6200,
-            "imagen": "mancuernas.jpg",
-        },
-    ]
+    try:
+        response = requests.get("http://localhost:3000/api/productos/")
+        if response.status_code == 200:
+            productos = response.json()
+        else:
+            productos = []
+    except Exception as e:
+        print(f"Error al obtener productos: {e}")
+        productos = []
+    
     return render_template("tienda.html", productos=productos, user=current_user)
 
 
 @app.route("/producto/<int:id>")
 def producto(id):
-    productos = [
-        {
-            "id": 1,
-            "nombre": "Bomba de Proteína",
-            "descripcion": "Milkshake sabor chocolate alto en proteína",
-            "precio": 4500,
-            "imagen": "images/milkshake.png",
-        },
-        {
-            "id": 2,
-            "nombre": "Proteína en Polvo",
-            "descripcion": "Suplemento concentrado de suero",
-            "precio": 8500,
-            "imagen": "images/proteina.png",
-        },
-        {
-            "id": 3,
-            "nombre": "Mancuernas 5kg",
-            "descripcion": "Accesorio esencial para entrenamiento",
-            "precio": 6200,
-            "imagen": "images/mancuernas.jpg",
-        },
-    ]
-    producto = next((p for p in productos if p["id"] == id), None)
-    if producto is None:
-        return "Producto no encontrado", 404
-    return render_template("producto.html", producto=producto, user=current_user)
+    try:
+        response = requests.get(f"http://localhost:3000/api/productos/{id}")
+        if response.status_code == 200:
+            producto = response.json()
+            return render_template("producto.html", producto=producto, user=current_user)
+        else:
+            return "Producto no encontrado", 404
+    except Exception as e:
+        print(f"Error al obtener producto: {e}")
+        return "Error del servidor", 500
 
 
 @app.route("/user", methods=["GET", "POST"])
@@ -276,7 +247,7 @@ def login():
             user["FechaNacimiento"],
             user["Usuario"],
             user.get("Imagen") or None,
-            # user["ID_rol"],
+            user["ID_rol"],
         )
         login_user(usuario)
 
@@ -337,7 +308,7 @@ def registro():
     try:
         payload = {
             "Email": email,
-            "Contraseña": contraseña,
+            "Contrasenia": contraseña,
             "Usuario": nombre_usuario,
             "Nombre": nombre,
             "Apellido": apellido,
@@ -426,6 +397,162 @@ def cambiarcontra():
             error="Error en el servidor. Intentalo más tarde.",
         )
 
+
+# Decorator para verificar si el usuario es admin
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or current_user.id_rol != 1:
+            return redirect(url_for('home'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route("/admin")
+@login_required
+@admin_required
+def admin_panel():
+    try:
+        # Obtener productos desde la API
+        response = requests.get("http://localhost:3000/api/productos/")
+        if response.status_code == 200:
+            productos = response.json()
+        else:
+            productos = []
+    except Exception as e:
+        print(f"Error al obtener productos: {e}")
+        productos = []
+    
+    producto_editado = session.pop("producto_editado", False)
+    producto_creado = session.pop("producto_creado", False)
+    producto_eliminado = session.pop("producto_eliminado", False)
+    
+    return render_template("admin/admin_panel.html", 
+                         productos=productos, 
+                         user=current_user,
+                         producto_editado=producto_editado,
+                         producto_creado=producto_creado,
+                         producto_eliminado=producto_eliminado)
+
+@app.route("/admin/producto/nuevo", methods=["GET", "POST"])
+@login_required
+@admin_required
+def nuevo_producto():
+    if request.method == "GET":
+        return render_template("admin/nuevo_producto.html", user=current_user)
+    
+    # Obtener datos del formulario
+    nombre = request.form.get("nombre")
+    descripcion = request.form.get("descripcion")
+    codigo = request.form.get("codigo")
+    cantidad = request.form.get("cantidad")
+    precio = request.form.get("precio")
+    
+    # Validaciones básicas
+    if not all([nombre, descripcion, codigo, cantidad, precio]):
+        return render_template("admin/nuevo_producto.html", 
+                             error="Todos los campos son obligatorios.", 
+                             user=current_user)
+    
+    try:
+        payload = {
+            "Nombre": nombre,
+            "Descripcion": descripcion,
+            "Codigo": codigo,
+            "Cantidad": int(cantidad),
+            "Precio": int(precio)
+        }
+        
+        response = requests.post("http://localhost:3000/api/productos/", json=payload)
+        
+        if response.status_code == 201:
+            session["producto_creado"] = True
+            return redirect("/admin")
+        else:
+            error_msg = response.json().get("error", "Error al crear producto")
+            return render_template("admin/nuevo_producto.html", 
+                                 error=error_msg, 
+                                 user=current_user)
+    except Exception as e:
+        return render_template("admin/nuevo_producto.html", 
+                             error="Error en el servidor. Inténtalo más tarde.", 
+                             user=current_user)
+
+@app.route("/admin/producto/<int:id>/editar", methods=["GET", "POST"])
+@login_required
+@admin_required
+def editar_producto(id):
+    if request.method == "GET":
+        try:
+            response = requests.get(f"http://localhost:3000/api/productos/{id}")
+            if response.status_code == 200:
+                producto = response.json()
+                return render_template("admin/editar_producto.html", 
+                                     producto=producto, 
+                                     user=current_user)
+            else:
+                return "Producto no encontrado", 404
+        except Exception as e:
+            return "Error del servidor", 500
+    
+    # POST - Actualizar producto
+    nombre = request.form.get("nombre")
+    descripcion = request.form.get("descripcion")
+    codigo = request.form.get("codigo")
+    cantidad = request.form.get("cantidad")
+    precio = request.form.get("precio")
+    
+    if not all([nombre, descripcion, codigo, cantidad, precio]):
+        try:
+            response = requests.get(f"http://localhost:3000/api/productos/{id}")
+            producto = response.json() if response.status_code == 200 else {}
+            return render_template("admin/editar_producto.html", 
+                                 producto=producto,
+                                 error="Todos los campos son obligatorios.", 
+                                 user=current_user)
+        except:
+            return "Error del servidor", 500
+    
+    try:
+        payload = {
+            "Nombre": nombre,
+            "Descripcion": descripcion,
+            "Codigo": codigo,
+            "Cantidad": int(cantidad),
+            "Precio": int(precio)
+        }
+        
+        response = requests.put(f"http://localhost:3000/api/productos/{id}", json=payload)
+        
+        if response.status_code == 200:
+            session["producto_editado"] = True
+            return redirect("/admin")
+        else:
+            error_msg = response.json().get("error", "Error al actualizar producto")
+            # Obtener producto actual para mostrar en caso de error
+            prod_response = requests.get(f"http://localhost:3000/api/productos/{id}")
+            producto = prod_response.json() if prod_response.status_code == 200 else {}
+            return render_template("admin/editar_producto.html", 
+                                 producto=producto,
+                                 error=error_msg, 
+                                 user=current_user)
+    except Exception as e:
+        return render_template("admin/editar_producto.html", 
+                             error="Error en el servidor. Inténtalo más tarde.", 
+                             user=current_user)
+
+@app.route("/admin/producto/<int:id>/eliminar", methods=["POST"])
+@login_required
+@admin_required
+def eliminar_producto(id):
+    try:
+        response = requests.delete(f"http://localhost:3000/api/productos/{id}")
+        
+        if response.status_code == 200:
+            session["producto_eliminado"] = True
+        
+        return redirect("/admin")
+    except Exception as e:
+        return redirect("/admin")
 
 if __name__ == "__main__":
     app.run("localhost", port=3000, debug=True)
