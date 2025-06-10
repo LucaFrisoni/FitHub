@@ -46,6 +46,69 @@ def get_usuario(id):
         conn.close()
 
 
+@usuarios_bp.route("/editar-usuario", methods=["PUT"])
+def editar_usuario():
+    data = request.get_json()
+
+    email = data.get("Email")
+    if not email:
+        return jsonify({"error": "Email requerido para identificar al usuario"}), 400
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Verificar si el usuario existe
+        cursor.execute("SELECT * FROM usuarios WHERE Email = %s", (email,))
+        usuario = cursor.fetchone()
+
+        if not usuario:
+            return jsonify({"error": "Usuario no encontrado"}), 400
+
+        # Construir campos a actualizar dinámicamente
+        campos_validos = [
+            "Nombre",
+            "Apellido",
+            "Usuario",
+            "Telefono",
+            "FechaNacimiento",
+        ]
+        updates = []
+        valores = []
+
+        for campo in campos_validos:
+            if campo in data and data[campo] != usuario.get(campo):
+                updates.append(f"{campo} = %s")
+                valores.append(data[campo])
+
+        valores.append(email)  # para el WHERE
+
+        query = f"UPDATE usuarios SET {', '.join(updates)} WHERE Email = %s"
+        cursor.execute(query, valores)
+        conn.commit()
+        # Traer el usuario actualizado
+        cursor.execute("SELECT * FROM usuarios WHERE Email = %s", (email,))
+        usuario_actualizado = cursor.fetchone()
+
+        return (
+            jsonify(
+                {
+                    "message": "Usuario actualizado exitosamente",
+                    "usuario": usuario_actualizado,
+                }
+            ),
+            200,
+        )
+
+    except Exception as ex:
+        return jsonify({"error": f"Error al actualizar usuario: {str(ex)}"}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Tabla: USUARIOS
 # ─────────────────────────────────────────────────────────────────────────────

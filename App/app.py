@@ -63,12 +63,12 @@ def load_user(user_id):
     if user:
         return User(
             user["ID_usuario"],
-            user["Usuario"],
-            user["Email"],
             user["Nombre"],
             user["Apellido"],
+            user["Email"],
             user["Telefono"],
             user["FechaNacimiento"],
+            user["Usuario"],
             user.get("Imagen") or None,
             # user["ID_rol"],
         )
@@ -179,10 +179,54 @@ def producto(id):
     return render_template("producto.html", producto=producto, user=current_user)
 
 
-@app.route("/user")
+@app.route("/user", methods=["GET", "POST"])
 @login_required
 def user():
-    return render_template("user.html", user=current_user)
+    if request.method == "GET":
+        # si existe la session login, la devuelve y luego la borra, sino usa False
+        usuario_editado = session.pop("usuario_editado", False)
+        return render_template(
+            "user.html", user=current_user, usuario_editado=usuario_editado
+        )
+
+    payload = {
+        "Email": current_user.email,  # fijo, para identificar al usuario
+        "Nombre": request.form.get("nombre"),
+        "Apellido": request.form.get("apellido"),
+        "Usuario": request.form.get("usuario"),
+        "Telefono": request.form.get("telefono"),
+        "FechaNacimiento": request.form.get("nacimiento"),
+    }
+
+    try:
+        response = requests.put(
+            "http://localhost:3000/api/usuarios/editar-usuario", json=payload
+        )
+        if response.status_code == 200:
+            data = response.json()
+            usuario = data["usuario"]
+
+            nuevo_usuario = User(
+                usuario["ID_usuario"],
+                usuario["Nombre"],
+                usuario["Apellido"],
+                usuario["Email"],
+                usuario["Telefono"],
+                usuario["FechaNacimiento"],
+                usuario["Usuario"],
+                usuario.get("Imagen") or None,
+            )
+            # Guardar en session si querés mostrar algo en el User
+            session["usuario_editado"] = True
+            login_user(nuevo_usuario)
+            return redirect("/user")
+        else:
+            error_msg = response.json().get("error", "Error inesperado")
+            return render_template("user.html", user=current_user, error=error_msg)
+    except Exception as ex:
+        return render_template(
+            "user.html", error="Error en el servidor. Intentalo más tarde."
+        )
 
 
 # ----------------------Rutas||Auth----------------------
@@ -224,12 +268,12 @@ def login():
         # Crear objeto User y loguear
         usuario = User(
             user["ID_usuario"],
-            user["Usuario"],
-            user["Email"],
             user["Nombre"],
             user["Apellido"],
+            user["Email"],
             user["Telefono"],
             user["FechaNacimiento"],
+            user["Usuario"],
             user.get("Imagen") or None,
             # user["ID_rol"],
         )
