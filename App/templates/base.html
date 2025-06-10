@@ -131,6 +131,76 @@
 
               <p class="text-slate-800 font-medium ml-2">Mi Perfil</p>
             </a>
+
+            {% if user.id_rol == 1 %}
+            <a
+              href="{{ url_for('admin_panel') }}"
+              role="menuitem"
+              class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-red-50 focus:bg-red-50 active:bg-red-50"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="w-5 h-5 text-red-500"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 1l-7 4v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+
+              <p class="text-red-600 font-medium ml-2">Adm Productos</p>
+            </a>
+            {% endif %}
+
+            {% if user.id_rol == 1 %}
+            <a
+              href="{{ url_for('admin_planes') }}"
+              role="menuitem"
+              class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-red-50 focus:bg-red-50 active:bg-red-50"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="w-5 h-5 text-red-500"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 1l-7 4v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+
+              <p class="text-red-600 font-medium ml-2">Adm Planes</p>
+            </a>
+            {% endif %}
+
+            {% if user.id_rol == 1 %}
+            <a
+              href="{{ url_for('admin_reservas') }}"
+              role="menuitem"
+              class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-red-50 focus:bg-red-50 active:bg-red-50"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="w-5 h-5 text-red-500"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 1l-7 4v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+
+              <p class="text-red-600 font-medium ml-2">Adm Reservas</p>
+            </a>
+            {% endif %}
+
             <hr class="my-2 border-slate-200" role="menuitem" />
             <!-- Cerrar Sesión Item -->
             <form action="{{ url_for('logout') }}" method="POST">

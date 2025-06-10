@@ -140,6 +140,8 @@ def post_usuario():
         "Nombre": str,
         "Apellido": str,
         "FechaNacimiento": str,
+        "Usuario": str,
+        "Contrasenia": str,
         "Telefono": str,
     }
 
@@ -163,8 +165,8 @@ def post_usuario():
 
         cursor.execute(
             """
-            INSERT INTO usuarios (Nombre, Apellido, Email, FechaNacimiento, Usuario, Contrasenia, Telefono)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO usuarios (Nombre, Apellido, Email, FechaNacimiento, Usuario, Contrasenia, ID_rol, Telefono)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """,
             (
                 body.get("Nombre"),
@@ -172,7 +174,8 @@ def post_usuario():
                 body.get("Email"),
                 obtener_fecha(body.get("FechaNacimiento")),
                 body.get("Usuario"),
-                encryptar_pwd(body.get("Contrasena")),
+                encryptar_pwd(body.get("Contrasenia")),
+                2,
                 body.get("Telefono"),
             ),
         )
