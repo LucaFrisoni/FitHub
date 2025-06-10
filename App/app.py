@@ -6,9 +6,10 @@ from Back.util.util import check_pwd
 from Back.models.user import User
 from Back.routes.planes import planes_bp
 from Back.routes.productos import productos_bp
-from Back.routes.reservas import reservas_bp
+from Back.routes.horariosentrenamiento import horarios_bp
 from Back.routes.usuarios import usuarios_bp
 from Back.routes.roles import roles_bp
+from Back.routes.alquileresplan import alquileres_plan_bp
 from Back.routes.docs import init_docs
 from Back.db.db import get_connection
 from flask_login import (
@@ -32,7 +33,7 @@ init_docs(app)
 
 app.register_blueprint(planes_bp, url_prefix="/api/planes")
 app.register_blueprint(productos_bp, url_prefix="/api/productos")
-app.register_blueprint(reservas_bp, url_prefix="/api/reservas")
+app.register_blueprint(alquileres_plan_bp, url_prefix="/api/alquileres") 
 app.register_blueprint(usuarios_bp, url_prefix="/api/usuarios")
 app.register_blueprint(roles_bp, url_prefix="/api/roles")
 
