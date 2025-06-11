@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-from flask import Flask, render_template, request, redirect, session, url_for, jsonify
+from flask import Flask, render_template, request, redirect, session, url_for, jsonify, flash
 from flask_cors import CORS
 from functools import wraps
 from Back.util.util import check_pwd
@@ -128,13 +128,22 @@ def tienda():
     try:
         response = requests.get("http://localhost:3000/api/productos/")
         if response.status_code == 200:
-            productos = response.json()
+            productos_api = response.json()
+            productos = []
+            for p in productos_api:
+                productos.append({
+                    "id": p.get("ID_Producto"),
+                    "imagen": p.get("Imagen", "default.png"),
+                    "nombre": p.get("Nombre"),
+                    "descripcion": p.get("Descripcion"),
+                    "precio": p.get("Precio")
+                })
         else:
             productos = []
     except Exception as e:
         print(f"Error al obtener productos: {e}")
         productos = []
-    
+
     return render_template("tienda.html", productos=productos, user=current_user)
 
 
@@ -447,9 +456,10 @@ def nuevo_producto():
     codigo = request.form.get("codigo")
     cantidad = request.form.get("cantidad")
     precio = request.form.get("precio")
+    imagen = request.form.get("imagen")
     
     # Validaciones básicas
-    if not all([nombre, descripcion, codigo, cantidad, precio]):
+    if not all([nombre, descripcion, codigo, cantidad, precio, imagen]):
         return render_template("admin/nuevo_producto.html", 
                              error="Todos los campos son obligatorios.", 
                              user=current_user)
@@ -460,7 +470,8 @@ def nuevo_producto():
             "Descripcion": descripcion,
             "Codigo": codigo,
             "Cantidad": int(cantidad),
-            "Precio": int(precio)
+            "Precio": int(precio),
+            "Imagen": imagen  # Asumiendo que la imagen es una URL o un nombre de archivo
         }
         
         response = requests.post("http://localhost:3000/api/productos/", json=payload)
@@ -867,6 +878,78 @@ def eliminar_reserva(id):
         return redirect("/admin/reservas")
     except Exception as e:
         return redirect("/admin/reservas")
+
+
+@app.route('/agregar_carrito/<int:producto_id>', methods=['POST'])
+def agregar_carrito(producto_id):
+    conn = None
+    cursor = None
+    
+    try:
+        # Conectar a la base de datos
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        # Buscar el producto en la base de datos
+        cursor.execute("SELECT * FROM productos WHERE ID_Producto = %s", (producto_id,))
+        producto = cursor.fetchone()
+        
+        if not producto:
+            flash('Producto no encontrado')
+            return redirect(url_for('tienda'))
+        
+        # Obtener carrito de la sesión
+        carrito = session.get('carrito', [])
+        
+        # Verificar si el producto ya está en el carrito
+        for item in carrito:
+            if item['id'] == producto_id:
+                item['cantidad'] += 1
+                break
+        else:
+            # Agregar nuevo producto al carrito
+            carrito.append({
+                'id': producto['ID_Producto'],
+                'nombre': producto['Nombre'],
+                'precio': float(producto['Precio']),
+                'cantidad': 1,
+                'imagen': producto['Imagen']
+            })
+        
+        # Guardar carrito en sesión
+        session['carrito'] = carrito
+        flash('Producto agregado al carrito')
+        
+        # CAMBIO: Usar request.referrer para redirigir inteligentemente
+        return redirect(request.referrer or url_for('tienda'))
+        
+    except Exception as ex:
+        flash('Error al agregar producto al carrito')
+        return redirect(request.referrer or url_for('tienda'))
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+@app.route('/ver_carrito')
+def ver_carrito():
+    carrito = session.get('carrito', [])
+    total = sum(item['precio'] * item['cantidad'] for item in carrito)
+    return render_template('carrito.html', carrito=carrito, total=total, user=current_user)
+
+@app.route('/eliminar_producto_carrito/<int:producto_id>', methods=['POST'])
+def eliminar_producto_carrito(producto_id):
+    carrito = session.get('carrito', [])
+    carrito = [item for item in carrito if item['id'] != producto_id]
+    session['carrito'] = carrito
+    flash('Producto eliminado del carrito')
+    return redirect(url_for('ver_carrito'))
+
+@app.route('/finalizar_compra', methods=['POST'])
+def finalizar_compra():
+    session.pop('carrito', None)  # Vacía el carrito
+    return redirect(url_for('ver_carrito'))
 
 if __name__ == "__main__":
     app.run("localhost", port=3000, debug=True, threaded=True)
