@@ -12,7 +12,7 @@ class User(UserMixin):
         FechaNacimiento,
         Usuario,
         Imagen,
-        # ID_rol,
+        ID_rol,
     ):
         self.id = ID_usuario
         self.nombre = Nombre
@@ -22,7 +22,7 @@ class User(UserMixin):
         self.fecha_nacimiento = FechaNacimiento
         self.usuario = Usuario
         self.imagen = Imagen
-        # self.id_rol = ID_rol
+        self.id_rol = ID_rol
 
     def get_id(self):
         return str(self.id)  # Necesario para Flask-Login

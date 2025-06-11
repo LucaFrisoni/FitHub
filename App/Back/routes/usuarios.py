@@ -33,7 +33,7 @@ def get_usuario(id):
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM usuarios WHERE id = %s", (id,))
+        cursor.execute("SELECT * FROM usuarios WHERE ID_Usuario = %s", (id,))
         usuario = cursor.fetchone()
         if usuario:
             return jsonify(usuario)
@@ -44,6 +44,69 @@ def get_usuario(id):
     finally:
         cursor.close()
         conn.close()
+
+
+@usuarios_bp.route("/editar-usuario", methods=["PUT"])
+def editar_usuario():
+    data = request.get_json()
+
+    email = data.get("Email")
+    if not email:
+        return jsonify({"error": "Email requerido para identificar al usuario"}), 400
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Verificar si el usuario existe
+        cursor.execute("SELECT * FROM usuarios WHERE Email = %s", (email,))
+        usuario = cursor.fetchone()
+
+        if not usuario:
+            return jsonify({"error": "Usuario no encontrado"}), 400
+
+        # Construir campos a actualizar dinámicamente
+        campos_validos = [
+            "Nombre",
+            "Apellido",
+            "Usuario",
+            "Telefono",
+            "FechaNacimiento",
+        ]
+        updates = []
+        valores = []
+
+        for campo in campos_validos:
+            if campo in data and data[campo] != usuario.get(campo):
+                updates.append(f"{campo} = %s")
+                valores.append(data[campo])
+
+        valores.append(email)  # para el WHERE
+
+        query = f"UPDATE usuarios SET {', '.join(updates)} WHERE Email = %s"
+        cursor.execute(query, valores)
+        conn.commit()
+        # Traer el usuario actualizado
+        cursor.execute("SELECT * FROM usuarios WHERE Email = %s", (email,))
+        usuario_actualizado = cursor.fetchone()
+
+        return (
+            jsonify(
+                {
+                    "message": "Usuario actualizado exitosamente",
+                    "usuario": usuario_actualizado,
+                }
+            ),
+            200,
+        )
+
+    except Exception as ex:
+        return jsonify({"error": f"Error al actualizar usuario: {str(ex)}"}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -76,8 +139,8 @@ def post_usuario():
         "Email": str,
         "FechaNacimiento": str,
         "Usuario": str,
-        "Contrasena": str,
-        "Telefono": int,
+        "Contrasenia": str,
+        "Telefono": str,
     }
 
     missing = [r for r in required if r not in body]
@@ -99,8 +162,8 @@ def post_usuario():
 
         cursor.execute(
             """
-            INSERT INTO usuarios (Nombre, Apellido, Email, FechaNacimiento, Usuario, Contrasenia, Telefono)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO usuarios (Nombre, Apellido, Email, FechaNacimiento, Usuario, Contrasenia, ID_rol, Telefono)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """,
             (
                 body.get("Nombre"),
@@ -108,7 +171,7 @@ def post_usuario():
                 body.get("Email"),
                 obtener_fecha(body.get("FechaNacimiento")),
                 body.get("Usuario"),
-                encryptar_pwd(body.get("Contrasena")),
+                encryptar_pwd(body.get("Contrasenia")),
                 2,
                 body.get("Telefono"),
             ),
@@ -127,24 +190,34 @@ def post_usuario():
 
 @usuarios_bp.route("/cambiar-contra", methods=["POST"])
 def change_password():
-    data = request.get_json()
-    email = data.get("email")
-    nueva_contra = data.get("nueva_contra")
+    body = request.get_json()
 
+    email = body.get("Email")
+    nueva_contra = body.get("Contraseña")
+
+    if not email:
+        return jsonify({"error": "Email no proporcionado"}), 400
     if not nueva_contra:
         return jsonify({"error": "Contraseña no proporcionada"}), 400
-    if not email:
-        return jsonify({"error": "email no proporcionado"}), 400
+
     try:
         conn = get_connection()
         cursor = conn.cursor()
 
+        # Verificar si el email existe
+        cursor.execute("SELECT 1 FROM usuarios WHERE Email = %s", (email,))
+        if cursor.fetchone() is None:
+            return jsonify({"error": "El email no existe"}), 404
+
+        # Actualizar la contraseña
         cursor.execute(
             "UPDATE usuarios SET Contrasenia = %s WHERE Email = %s",
             (encryptar_pwd(nueva_contra), email),
         )
         conn.commit()
-        return jsonify({"success": True, "message": "Contraseña actualizada"})
+
+        return jsonify({"success": True, "message": "Contraseña actualizada"}), 200
+
     except Exception as ex:
         return devolver_error(ruta="usuario/cambiar-contra", metodo="POST", ex=ex)
     finally:

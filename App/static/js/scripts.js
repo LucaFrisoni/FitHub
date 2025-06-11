@@ -17,7 +17,7 @@ function updateprice(plan, dias) {
 
 document.addEventListener("DOMContentLoaded", () => {
   // Código del primer bloque...
-  // -------------------updateprice y botones .button-dias
+  // ------------------------------------------updateprice y botones .button-dias
   const botonesdias = document.querySelectorAll(".button-dias");
   botonesdias.forEach((boton) => {
     boton.addEventListener("click", () => {
@@ -28,12 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .closest(".dias-buttons")
         .querySelectorAll(".button-dias");
       botonesplan.forEach((b) => {
-        b.classList.remove(
-          "activo",
-          "bg-[#c4a300]",
-          "text-black",
-          "opacity-100"
-        );
+        b.classList.remove("activo", "bg-primary", "text-black", "opacity-100");
         b.classList.add("inactivo", "bg-gray-600", "text-white", "opacity-70");
       });
       boton.classList.remove(
@@ -42,16 +37,11 @@ document.addEventListener("DOMContentLoaded", () => {
         "text-white",
         "opacity-70"
       );
-      boton.classList.add(
-        "activo",
-        "bg-[#c4a300]",
-        "text-black",
-        "opacity-100"
-      );
+      boton.classList.add("activo", "bg-primary", "text-black", "opacity-100");
     });
   });
 
-  //------------------- Cambio de imagen según el deporte
+  //------------------------------------------ Cambio de imagen según el deporte
   const selectdeporte = document.querySelector("select[id^='deporte-']");
   const imagen = document.getElementById("imagen-deporte");
   if (selectdeporte && imagen) {
@@ -66,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  //------------------- Funcionalidad toast: cerrar al click en la X
+  //------------------------------------------ Funcionalidad toast: cerrar al click en la X
   const botonCerrar = document.getElementById("button_alert_login");
   if (botonCerrar) {
     botonCerrar.onclick = () => {
@@ -83,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, 3000);
 
-  //------------------- Funcion para que aparezca la barra amarilla debajo del logo de la ruta actual
+  //------------------------------------------ Funcion para que aparezca la barra amarilla debajo del logo de la ruta actual
   const links = document.querySelectorAll(".nav-link");
   const actualruta = window.location.pathname;
   let linkactivo = null;
@@ -108,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  //------------------- Funcionalidad del Menu
+  //------------------------------------------ Funcionalidad del Menu
   const avatar = document.getElementById("menu-user-avatar");
   const menu = document.getElementById("menu-ul");
   const miPerfil = document.getElementById("menu-item-miperfil");
@@ -142,6 +132,105 @@ document.addEventListener("DOMContentLoaded", () => {
   // Cierra el menú al hacer clic en los ítems
   miPerfil.addEventListener("click", ocultarMenu);
   cerrarSesion.addEventListener("click", ocultarMenu);
+
+  //------------------------------------------ UserInputs
+  const button = document.getElementById("editar_perfil");
+  const button_guardar = document.getElementById("guardar_perfil");
+  const button_cancelar = document.getElementById("cancelar_perfil");
+
+  const inputs = [
+    document.getElementById("user_nombre"),
+    document.getElementById("user_apellido"),
+    document.getElementById("user_usuario"),
+    document.getElementById("user_telefono"),
+    document.getElementById("user_nacimiento"),
+  ];
+
+  const valoresOriginales = {};
+
+  // Guardamos los valores originales una vez y preparamos los listeners de los inputs
+  inputs.forEach((input) => {
+    valoresOriginales[input.name] = input.value;
+
+    const label = input.parentElement.querySelector(`label[for="${input.id}"]`);
+
+    input.addEventListener("input", () => {
+      if (label) {
+        if (
+          input.value !== valoresOriginales[input.name] &&
+          input.value !== ""
+        ) {
+          label.classList.add("opacity-0", "scale-95");
+        } else {
+          label.classList.remove("opacity-0", "scale-95");
+        }
+      }
+    });
+  });
+
+  function mostrarBotones() {
+    button.classList.remove("opacity-100", "scale-100");
+    button.classList.add("opacity-0", "scale-95", "pointer-events-none");
+
+    button_guardar.classList.remove(
+      "opacity-0",
+      "scale-95",
+      "pointer-events-none"
+    );
+    button_cancelar.classList.remove(
+      "opacity-0",
+      "scale-95",
+      "pointer-events-none"
+    );
+    button_guardar.classList.add("opacity-100", "scale-100");
+    button_cancelar.classList.add("opacity-100", "scale-100");
+  }
+  function ocultarBtones() {
+    button.classList.remove("opacity-0", "scale-95", "pointer-events-none");
+    button.classList.add("opacity-100", "scale-100");
+    button_guardar.classList.remove("opacity-100", "scale-100");
+    button_cancelar.classList.remove("opacity-100", "scale-100");
+    button_guardar.classList.add(
+      "opacity-0",
+      "scale-95",
+      "pointer-events-none"
+    );
+    button_cancelar.classList.add(
+      "opacity-0",
+      "scale-95",
+      "pointer-events-none"
+    );
+  }
+
+  button.addEventListener("click", (e) => {
+    e.preventDefault();
+    mostrarBotones();
+
+    // Habilitamos todos los inputs
+    inputs.forEach((input) => {
+      input.disabled = false;
+    });
+
+    // Hacemos foco en el primer campo
+    inputs[0].focus();
+  });
+
+  button_cancelar.addEventListener("click", (e) => {
+    e.preventDefault();
+    ocultarBtones();
+
+    // Restauramos valores originales y deshabilitamos inputs
+    inputs.forEach((input) => {
+      input.value = valoresOriginales[input.name];
+      input.disabled = true;
+      const label = input.parentElement.querySelector(
+        `label[for="${input.id}"]`
+      );
+      if (label) {
+        label.classList.remove("opacity-0", "scale-95");
+      }
+    });
+  });
 });
 
 // Slide para las ventas y productos
