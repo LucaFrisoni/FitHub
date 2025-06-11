@@ -99,7 +99,9 @@ def post_producto():
         "Cantidad": int,
         "Precio": int,
         "Categoria": str
+        "Imagen": str  
     }
+
 
     missing = [r for r in required if r not in body]
     if missing:
@@ -124,7 +126,8 @@ def post_producto():
 
         cursor.execute(
             """
-            INSERT INTO productos (Nombre, Descripcion, Codigo, Cantidad, Precio, Categoria)
+
+            INSERT INTO productos (Nombre, Descripcion, Codigo, Cantidad, Precio, Categoria, Imagen)
             VALUES (%s, %s, %s, %s, %s, %s)
             """,
             (
@@ -134,6 +137,7 @@ def post_producto():
                 body["Cantidad"],
                 body["Precio"],
                 body["Categoria"],
+                body["Imagen"]
             ),
         )
 
@@ -165,6 +169,7 @@ def put_producto(id):
         "Cantidad": int,
         "Precio": int,
         "Categoria": str
+        "Imagen": str
     }
 
     missing = [r for r in required if r not in body]

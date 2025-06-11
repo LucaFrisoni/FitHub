@@ -1,0 +1,7 @@
+{% extends "base.html" %} {% block content %}
+<div class="flex flex-col justify-center items-center bg-center min-h-screen" style="background-image: url('{{ url_for('static', filename='images/fondo.png') }}')">
+    <h1 class="text-6xl text-black">404</h1>
+    <p class="pt-5 text-center">No pudimos encontrar la pagina que buscabas. utiliza la navegacion o el boton de abajo <br> para volver a nuestro sitio web.</p>
+    <a href="{{ url_for('home') }}" class="relative mt-5 overflow-hidden border border-black bg-black text-white px-6 py-2 font-semibold hover:bg-primary transition hover:border-primary"> Seguir comprando</a>
+</div>
+{% endblock %}
