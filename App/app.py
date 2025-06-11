@@ -12,6 +12,8 @@ from Back.routes.horariosentrenamiento import horarios_bp
 from Back.routes.usuarios import usuarios_bp
 from Back.routes.roles import roles_bp
 from Back.routes.alquileresplan import alquileres_plan_bp
+from Back.routes.detallecompras import detallecompras_bp
+from Back.routes.compras import compras_bp
 from Back.routes.docs import init_docs
 from Back.db.db import get_connection
 from flask_login import (
@@ -38,6 +40,8 @@ app.register_blueprint(productos_bp, url_prefix="/api/productos")
 app.register_blueprint(alquileres_plan_bp, url_prefix="/api/alquileres") 
 app.register_blueprint(usuarios_bp, url_prefix="/api/usuarios")
 app.register_blueprint(roles_bp, url_prefix="/api/roles")
+app.register_blueprint(compras_bp, url_prefix="/api/compras")
+app.register_blueprint(detallecompras_bp, url_prefix="/api/detallecompras")
 
 # ------------------Check-conexion-bd------------------
 try:
