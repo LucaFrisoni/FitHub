@@ -87,6 +87,9 @@ def home():
     login = session.pop("login", False)
     return render_template("home.html", login=login, user=current_user)
 
+@app.errorhandler(404)
+def pagina_error(error):
+    return render_template('404.html', user=current_user), 404
 
 @app.route("/planes")
 def planes():
