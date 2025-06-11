@@ -51,12 +51,13 @@ def post_producto():
     body = request.get_json()
 
     required = {
-        "Nombre": str,
-        "Descripcion": str,
-        "Codigo": str,
-        "Cantidad": int,
-        "Precio": int,
-    }
+    "Nombre": str,
+    "Descripcion": str,
+    "Codigo": str,
+    "Cantidad": int,
+    "Precio": int,
+    "Imagen": str  
+}
 
     missing = [r for r in required if r not in body]
     if missing:
@@ -81,8 +82,8 @@ def post_producto():
 
         cursor.execute(
             """
-            INSERT INTO productos (Nombre, Descripcion, Codigo, Cantidad, Precio)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO productos (Nombre, Descripcion, Codigo, Cantidad, Precio, Imagen)
+            VALUES (%s, %s, %s, %s, %s, %s)
             """,
             (
                 body["Nombre"],
@@ -90,6 +91,7 @@ def post_producto():
                 body["Codigo"],
                 body["Cantidad"],
                 body["Precio"],
+                body["Imagen"]
             ),
         )
 
@@ -120,6 +122,7 @@ def put_producto(id):
         "Codigo": str,
         "Cantidad": int,
         "Precio": int,
+        "Imagen": str
     }
 
     missing = [r for r in required if r not in body]

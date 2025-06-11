@@ -85,3 +85,4 @@ CREATE TABLE detallecompras (
 
 INSERT INTO roles (ID_rol, Tipo_rol) VALUES (1, 'Admin');
 INSERT INTO roles (ID_rol, Tipo_rol) VALUES (2, 'Usuario');
+ALTER TABLE productos ADD COLUMN Imagen VARCHAR(255) NULL;

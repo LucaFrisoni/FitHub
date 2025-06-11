@@ -85,7 +85,17 @@
                                placeholder="0">
                     </div>
                 </div>
-
+                    <!-- Imagen -->
+                    <div>
+                        <label for="imagen" class="block text-sm font-medium mb-2">Nombre de la Imagen</label>
+                        <input type="text" 
+                                id="imagen" 
+                                name="imagen" 
+                                required
+                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                                placeholder="Ej: proteina1.png">
+                        <p class="text-sm text-gray-400 mt-1">La imagen debe estar en <code>/static/images/</code></p>
+                    </div>
                 <!-- Botones -->
                 <div class="flex justify-end space-x-4 pt-6">
                     <a href="{{ url_for('admin_panel') }}" 

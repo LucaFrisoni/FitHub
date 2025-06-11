@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-white min-h-screen pt-24">
+    <div class="max-w-4xl mx-auto p-6 pt-24">
+        <h1 class="text-2xl font-bold mb-4">Tu Carrito</h1>
+
+        {% if carrito %}
+            {% for item in carrito %}
+            <div class="bg-white shadow-md p-4 mb-4 rounded-lg">
+                <div class="flex items-center justify-between">
+                    <!-- Información del producto en una línea -->
+                    <div class="flex items-center space-x-6 flex-1">
+                        <h2 class="text-lg font-semibold text-black">{{ item.nombre }}</h2>
+                        <span class="text-black">Cantidad: {{ item.cantidad }}</span>
+                        <span class="text-black">Precio total: ${{ item.precio * item.cantidad }}</span>
+                    </div>
+                    
+                    <!-- Botón eliminar -->
+                    <form method="POST" action="{{ url_for('eliminar_producto_carrito', producto_id=item.id) }}">
+                        <button class="text-red-500 text-sm hover:underline hover:text-red-700 px-4 py-2">
+                            Eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="text-right mt-6">
+                <p class="text-xl font-semibold">Total: ${{ total }}</p>
+                <div class="mt-4 flex justify-end space-x-4">
+                    <a href="{{ url_for('home') }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">
+                        Volver al Home
+                    </a>
+                    <a href="{{ url_for('finalizar_compra') }}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                        Finalizar Compra
+                    </a>
+                </div>
+            </div>
+
+        {% else %}
+            <p class="text-center text-gray-300">Tu carrito está vacío.</p>
+            <div class="text-center mt-4">
+                <a href="{{ url_for('tienda') }}" class="text-yellow-400 hover:underline">Ir a la tienda</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
