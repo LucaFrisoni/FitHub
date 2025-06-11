@@ -1,10 +1,11 @@
-{% extends "base.html" %}{% block content %}
-<div class="max-h-screen gym-bg bg-[url(/static/images/reserva_fondo.png)]">
+{% extends "base.html" %}
+{% block content %}
+<div class="gym-bg bg-[url(/static/images/reserva_fondo.png)] ">
     <!-- Main Content -->
-    <div class="container px-4 py-8 mt-22 ">
-        <div class="flex flex-col md:flex-row lg:flex-row gap-6 grid-cols-2">
+    <div class=" py-9 mt-22 flex justify-center">
+        <div class="flex justify-center lg:flex-row gap-6">
             <!-- Left Panel - Reservation Form -->
-            <div class="lg:w-2/3">
+            <div class="lg:w-3/5">
                 <div class="bg-white rounded-lg shadow-lg p-6">
                     <h2 class="text-xl font-bold text-gray-800 mb-6">Reservación</h2>
 
@@ -114,13 +115,13 @@
             </div>
 
             <!-- Right Panel - Available Slots -->
-            <div class="lg:w-1/4 flex flex-col">
+            <div class="lg:w-50% flex flex-col">
                 <div class="bg-white rounded-lg shadow-lg p-6">
                     <h2 class="text-xl font-bold text-gray-800 mb-6">Turnos Disponibles</h2>
 
-                    <div class="space-y-4">
+                    <div class="space-y-4 space-x-3 grid">
                         <!-- Lunes -->
-                        <div class="flex items-center justify-between p-4 border rounded-lg bg-white">
+                        <div class="flex items-center justify-between p-4 border rounded-lg bg-white col-end-1">
                             <div class="flex items-center space-x-4">
                                 <span class="font-semibold text-black">Lunes</span>
                                 <div class="flex items-center space-x-2">
@@ -141,7 +142,7 @@
                         </div>
 
                         <!-- Martes -->
-                        <div class="flex items-center justify-between p-4 border rounded-lg bg-white">
+                        <div class="flex items-center justify-between p-4 border rounded-lg bg-white col-end-2">
                             <div class="flex items-center space-x-4">
                                 <span class="font-semibold text-black">Martes</span>
                                 <div class="flex items-center space-x-2">
@@ -304,5 +305,5 @@
             }
         </script>
     </div>
-    
-    {% endblock %}
+</div>
+{% endblock %} {% block footer%}{% endblock %}

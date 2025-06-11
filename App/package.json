@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npx tailwindcss -i ./static/css/src/tailwind.css -o ./static/css/main.css --watch\" \"python3 app.py\""
+    "dev": "concurrently \"npx tailwindcss -i ./static/css/src/tailwind.css -o ./static/css/main.css --watch\" \"python app.py\""
   },
   "keywords": [],
   "author": "",
