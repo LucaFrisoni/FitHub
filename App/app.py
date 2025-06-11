@@ -1,100 +1,872 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+import os
+import re
+from flask import Flask, render_template, request, redirect, session, url_for, jsonify
 from flask_cors import CORS
+from functools import wraps
+from Back.util.util import check_pwd
+from Back.models.user import User
 from Back.routes.planes import planes_bp
 from Back.routes.productos import productos_bp
-from Back.routes.reservas import reservas_bp
+from Back.routes.horariosentrenamiento import horarios_bp
 from Back.routes.usuarios import usuarios_bp
 from Back.routes.roles import roles_bp
+from Back.routes.alquileresplan import alquileres_plan_bp
 from Back.routes.docs import init_docs
 from Back.db.db import get_connection
-#import requests
+from flask_login import (
+    LoginManager,
+    login_required,
+    login_user,
+    logout_user,
+    current_user,
+)
+import requests
+
 
 # --------------------------------------------Rutas||Back--------------------------------------------
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+
+APP_SECRET_KEY = os.getenv("APP_SECRET_KEY")
+app.secret_key = APP_SECRET_KEY
+
 init_docs(app)
+
+
 app.register_blueprint(planes_bp, url_prefix="/api/planes")
 app.register_blueprint(productos_bp, url_prefix="/api/productos")
-app.register_blueprint(reservas_bp, url_prefix="/api/reservas")
+app.register_blueprint(alquileres_plan_bp, url_prefix="/api/alquileres") 
 app.register_blueprint(usuarios_bp, url_prefix="/api/usuarios")
 app.register_blueprint(roles_bp, url_prefix="/api/roles")
 
+# ------------------Check-conexion-bd------------------
 try:
     conn = get_connection()
     conn.close()
-    print(" Conectado a la base de datos exitosamente.")
+    print("\033[92m------Conectado a la base de datos exitosamente.\033[0m")
 except Exception as e:
-    print(" Error al conectar con la base de datos:", e)
+    print("\033[91mError al conectar con la base de datos:", e, "\033[0m")
+
+# ------------------InitAuth------------------
+login_manager = LoginManager()
+login_manager.init_app(app)  # Conectás Flask-Login con tu app
+login_manager.login_view = (
+    "login"  # la ruta donde te lleva si no esta logeado en una ruta proteguida
+)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM usuarios WHERE ID_usuario = %s", (user_id,))
+    user = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    if user:
+        return User(
+            user["ID_usuario"],
+            user["Nombre"],
+            user["Apellido"],
+            user["Email"],
+            user["Telefono"],
+            user["FechaNacimiento"],
+            user["Usuario"],
+            user.get("Imagen") or None,
+            user["ID_rol"],
+        )
+    return None
+
 
 # --------------------------------------------Rutas||Front--------------------------------------------
 
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    # si existe la session login, la devuelve y luego la borra, sino usa False
+    login = session.pop("login", False)
+    return render_template("home.html", login=login, user=current_user)
 
 
 @app.route("/planes")
 def planes():
-    return render_template("planes.html")
+    planes = [
+        {
+            "id": "bodybuilding",
+            "nombre": "Body-Building",
+            "dias_elegidos": 3,
+            "imagen": url_for("static", filename="images/bodybuilding.png"),
+            "precio_dias": {3: 46900, 5: 63000},
+        },
+        {
+            "id": "spinning",
+            "nombre": "Spinning",
+            "dias_elegidos": 3,
+            "imagen": url_for("static", filename="images/spinning.png"),
+            "precio_dias": {3: 29500, 5: 42000},
+        },
+        {
+            "id": "sport",
+            "nombre": "Sport-Focused Training",
+            "dias_elegidos": 3,
+            "imagen": url_for("static", filename="images/sport.png"),
+            "precio_dias": {3: 49500, 5: 65000},
+            "deportes": ["futbol sala", "boxeo", "rugby"],
+        },
+    ]
+    return render_template("planes.html", planes=planes, user=current_user)
 
 
 @app.route("/reservas")
+# @login_required
 def reservas():
-    return render_template("reservas.html")
+    return render_template("reservas.html", user=current_user)
 
 
-@app.route("/tienda")
+@app.route("/tienda", methods=["GET"])
 def tienda():
-    return render_template("tienda.html")
+    try:
+        response = requests.get("http://localhost:3000/api/productos/")
+        if response.status_code == 200:
+            productos = response.json()
+        else:
+            productos = []
+    except Exception as e:
+        print(f"Error al obtener productos: {e}")
+        productos = []
+    
+    return render_template("tienda.html", productos=productos, user=current_user)
 
 
-@app.route("/user")
+@app.route("/producto/<int:id>")
+def producto(id):
+    try:
+        response = requests.get(f"http://localhost:3000/api/productos/{id}")
+        if response.status_code == 200:
+            producto = response.json()
+            return render_template("producto.html", producto=producto, user=current_user)
+        else:
+            return "Producto no encontrado", 404
+    except Exception as e:
+        print(f"Error al obtener producto: {e}")
+        return "Error del servidor", 500
+
+
+@app.route("/user", methods=["GET", "POST"])
+@login_required
 def user():
-    return render_template("user.html")
+    if request.method == "GET":
+        # si existe la session login, la devuelve y luego la borra, sino usa False
+        usuario_editado = session.pop("usuario_editado", False)
+        return render_template(
+            "user.html", user=current_user, usuario_editado=usuario_editado
+        )
+
+    payload = {
+        "Email": current_user.email,  # fijo, para identificar al usuario
+        "Nombre": request.form.get("nombre"),
+        "Apellido": request.form.get("apellido"),
+        "Usuario": request.form.get("usuario"),
+        "Telefono": request.form.get("telefono"),
+        "FechaNacimiento": request.form.get("nacimiento"),
+    }
+
+    try:
+        response = requests.put(
+            "http://localhost:3000/api/usuarios/editar-usuario", json=payload
+        )
+        if response.status_code == 200:
+            data = response.json()
+            usuario = data["usuario"]
+
+            nuevo_usuario = User(
+                usuario["ID_usuario"],
+                usuario["Nombre"],
+                usuario["Apellido"],
+                usuario["Email"],
+                usuario["Telefono"],
+                usuario["FechaNacimiento"],
+                usuario["Usuario"],
+                usuario.get("Imagen") or None,
+                usuario["ID_rol"],
+            )
+            # Guardar en session si querés mostrar algo en el User
+            session["usuario_editado"] = True
+            login_user(nuevo_usuario)
+            return redirect("/user")
+        else:
+            error_msg = response.json().get("error", "Error inesperado")
+            return render_template("user.html", user=current_user, error=error_msg)
+    except Exception as ex:
+        return render_template(
+            "user.html", error="Error en el servidor. Intentalo más tarde."
+        )
 
 
-# ----------------------Auth----------------------
+# ----------------------Rutas||Auth----------------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    # si existe la session login, la devuelve y luego la borra, sino usa False
+    usuario_creado = session.pop("usuario_creado", False)
+    contraseña_cambiada = session.pop("contraseña_cambiada", False)
     if request.method == "GET":
-        return render_template("auth/login.html")
-    # if request.method == "POST":
-    #     mail = request.form.get("email")
-    #     contraseña = request.form.get("contraseña")
-    #     if not mail or not contraseña:
-    #         return render_template(
-    #             "auth/login.html", error="No se completaron todos los campos"
-    #         )
-    #     try:
-    #         # Mandar los datos al backend
-    #         response = requests.post(
-    #             "http://localhost:3001/usuarios/login",
-    #             json={"email": mail, "password": contraseña},
-    #             timeout=5,  # evita que cuelgue si el back no responde
-    #         )
+        return render_template(
+            "auth/login.html",
+            usuario_creado=usuario_creado,
+            contraseña_cambiada=contraseña_cambiada,
+        )
 
-    #         if response.status_code == 200:
-    #             return redirect(url_for("home"))
-    #         else:
-    #             mensaje = response.json().get("error", "Error al iniciar sesión")
-    #             return render_template("auth/login.html", error=mensaje)
+    # Obtener datos del formulario
+    email = request.form.get("email")
+    contraseña = request.form.get("contraseña")
+    # Validaciones básicas
+    if not email or not contraseña:
+        return render_template(
+            "auth/login.html", error="Email y contraseña son obligatorios."
+        )
 
-    #     except requests.exceptions.RequestException:
-    #         return render_template(
-    #             "auth/login.html", error="Error de conexión con el servidor"
-    #         )
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Buscar usuario
+        cursor.execute("SELECT * FROM usuarios WHERE Email = %s", (email,))
+        user = cursor.fetchone()
+
+        if not user:
+            return render_template("auth/login.html", error="Usuario no encontrado.")
+
+        if not check_pwd(contraseña, user["Contrasenia"]):
+            return render_template("auth/login.html", error="Contraseña incorrecta.")
+
+        # Crear objeto User y loguear
+        usuario = User(
+            user["ID_usuario"],
+            user["Nombre"],
+            user["Apellido"],
+            user["Email"],
+            user["Telefono"],
+            user["FechaNacimiento"],
+            user["Usuario"],
+            user.get("Imagen") or None,
+            user["ID_rol"],
+        )
+        login_user(usuario)
+
+        # Guardar en session si querés mostrar algo en el home
+        session["login"] = True
+
+        return redirect("/")
+    except Exception as ex:
+        return render_template(
+            "auth/login.html", error="Error en el servidor. Intentalo más tarde."
+        )
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
-@app.route("/registro")
+@app.route("/registro", methods=["GET", "POST"])
 def registro():
-    return render_template("auth/registro.html")
+    if request.method == "GET":
+        return render_template("auth/registro.html")
+
+    # Obtener datos del formulario
+    email = request.form.get("email")
+    contraseña = request.form.get("contraseña")
+    nombre_usuario = request.form.get("nombre_usuario")
+    nombre = request.form.get("nombre")
+    apellido = request.form.get("apellido")
+    nacimiento = request.form.get("nacimiento")
+    telefono = request.form.get("telefono")
+   
+    # Validar campos
+    campos = [email, contraseña, nombre_usuario, nombre, apellido, nacimiento, telefono]
+    nombres_campos = [
+        "email",
+        "contraseña",
+        "nombre de usuario",
+        "nombre",
+        "apellido",
+        "nacimiento",
+        "teléfono",
+    ]
+    for valor, nombre_campo in zip(campos, nombres_campos):
+        if not valor:
+            return render_template(
+                "auth/registro.html", error=f"El campo '{nombre_campo}' es obligatorio."
+            )
+
+    # Validar contraseña
+    if not re.match(r"^(?=.*[A-Z])(?=.*\d).{8,}$", contraseña):
+        return render_template(
+            "auth/registro.html",
+            error="La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.",
+        )
+
+    try:
+        payload = {
+            "Email": email,
+            "Contrasenia": contraseña,
+            "Usuario": nombre_usuario,
+            "Nombre": nombre,
+            "Apellido": apellido,
+            "FechaNacimiento": nacimiento,
+            "Telefono": telefono,
+        }
+
+        response = requests.post(
+            "http://localhost:3000/api/usuarios/registro", json=payload
+        )
+
+        if response.status_code == 201:
+            # Guardar en session si querés mostrar algo en el login
+            session["usuario_creado"] = True
+            return redirect("/login")
+        elif response.status_code == 409:
+            return render_template("auth/registro.html", error="Email ya registrado.")
+        else:
+            return render_template(
+                "auth/registro.html", error="Registro fallido. Verificá los datos."
+            )
+
+    except Exception:
+        return render_template(
+            "auth/registro.html", error="Error en el servidor. Intentalo más tarde."
+        )
 
 
-@app.route("/cambiarcontra")
+@app.route("/logout", methods=["POST"])
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
+
+
+@app.route("/cambiarcontra", methods=["GET", "POST"])
 def cambiarcontra():
-    return render_template("auth/cambiar_contra.html")
+    if request.method == "GET":
+        return render_template("auth/cambiar_contra.html")
 
+    # Obtener datos
+    email = request.form.get("email")
+    nueva_contraseña = request.form.get("nueva_contraseña")
+    nueva_contraseña2 = request.form.get("nueva_contraseña2")
+
+    # Validaciones
+    if not email or not nueva_contraseña or not nueva_contraseña2:
+        return render_template(
+            "auth/cambiar_contra.html", error="Todos los campos son obligatorios."
+        )
+
+    if nueva_contraseña != nueva_contraseña2:
+        return render_template(
+            "auth/cambiar_contra.html", error="Las contraseñas no coinciden."
+        )
+
+    if not re.match(r"^(?=.*[A-Z])(?=.*\d).{8,}$", nueva_contraseña):
+        return render_template(
+            "auth/cambiar_contra.html",
+            error="La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.",
+        )
+
+    try:
+        payload = {
+            "Email": email,
+            "Contraseña": nueva_contraseña,
+        }
+
+        response = requests.post(
+            "http://localhost:3000/api/usuarios/cambiar-contra", json=payload
+        )
+
+        if response.status_code == 200:
+            session["contraseña_cambiada"] = True
+            return redirect("/login")
+        else:
+            try:
+                error_msg = response.json().get("error", "Error desconocido")
+            except:
+                error_msg = "Error en el servidor. Intentalo más tarde."
+            return render_template("auth/cambiar_contra.html", error=error_msg)
+
+    except Exception as e:
+        return render_template(
+            "auth/cambiar_contra.html",
+            error="Error en el servidor. Intentalo más tarde.",
+        )
+
+
+# Decorator para verificar si el usuario es admin
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or current_user.id_rol != 1:
+            return redirect(url_for('home'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route("/admin")
+@login_required
+@admin_required
+def admin_panel():
+    try:
+        # Obtener productos desde la API
+        response = requests.get("http://localhost:3000/api/productos/")
+        if response.status_code == 200:
+            productos = response.json()
+        else:
+            productos = []
+    except Exception as e:
+        print(f"Error al obtener productos: {e}")
+        productos = []
+    
+    producto_editado = session.pop("producto_editado", False)
+    producto_creado = session.pop("producto_creado", False)
+    producto_eliminado = session.pop("producto_eliminado", False)
+    
+    return render_template("admin/admin_panel.html", 
+                         productos=productos, 
+                         user=current_user,
+                         producto_editado=producto_editado,
+                         producto_creado=producto_creado,
+                         producto_eliminado=producto_eliminado)
+
+@app.route("/admin/producto/nuevo", methods=["GET", "POST"])
+@login_required
+@admin_required
+def nuevo_producto():
+    if request.method == "GET":
+        return render_template("admin/nuevo_producto.html", user=current_user)
+    
+    # Obtener datos del formulario
+    nombre = request.form.get("nombre")
+    descripcion = request.form.get("descripcion")
+    codigo = request.form.get("codigo")
+    cantidad = request.form.get("cantidad")
+    precio = request.form.get("precio")
+    
+    # Validaciones básicas
+    if not all([nombre, descripcion, codigo, cantidad, precio]):
+        return render_template("admin/nuevo_producto.html", 
+                             error="Todos los campos son obligatorios.", 
+                             user=current_user)
+    
+    try:
+        payload = {
+            "Nombre": nombre,
+            "Descripcion": descripcion,
+            "Codigo": codigo,
+            "Cantidad": int(cantidad),
+            "Precio": int(precio)
+        }
+        
+        response = requests.post("http://localhost:3000/api/productos/", json=payload)
+        
+        if response.status_code == 201:
+            session["producto_creado"] = True
+            return redirect("/admin")
+        else:
+            error_msg = response.json().get("error", "Error al crear producto")
+            return render_template("admin/nuevo_producto.html", 
+                                 error=error_msg, 
+                                 user=current_user)
+    except Exception as e:
+        return render_template("admin/nuevo_producto.html", 
+                             error="Error en el servidor. Inténtalo más tarde.", 
+                             user=current_user)
+
+@app.route("/admin/producto/<int:id>/editar", methods=["GET", "POST"])
+@login_required
+@admin_required
+def editar_producto(id):
+    if request.method == "GET":
+        try:
+            response = requests.get(f"http://localhost:3000/api/productos/{id}")
+            if response.status_code == 200:
+                producto = response.json()
+                return render_template("admin/editar_producto.html", 
+                                     producto=producto, 
+                                     user=current_user)
+            else:
+                return "Producto no encontrado", 404
+        except Exception as e:
+            return "Error del servidor", 500
+    
+    # POST - Actualizar producto
+    nombre = request.form.get("nombre")
+    descripcion = request.form.get("descripcion")
+    codigo = request.form.get("codigo")
+    cantidad = request.form.get("cantidad")
+    precio = request.form.get("precio")
+    
+    if not all([nombre, descripcion, codigo, cantidad, precio]):
+        try:
+            response = requests.get(f"http://localhost:3000/api/productos/{id}")
+            producto = response.json() if response.status_code == 200 else {}
+            return render_template("admin/editar_producto.html", 
+                                 producto=producto,
+                                 error="Todos los campos son obligatorios.", 
+                                 user=current_user)
+        except:
+            return "Error del servidor", 500
+    
+    try:
+        payload = {
+            "Nombre": nombre,
+            "Descripcion": descripcion,
+            "Codigo": codigo,
+            "Cantidad": int(cantidad),
+            "Precio": int(precio)
+        }
+        
+        response = requests.put(f"http://localhost:3000/api/productos/{id}", json=payload)
+        
+        if response.status_code == 200:
+            session["producto_editado"] = True
+            return redirect("/admin")
+        else:
+            error_msg = response.json().get("error", "Error al actualizar producto")
+            # Obtener producto actual para mostrar en caso de error
+            prod_response = requests.get(f"http://localhost:3000/api/productos/{id}")
+            producto = prod_response.json() if prod_response.status_code == 200 else {}
+            return render_template("admin/editar_producto.html", 
+                                 producto=producto,
+                                 error=error_msg, 
+                                 user=current_user)
+    except Exception as e:
+        return render_template("admin/editar_producto.html", 
+                             error="Error en el servidor. Inténtalo más tarde.", 
+                             user=current_user)
+
+@app.route("/admin/producto/<int:id>/eliminar", methods=["POST"])
+@login_required
+@admin_required
+def eliminar_producto(id):
+    try:
+        response = requests.delete(f"http://localhost:3000/api/productos/{id}")
+        
+        if response.status_code == 200:
+            session["producto_eliminado"] = True
+        
+        return redirect("/admin")
+    except Exception as e:
+        return redirect("/admin")
+
+
+@app.route("/admin/planes")
+@login_required
+@admin_required
+def admin_planes():
+    try:
+        # Obtener planes desde la API
+        response = requests.get("http://localhost:3000/api/planes/")
+        if response.status_code == 200:
+            planes = response.json()
+        else:
+            planes = []
+    except Exception as e:
+        print(f"Error al obtener planes: {e}")
+        planes = []
+    
+    plan_editado = session.pop("plan_editado", False)
+    plan_creado = session.pop("plan_creado", False)
+    plan_eliminado = session.pop("plan_eliminado", False)
+    
+    return render_template("admin/admin_planes.html", 
+                         planes=planes, 
+                         user=current_user,
+                         plan_editado=plan_editado,
+                         plan_creado=plan_creado,
+                         plan_eliminado=plan_eliminado)
+
+@app.route("/admin/plan/nuevo", methods=["GET", "POST"])
+@login_required
+@admin_required
+def nuevo_plan():
+    if request.method == "GET":
+        return render_template("admin/nuevo_plan.html", user=current_user)
+    
+    # Obtener datos del formulario
+    descripcion = request.form.get("descripcion")
+    duracion = request.form.get("duracion")
+    precio = request.form.get("precio")
+    
+    # Validaciones básicas
+    if not all([descripcion, duracion, precio]):
+        return render_template("admin/nuevo_plan.html", 
+                             error="Todos los campos son obligatorios.", 
+                             user=current_user)
+    
+    try:
+        payload = {
+            "Descripcion": descripcion,
+            "DuracionPlan": duracion,
+            "Precio": int(precio)
+        }
+        
+        response = requests.post("http://localhost:3000/api/planes/", json=payload)
+        
+        if response.status_code == 201:
+            session["plan_creado"] = True
+            return redirect("/admin/planes")
+        else:
+            error_msg = response.json().get("error", "Error al crear plan")
+            return render_template("admin/nuevo_plan.html", 
+                                 error=error_msg, 
+                                 user=current_user)
+    except Exception as e:
+        return render_template("admin/nuevo_plan.html", 
+                             error="Error en el servidor. Inténtalo más tarde.", 
+                             user=current_user)
+
+@app.route("/admin/plan/<int:id>/editar", methods=["GET", "POST"])
+@login_required
+@admin_required
+def editar_plan(id):
+    if request.method == "GET":
+        try:
+            response = requests.get(f"http://localhost:3000/api/planes/{id}")
+            if response.status_code == 200:
+                plan = response.json()
+                return render_template("admin/editar_plan.html", 
+                                     plan=plan, 
+                                     user=current_user)
+            else:
+                return "Plan no encontrado", 404
+        except Exception as e:
+            return "Error del servidor", 500
+    
+    # POST - Actualizar plan
+    descripcion = request.form.get("descripcion")
+    duracion = request.form.get("duracion")
+    precio = request.form.get("precio")
+    
+    if not all([descripcion, duracion, precio]):
+        try:
+            response = requests.get(f"http://localhost:3000/api/planes/{id}")
+            plan = response.json() if response.status_code == 200 else {}
+            return render_template("admin/editar_plan.html", 
+                                 plan=plan,
+                                 error="Todos los campos son obligatorios.", 
+                                 user=current_user)
+        except:
+            return "Error del servidor", 500
+    
+    try:
+        payload = {
+            "Descripcion": descripcion,
+            "DuracionPlan": duracion,
+            "Precio": int(precio)
+        }
+        
+        response = requests.put(f"http://localhost:3000/api/planes/{id}", json=payload)
+        
+        if response.status_code == 200:
+            session["plan_editado"] = True
+            return redirect("/admin/planes")
+        else:
+            error_msg = response.json().get("error", "Error al actualizar plan")
+            # Obtener plan actual para mostrar en caso de error
+            plan_response = requests.get(f"http://localhost:3000/api/planes/{id}")
+            plan = plan_response.json() if plan_response.status_code == 200 else {}
+            return render_template("admin/editar_plan.html", 
+                                 plan=plan,
+                                 error=error_msg, 
+                                 user=current_user)
+    except Exception as e:
+        return render_template("admin/editar_plan.html", 
+                             error="Error en el servidor. Inténtalo más tarde.", 
+                             user=current_user)
+
+@app.route("/admin/plan/<int:id>/eliminar", methods=["POST"])
+@login_required
+@admin_required
+def eliminar_plan(id):
+    try:
+        response = requests.delete(f"http://localhost:3000/api/planes/{id}")
+        
+        if response.status_code == 200:
+            session["plan_eliminado"] = True
+        
+        return redirect("/admin/planes")
+    except Exception as e:
+        return redirect("/admin/planes")
+
+@app.route("/admin/reservas")
+@login_required
+@admin_required
+def admin_reservas():
+    try:
+        # Obtener reservas desde la API
+        response = requests.get("http://localhost:3000/api/alquileres/")
+        reservas = response.json() if response.status_code == 200 else []
+        
+        # Obtener usuarios y planes para mostrar nombres
+        usuarios_response = requests.get("http://localhost:3000/api/usuarios/")
+        usuarios = {u['ID_usuario']: u for u in usuarios_response.json()} if usuarios_response.status_code == 200 else {}
+        
+        planes_response = requests.get("http://localhost:3000/api/planes/")
+        planes = {p['ID_Plan']: p for p in planes_response.json()} if planes_response.status_code == 200 else {}
+        
+    except Exception as e:
+        print(f"Error al obtener reservas: {e}")
+        reservas = []
+        usuarios = {}
+        planes = {}
+    
+    reserva_editada = session.pop("reserva_editada", False)
+    reserva_creada = session.pop("reserva_creada", False)
+    reserva_eliminada = session.pop("reserva_eliminada", False)
+    
+    return render_template("admin/admin_reservas.html", 
+                         reservas=reservas, 
+                         usuarios=usuarios,
+                         planes=planes,
+                         user=current_user,
+                         reserva_editada=reserva_editada,
+                         reserva_creada=reserva_creada,
+                         reserva_eliminada=reserva_eliminada)
+
+@app.route("/admin/reserva/nueva", methods=["GET", "POST"])
+@login_required
+@admin_required
+def nueva_reserva():
+    try:
+        # Obtener usuarios y planes para los selects
+        usuarios_response = requests.get("http://localhost:3000/api/usuarios/")
+        usuarios = usuarios_response.json() if usuarios_response.status_code == 200 else []
+        
+        planes_response = requests.get("http://localhost:3000/api/planes/")
+        planes = planes_response.json() if planes_response.status_code == 200 else []
+        
+        if request.method == "GET":
+            return render_template("admin/nueva_reserva.html", 
+                                 usuarios=usuarios,
+                                 planes=planes,
+                                 user=current_user)
+    
+        # POST - Crear nueva reserva
+        usuario_id = request.form.get("usuario")
+        plan_id = request.form.get("plan")
+        nota = request.form.get("nota", "")
+        
+        if not usuario_id or not plan_id:
+            return render_template("admin/nueva_reserva.html", 
+                                 usuarios=usuarios,
+                                 planes=planes,
+                                 error="Usuario y Plan son obligatorios",
+                                 user=current_user)
+        
+        payload = {
+            "ID_Usuario": int(usuario_id),
+            "ID_Plan": int(plan_id),
+            "Nota": nota
+        }
+        
+        response = requests.post("http://localhost:3000/api/alquileres/", json=payload)
+        
+        if response.status_code == 201:
+            session["reserva_creada"] = True
+            return redirect("/admin/reservas")
+        else:
+            error_msg = response.json().get("error", "Error al crear reserva")
+            return render_template("admin/nueva_reserva.html", 
+                                 usuarios=usuarios,
+                                 planes=planes,
+                                 error=error_msg,
+                                 user=current_user)
+            
+    except Exception as e:
+        print(f"Error: {e}")
+        return render_template("admin/nueva_reserva.html", 
+                             usuarios=usuarios,
+                             planes=planes,
+                             error="Error en el servidor",
+                             user=current_user)
+
+@app.route("/admin/reserva/<int:id>/editar", methods=["GET", "POST"])
+@login_required
+@admin_required
+def editar_reserva(id):
+    try:
+        # Obtener reserva actual
+        response = requests.get(f"http://localhost:3000/api/alquileres/{id}")
+        if response.status_code != 200:
+            return "Reserva no encontrada", 404
+        reserva = response.json()
+        
+        # Obtener usuarios y planes para los selects
+        usuarios_response = requests.get("http://localhost:3000/api/usuarios/")
+        usuarios = usuarios_response.json() if usuarios_response.status_code == 200 else []
+        
+        planes_response = requests.get("http://localhost:3000/api/planes/")
+        planes = planes_response.json() if planes_response.status_code == 200 else []
+        
+        if request.method == "GET":
+            return render_template("admin/editar_reserva.html", 
+                                 reserva=reserva,
+                                 usuarios=usuarios,
+                                 planes=planes,
+                                 user=current_user)
+    
+        # POST - Actualizar reserva
+        usuario_id = request.form.get("usuario")
+        plan_id = request.form.get("plan")
+        nota = request.form.get("nota", "")
+        
+        if not usuario_id or not plan_id:
+            return render_template("admin/editar_reserva.html", 
+                                 reserva=reserva,
+                                 usuarios=usuarios,
+                                 planes=planes,
+                                 error="Usuario y Plan son obligatorios",
+                                 user=current_user)
+        
+        payload = {
+            "ID_Usuario": int(usuario_id),
+            "ID_Plan": int(plan_id),
+            "Nota": nota
+        }
+        
+        response = requests.put(f"http://localhost:3000/api/alquileres/{id}", json=payload)
+        
+        if response.status_code == 200:
+            session["reserva_editada"] = True
+            return redirect("/admin/reservas")
+        else:
+            error_msg = response.json().get("error", "Error al actualizar reserva")
+            return render_template("admin/editar_reserva.html", 
+                                 reserva=reserva,
+                                 usuarios=usuarios,
+                                 planes=planes,
+                                 error=error_msg,
+                                 user=current_user)
+            
+    except Exception as e:
+        print(f"Error: {e}")
+        return render_template("admin/editar_reserva.html", 
+                             reserva=reserva,
+                             usuarios=usuarios,
+                             planes=planes,
+                             error="Error en el servidor",
+                             user=current_user)
+
+@app.route("/admin/reserva/<int:id>/eliminar", methods=["POST"])
+@login_required
+@admin_required
+def eliminar_reserva(id):
+    try:
+        response = requests.delete(f"http://localhost:3000/api/alquileres/{id}")
+        
+        if response.status_code == 200:
+            session["reserva_eliminada"] = True
+        
+        return redirect("/admin/reservas")
+    except Exception as e:
+        return redirect("/admin/reservas")
 
 if __name__ == "__main__":
-    app.run("localhost", port=3000, debug=True)
+    app.run("localhost", port=3000, debug=True, threaded=True)

@@ -3,9 +3,9 @@ USE fithub_db;
 
 -- Tabla de roles
 CREATE TABLE roles (
-    ID_rol INT PRIMARY KEY AUTO_INCREMENT,
-    Tipo_rol VARCHAR(50)
-);
+     ID_rol INT PRIMARY KEY AUTO_INCREMENT,
+     Tipo_rol VARCHAR(50)
+ );
 
 -- Tabla de usuarios
 CREATE TABLE usuarios (
@@ -13,11 +13,12 @@ CREATE TABLE usuarios (
     Nombre VARCHAR(50),
     Apellido VARCHAR(50),
     Email VARCHAR(100),
-    Telefono INT,
+    Telefono VARCHAR(30),
     FechaNacimiento DATE,
     Usuario VARCHAR(50),
+    Imagen VARCHAR(255) DEFAULT NULL,
     Contrasenia VARCHAR(100),
-    ID_rol INT,
+    ID_rol INT DEFAULT 1,
     FOREIGN KEY (ID_rol) REFERENCES roles(ID_rol)
 );
 
@@ -80,3 +81,7 @@ CREATE TABLE detallecompras (
     FOREIGN KEY (ID_Producto) REFERENCES productos(ID_Producto),
     FOREIGN KEY (ID_Compra) REFERENCES compras(ID_Compra)
 );
+
+
+INSERT INTO roles (ID_rol, Tipo_rol) VALUES (1, 'Admin');
+INSERT INTO roles (ID_rol, Tipo_rol) VALUES (2, 'Usuario');
