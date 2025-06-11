@@ -204,6 +204,7 @@ def user():
                 usuario["FechaNacimiento"],
                 usuario["Usuario"],
                 usuario.get("Imagen") or None,
+                usuario["ID_rol"],
             )
             # Guardar en session si querés mostrar algo en el User
             session["usuario_editado"] = True
@@ -297,7 +298,7 @@ def registro():
     apellido = request.form.get("apellido")
     nacimiento = request.form.get("nacimiento")
     telefono = request.form.get("telefono")
-
+   
     # Validar campos
     campos = [email, contraseña, nombre_usuario, nombre, apellido, nacimiento, telefono]
     nombres_campos = [

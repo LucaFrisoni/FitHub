@@ -132,19 +132,20 @@ def editar_usuario():
 @usuarios_bp.route("/registro", methods=["POST"])
 def post_usuario():
     body = request.get_json()
-
+    print("Body recibido:", body)
     required = {
+        "Email": str,
+        "Usuario": str,
         "Nombre": str,
         "Apellido": str,
-        "Email": str,
         "FechaNacimiento": str,
-        "Usuario": str,
         "Contrasenia": str,
         "Telefono": str,
     }
 
     missing = [r for r in required if r not in body]
     if missing:
+      
         return jsonify({"error": "bad request", "missing": missing}), 400
 
     badtype = [r for r in required if not isinstance(body.get(r), required[r])]
