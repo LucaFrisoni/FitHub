@@ -50,16 +50,16 @@
                     <!-- Duración -->
                     <div>
                         <label for="duracion" class="block text-sm font-medium mb-2">
-                            Duración <span class="text-red-400">*</span>
+                            Duración (meses) <span class="text-red-400">*</span>
                         </label>
-                        <input type="text" 
+                        <input type="number" 
                                id="duracion" 
                                name="duracion" 
                                value="{{ plan.DuracionPlan if plan.DuracionPlan else '' }}"
                                required
                                minlength="3"
                                class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition">
-                        <small class="text-gray-400">Ej: 3 meses</small>
+                        <small class="text-gray-400">Ej: 3</small>
                     </div>
 
                     <!-- Precio -->
@@ -93,7 +93,7 @@
                             <span class="font-mono text-lg">{{ plan.ID_Plan }}</span>
                         </div>
                         <div class="bg-white/5 p-3 rounded">
-                            <span class="block text-gray-300 text-xs">Duración Actual</span>
+                            <span class="block text-gray-300 text-xs">Duración Actual(meses)</span>
                             <span class="font-mono text-lg">{{ plan.DuracionPlan }}</span>
                         </div>
                     </div>

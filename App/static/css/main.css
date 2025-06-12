@@ -392,9 +392,6 @@
   .mt-20 {
     margin-top: calc(var(--spacing) * 20);
   }
-  .mt-22 {
-    margin-top: calc(var(--spacing) * 22);
-  }
   .mt-\[1\.5vw\] {
     margin-top: 1.5vw;
   }
@@ -1453,6 +1450,15 @@
   .pt-\[15\%\] {
     padding-top: 15%;
   }
+  .pt-\[70px\] {
+    padding-top: 70px;
+  }
+  .pt-\[90px\] {
+    padding-top: 90px;
+  }
+  .pt-\[100px\] {
+    padding-top: 100px;
+  }
   .pt-\[150px\] {
     padding-top: 150px;
   }
@@ -2317,6 +2323,16 @@
       flex-direction: row;
     }
   }
+  .sm\:pt-\[80px\] {
+    @media (width >= 40rem) {
+      padding-top: 80px;
+    }
+  }
+  .sm\:pt-\[90px\] {
+    @media (width >= 40rem) {
+      padding-top: 90px;
+    }
+  }
   .md\:w-1\/2 {
     @media (width >= 48rem) {
       width: calc(1/2 * 100%);
@@ -2342,6 +2358,16 @@
       align-items: flex-start;
     }
   }
+  .md\:pt-\[80px\] {
+    @media (width >= 48rem) {
+      padding-top: 80px;
+    }
+  }
+  .md\:pt-\[90px\] {
+    @media (width >= 48rem) {
+      padding-top: 90px;
+    }
+  }
   .lg\:w-3\/5 {
     @media (width >= 64rem) {
       width: calc(3/5 * 100%);
@@ -2350,6 +2376,11 @@
   .lg\:flex-row {
     @media (width >= 64rem) {
       flex-direction: row;
+    }
+  }
+  .\[\&\>option\]\:text-black {
+    &>option {
+      color: var(--color-black);
     }
   }
 }
