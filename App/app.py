@@ -44,6 +44,7 @@ app.register_blueprint(compras_bp, url_prefix="/api/compras")
 app.register_blueprint(detallecompras_bp, url_prefix="/api/detallecompras")
 
 # ------------------Check-conexion-bd------------------
+
 try:
     conn = get_connection()
     conn.close()
@@ -224,6 +225,7 @@ def login():
     # si existe la session login, la devuelve y luego la borra, sino usa False
     usuario_creado = session.pop("usuario_creado", False)
     contraseña_cambiada = session.pop("contraseña_cambiada", False)
+    
     if request.method == "GET":
         return render_template(
             "auth/login.html",
@@ -231,20 +233,21 @@ def login():
             contraseña_cambiada=contraseña_cambiada,
         )
 
-    # Obtener datos del formulario
     email = request.form.get("email")
     contraseña = request.form.get("contraseña")
-    # Validaciones básicas
+
     if not email or not contraseña:
         return render_template(
             "auth/login.html", error="Email y contraseña son obligatorios."
         )
 
+    cursor = None
+    conn = None  # <-- AGREGADO
+
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        # Buscar usuario
         cursor.execute("SELECT * FROM usuarios WHERE Email = %s", (email,))
         user = cursor.fetchone()
 
@@ -254,7 +257,6 @@ def login():
         if not check_pwd(contraseña, user["Contrasenia"]):
             return render_template("auth/login.html", error="Contraseña incorrecta.")
 
-        # Crear objeto User y loguear
         usuario = User(
             user["ID_usuario"],
             user["Nombre"],
@@ -267,11 +269,10 @@ def login():
             user["ID_rol"],
         )
         login_user(usuario)
-
-        # Guardar en session si querés mostrar algo en el home
         session["login"] = True
 
         return redirect("/")
+
     except Exception as ex:
         return render_template(
             "auth/login.html", error="Error en el servidor. Intentalo más tarde."

@@ -98,8 +98,8 @@ def post_producto():
         "Codigo": str,
         "Cantidad": int,
         "Precio": int,
-        "Categoria": str
-        "Imagen": str  
+        "Categoria": str,
+        "Imagen": str,
     }
 
 
@@ -168,7 +168,7 @@ def put_producto(id):
         "Codigo": str,
         "Cantidad": int,
         "Precio": int,
-        "Categoria": str
+        "Categoria": str,
         "Imagen": str
     }
 
