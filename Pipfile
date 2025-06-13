@@ -13,6 +13,7 @@ mysql-connector-python = "*"
 flask = "*"
 requests = "*"
 flask-login = "*"
+werkzeug = "*"
 
 [dev-packages]
 

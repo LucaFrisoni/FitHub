@@ -1,105 +1,42 @@
 {% extends "base.html" %} {% block content %}
-<div class="px-[80px] pt-[150px]">
-  <!-- toast -->
-  {% if error %}
-  <div
-    id="alert-login"
-    role="alert"
-    class="fixed bottom-4 right-4 mb-4 flex w-fit p-3 text-sm text-white bg-red-500 rounded-md z-10"
-  >
-    <div class="flex items-center justify-center">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-8 w-8 p-1 shrink-0 stroke-current"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
-      <p class="font-bold pr-6">{{ error }}</p>
-      <button
-        id="button_alert_login"
-        class="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute right-1"
-        type="button"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          class="h-5 w-5"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M6 18L18 6M6 6l12 12"
-          ></path>
-        </svg>
-      </button>
-    </div>
-  </div>
+<div class="px-[30px] sm:px-[80px] pt-[150px]">
+  <!-- toasts -->
 
-  {% endif %} {% if usuario_editado %}
-  <div
-    id="alert-login"
-    role="alert"
-    class="fixed bottom-4 right-4 mb-4 flex w-fit p-3 text-sm text-white bg-emerald-500 rounded-md z-10"
-  >
-    <div class="flex items-center justify-center">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-8 w-8 p-1 shrink-0 stroke-current"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
-      <p class="font-bold pr-6">Usuario editado exitosamente</p>
-      <button
-        id="button_alert_login"
-        class="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute right-1"
-        type="button"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          class="h-5 w-5"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M6 18L18 6M6 6l12 12"
-          ></path>
-        </svg>
-      </button>
-    </div>
-  </div>
-
-  {% endif %}
+  {% if error %} {% include "components/toasts/error.html" %} {% endif %}
+  <div></div>
+  {% if toast_exitoso %} {% include "components/toasts/exito.html" %} {%endif %}
 
   <!-- User header -->
-  <div class="flex justify-between pb-[24px]">
+  <div class="bp-user_profile:flex justify-between pb-[24px] w-full">
     <!-- image y titulos -->
     <div class="flex gap-x-6 items-center">
-      <img
-        src="https://docs.material-tailwind.com/img/face-2.jpg"
-        alt="avatar"
-        class="relative inline-block h-30 w-30 !rounded-full object-cover object-center shadow-2xl"
-      />
+      <div class="relative group h-[120px] w-[120px]">
+        <img
+          src="{% if user['imagen'] %}
+          {{ url_for('static', filename='images/uploads/perfil/' ~ user['imagen']) }}
+        {% else %}
+          {{ url_for('static', filename='images/default_user.png') }}
+        {% endif %}"
+          alt="avatar"
+          class="h-full w-full rounded-full object-cover object-center shadow-2xl transition duration-300 group-hover:brightness-75"
+        />
+        <!-- Lápiz -->
+        <div
+          class="absolute bottom-[-12px] left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition duration-300"
+        >
+          <button
+            onclick="abrirModal()"
+            class="bg-white shadow-md p-1 rounded-full hover:bg-gray-100 hover:cursor-pointer"
+          >
+            <!-- Ícono de lápiz -->
+            <img
+              src="{{ url_for('static',filename='images/lapiz_icono.png')}}"
+              class="w-[23px] h-[23xp]"
+            />
+          </button>
+        </div>
+      </div>
+
       <div class="flex flex-col gap-y-1.5">
         <p class="font-bold text-2xl">
           {{ user["nombre"] }} {{ user["apellido"] }}
@@ -109,20 +46,21 @@
       </div>
     </div>
     <!-- botones -->
-    <div class="flex gap-x-2">
+    <div class="gap-x-2 flex mt-10">
       <div class="flex items-center justify-center">
         <button
           id="editar_perfil"
           type="button"
-          class="opacity-100 scale-100 cursor-pointer p-3 px-5 bg-black font-bold text-stone-100 rounded-xl shadow-md hover:bg-black/85 hover:shadow-lg transition duration-300 ease-in-out"
+          class="opacity-100 scale-100 cursor-pointer py-2 px-3 sm:py-3 sm:px-5 bg-black font-bold text-stone-100 rounded-xl shadow-md hover:bg-black/85 hover:shadow-lg transition duration-300 ease-in-out"
         >
           Editar Pefil
         </button>
       </div>
-      <div class="flex items-center justify-center pr-10">
+      <div class="flex items-center justify-center mr-10">
         <button
+          onclick="abrirModal()"
           type="button"
-          class="cursor-pointer p-3 px-5 ml-6 bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition"
+          class="cursor-pointer py-2 px-3 sm:py-3 sm:px-5 ml-6 bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition"
         >
           Cambiar foto
         </button>
@@ -134,11 +72,10 @@
 
   <form action="{{ url_for('user') }}" method="POST">
     <!-- UserBio -->
-
     <div>
-      <div class="flex w-full justify-between">
+      <div class="sm:flex-row w-full justify-between flex flex-col">
         <!-- 1 -->
-        <div class="w-full max-w-[800px] min-w-[300px]">
+        <div class="w-full max-w-[800px] min-w-[200px]">
           <label class="block mb-2 text-sm text-black font-bold">Nombre</label>
           <div class="relative">
             <input
@@ -158,7 +95,9 @@
           </div>
         </div>
         <!-- 2 -->
-        <div class="w-full max-w-[800px] min-w-[200px] pl-[40px]">
+        <div
+          class="w-full max-w-[800px] min-w-[200px] sm:ml-[40px] sm:mt-0 mt-6"
+        >
           <label class="block mb-2 text-sm text-black font-bold">
             Apellido
           </label>
@@ -181,7 +120,7 @@
         </div>
       </div>
       <!-- 3 -->
-      <div class="w-full py-[24px]">
+      <div class="w-full my-6">
         <div class="w-full min-w-[200px]">
           <label class="block mb-2 text-sm text-black font-bold">
             Usuario
@@ -208,9 +147,9 @@
     <hr class="pb-[24px]" />
     <!-- User datos -->
     <div>
-      <div class="flex w-full justify-between">
+      <div class="sm:flex-row w-full justify-between flex flex-col">
         <!-- 1 -->
-        <div class="w-full max-w-[800px] min-w-[300px]">
+        <div class="w-full max-w-[800px] min-w-[200px]">
           <label class="block mb-2 text-sm text-black font-bold">
             Direccion Email
           </label>
@@ -238,7 +177,9 @@
           </div>
         </div>
         <!-- 2 -->
-        <div class="w-full max-w-[800px] min-w-[300px] pl-[40px]">
+        <div
+          class="w-full max-w-[800px] min-w-[200px] sm:ml-[40px] sm:mt-0 mt-6"
+        >
           <label class="block mb-2 text-sm text-black font-bold">
             Numero de telefono
           </label>
@@ -268,7 +209,7 @@
         </div>
       </div>
       <!-- 3 -->
-      <div class="w-full py-[24px]">
+      <div class="w-full my-6">
         <div class="w-full min-w-[200px]">
           <label class="block mb-2 text-sm text-black font-bold">
             Fecha de Nacimiento
@@ -305,7 +246,7 @@
         <button
           id="cancelar_perfil"
           type="button"
-          class="opacity-0 scale-95 pointer-none: cursor-pointer p-3 px-8 bg-black font-bold text-stone-100 rounded-xl shadow-md hover:bg-black/85 hover:shadow-lg transition duration-300 ease-in-out"
+          class="opacity-0 scale-95 pointer-none: cursor-pointer py-2 px-3 sm:py-3 sm:px-5 bg-black font-bold text-stone-100 rounded-xl shadow-md hover:bg-black/85 hover:shadow-lg transition duration-300 ease-in-out"
         >
           Cancelar
         </button>
@@ -315,7 +256,7 @@
         <button
           id="guardar_perfil"
           type="submit"
-          class="opacity-0 scale-95 pointer-none: cursor-pointer p-3 px-8 ml-6 bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition duration-300 ease-in-out"
+          class="opacity-0 scale-95 pointer-none: cursor-pointer py-2 px-3 sm:py-3 sm:px-5 ml-6 bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition duration-300 ease-in-out"
         >
           Guardar
         </button>
@@ -457,6 +398,8 @@
       </button>
     </div>
   </div>
+  <!-- Modal subir foto -->
+  {% include "components/modales/modal_user_profile.html" %}
 </div>
 
 {% endblock %}
