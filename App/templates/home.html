@@ -72,11 +72,11 @@
       <img
         src="{{ url_for('static', filename='images/home2.png') }}"
         alt="Home2 deberia ir aca..."
-        class="min-w-[33%] max-h-[43%]"
+        class="w-[35vw] h-[16vw] min-w-[640px] min-h-[291px] hover:translate-y-[-0.2vw] transition"
       />
 
       <p
-        class="text-stone-100 text-[150%] max-w-[50%] pt-[1.5%] pb-[1.8%] text-center"
+        class="text-stone-100 text-[clamp(1.2rem,1.25vw,1.25vw)] max-w-[50%] pt-[1.5vw] pb-[2vw] text-center "
       >
       En Fithub, el entrenamiento no es un reto ni una meta a corto plazo. Creemos que superarse día a día y mejorar 
       la salud a través del deporte debe ser parte natural de tu rutina. Por eso, nos enfocamos en ayudarte a
@@ -91,7 +91,7 @@
         <a class="w-[12.5%]" href="#HISTORIA">
           <button
             type="button"
-            class="w-full h-[130%] text-[200%] rounded-xl shadow-sm cursor-pointer bg-transparent border-[5px] border-black box-border font-bold text-stone-100 hover:bg-black transition"
+            class="w-[12.5vw] h-[4vw] min-w-[120px] min-h-[65px] text-[clamp(1.2rem,1.8vw,1.8vw)] rounded-xl shadow-sm cursor-pointer bg-transparent border-[5px] border-black box-border font-bold text-stone-100 hover:bg-black transition"
           >
             Saber mas
           </button>
@@ -99,7 +99,7 @@
         <a class="w-[12.5%]" href="{{ url_for('registro') }}">
           <button
             type="button"
-            class="w-full h-[130%] text-[200%] rounded-xl shadow-sm cursor-pointer bg-primary border-[5px] border-primary box-border font-bold text-black hover:bg-secondary transition hover:border-secondary"
+            class="w-[12.5vw] h-[4vw] min-w-[120px] min-h-[65px] text-[clamp(1.2rem,1.8vw,1.8vw)] rounded-xl shadow-sm cursor-pointer bg-primary border-[5px] border-primary box-border font-bold text-black hover:bg-secondary transition hover:border-secondary"
           >
             Unirme ya
           </button>
@@ -224,7 +224,7 @@
 
   <!-- - - - -///SECCION PLANES///- - - - -->
 
-  <section class="pt-[15%] flex relative w-full px-[10vw]">
+  <section class="pt-[15%] flex relative w-full px-[10vw] justify-center">
     <!-- Texto -->
     <article class="flex flex-col pt-[10%]">
       <div class="absolute z-5 translate-y-[-14vw] translate-x-[5vw]">
@@ -340,31 +340,117 @@
     </article>
   </section>
 
+<!-- - - - -///VENTAS///- - - - -->
+<section class="pt-[15%] flex flex-col relative w-full px-[10vw] items-center justify-center">
+
+  <div class="flex bg-stone-700 w-[50vw] h-[45vw] rounded-[2%] shadow-pr justify-center items-center z-0">
+        <!-- Texto absolute FUERA del cuadro -->
+    <h2 class="absolute  translate-x-[-12vw] translate-y-[-20.5vw] text-[1.4vw] text-black italic font-bold z-20 text-center">
+      Probaste de todo para mejorar...
+    </h2>
+
+    <!-- Cuadro central -->
+    <div class="relative flex flex-col bg-stone-300 w-[48vw] h-[43vw] rounded-[2%] justify-center z-0 px-[2vw] py-[2vw] 
+                items-center mx-auto"
+        style="background-image: url('{{ url_for('static', filename='images/home4.jpeg') }}'); background-size: cover; background-position: center;">
+        <div class=" absolute flex bg-stone-300/90 rounded-[2%] justify-center z-0 px-[2vw] py-[2vw] w-[100%] h-[100%] items-center mx-auto"></div>
+
+      <div class="flex flex-col h-full w-full justify-between gap-[2vw] items-center">
+
+        <!-- Título -->
+        <h1 id="titulo-animado"
+            class="leading-none text-[4vw] text-primary font-bold text-center
+                  [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
+          ¿PERO AUN NO * LO CONSEGUIS?
+        </h1>
+
+        <!-- Recuadro de productos -->
+        <div class="flex bg-stone-200 w-[85%] h-[65%] rounded-[2%] justify-center items-center z-1">
+          <div class="flex relative w-[100%] h-[100%] mx-auto overflow-hidden rounded-[2%] items-center justrify-center">
+
+            <!-- Contenedor de las imágenes -->
+            <a href="{{ url_for('tienda') }}" id="carrusel" class="flex transition-transform duration-500 ease-in-out">
+              <img src="{{ url_for('static', filename='images/slide1.png') }}" />
+              <img src="{{ url_for('static', filename='images/slide2.png') }}" />
+              <img src="{{ url_for('static', filename='images/slide3.png') }}" />
+            </a>
+           <!-- Contenedor de las imágenes FIN -->
+          </div>
+            <!-- Botones -->
+            <button onclick="prevSlide()" class="absolute translate-x-[-20.5vw] top-1/2 -translate-y-1 cursor-pointer p-3 ml-6 bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition">
+              ‹
+            </button>
+            <button onclick="nextSlide()" class="absolute translate-x-[19.3vw] top-1/2 -translate-y-1 cursor-pointer p-3 ml-6 bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition">
+              ›
+            </button>
+        </div>
+
+        <!-- Botón -->
+        <a href="{{ url_for('tienda') }}"
+          class="h-[3.5vw] w-[13vw] text-[1.7vw] rounded-xl shadow-sm cursor-pointer z-1
+                  bg-primary border-[5px] border-primary box-border font-bold text-black
+                  hover:bg-secondary hover:border-secondary transition flex items-center justify-center">
+          Ver productos
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+</section>
+<!-- - - - -///VENTAS///- - - - -->
+
+
   <!-- - - - -///Mapa///- - - - -->
   <section
-    class="pt-[15%] flex flex-col relative w-full px-[10vw] items-center justify-center pb-[8vw]"
+    class="pt-[15vw] flex flex-col  w-full px-[10vw] items-center justify-between gap-2 pb-[8vw]"
   >
-    <h1
-      class="leading-none text-[6vw] drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary font-bold"
-    >
-      Visitanos!
-    </h1>
 
-    <div
-      class="flex bg-stone-700 w-[35vw] h-[30vw] rounded-[2%] shadow-pr justify-center items-center"
-    >
-      <a
-        href="https://www.google.com.ar/maps/place/fithub+Parque+93/@4.6759321,-74.0506914,16.46z/data=!4m6!3m5!1s0x8e3f9b650a130811:0x4d4df635bf5ce1a2!8m2!3d4.6759089!4d-74.0473958!16s%2Fg%2F11px0vcnkv?hl=es&entry=ttu&g_ep=EgoyMDI1MDYwMi4wIKXMDSoASAFQAw%3D%3D"
-        class="w-[95%] h-[95%]"
-        target="_blank"
-      >
-        <div
-          class="flex w-full h-full rounded-[2%] bg-cover bg-center"
-          style="background-image: url('{{ url_for('static', filename='images/mapa.png') }}');"
-          title="Mapa debería ir acá..."
-        ></div>
-      </a>
+    <div class="group justify-center items-center">
+          <!-- Texto -->
+      <h2 class="leading-none text-[2vw] mix-blend-darken text-center [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-black font-bold mb-[2vw]
+        translate-y-[1.5vw] group-hover:translate-y-[-3.5vw] transition-all duration-500 ease-in-out">
+        Que esperas...
+      </h2>
+      <h1 class="mt-[-9vw] absolute group-hover:translate-y-[2vw] left-1/2 translate-x-[-50%] translate-y-[100%] transition-all duration-500 ease-in-out text-[5vw] 
+      text-primary font-bold [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] ">
+        ¡Visitanos!
+      </h1>
+      <!-- Texto FIN -->
+
+
+      <!-- Cuadro -->
+      <div class="flex relative group transition-all ease-in-out duration-500 bg-stone-700 w-[35vw] h-[30vw] rounded-[2%] shadow-pr justify-center 
+       items-center group-hover:bg-primary">
+
+          <div class="flex absolute transition-all ease-in-out duration-500  bg-stone-700 w-[10vw] h-[4vw] rounded-[10%] shadow-pr justify-center 
+          items-center group-hover:bg-primary translate-x-[-11.5vw] group-hover:translate-x-[-21.5vw]">
+          <p class="text-center text-stone-100 text-[0.9vw] group-hover:text-black ransition-all ease-in-out duration-500 font-bold"> Argentina, CABA, Av. Sta Fe, 3223 </p>
+          </div>
+
+        <!-- Mapa -->
+        <a
+          href="https://www.google.com.ar/maps/place/fithub+Parque+93/@4.6759321,-74.0506914,16.46z/data=!4m6!3m5!1s0x8e3f9b650a130811:0x4d4df635bf5ce1a2!8m2!3d4.6759089!4d-74.0473958!16s%2Fg%2F11px0vcnkv?hl=es&entry=ttu&g_ep=EgoyMDI1MDYwMi4wIKXMDSoASAFQAw%3D%3D"
+          class="w-[95%] h-[95%] z-10"
+          target="_blank"
+        >
+          <div
+            class="flex w-full h-full rounded-[2%] bg-cover bg-center"
+            style="background-image: url('{{ url_for('static', filename='images/mapa.png') }}');"
+            title="Mapa debería ir acá..."
+          ></div>
+        </a>
+        <!-- Mapa FIN -->
+      </div>
     </div>
-  </section>
-</div>
+    <!-- Cuadro -->
+
+</section>
+<!-- - - - -///Mapa FIN///- - - - -->
+
+
+<!-- - - - -///SCRIPTS///- - - - -->
+<script src="{{ url_for('static', filename='scripts.js') }}"></script>
+<!-- - - - -///SCRIPTS FIN///- - - - -->
+
 {% endblock %}
