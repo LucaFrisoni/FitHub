@@ -1,27 +1,13 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} 
+{% block content %}
 
-<div
-  class="min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-white pt-24 px-6"
->
+<div class="min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-white pt-24 px-6">
   <div class="max-w-2xl mx-auto pb-20">
     <!-- Header -->
     <div class="flex items-center mb-8 mt-20">
-      <a
-        href="{{ url_for('admin_planes') }}"
-        class="mr-4 bg-white/10 hover:bg-white/20 p-2 rounded-lg transition"
-      >
-        <svg
-          class="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 19l-7-7 7-7"
-          ></path>
+      <a href="{{ url_for('admin_planes') }}" class="mr-4 bg-white/10 hover:bg-white/20 p-2 rounded-lg transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
       </a>
       <div>
@@ -33,19 +19,48 @@
     <!-- Formulario -->
     <div class="bg-white/10 backdrop-blur-sm rounded-lg p-8">
       {% if error %}
-      <div
-        class="bg-red-500/20 border border-red-500 text-red-100 px-4 py-3 rounded mb-6"
-      >
+      <div class="bg-red-500/20 border border-red-500 text-red-100 px-4 py-3 rounded mb-6">
         <strong>Error:</strong> {{ error }}
       </div>
       {% endif %}
 
-      <form method="POST" class="space-y-6">
+      <form method="POST" class="space-y-6" enctype="multipart/form-data">
+        <!-- Sección de imagen (similar a user.html) -->
+        <div class="flex justify-between pb-[24px] w-full">
+          <div class="flex gap-x-6 items-center">
+            <div class="relative group h-[120px] w-[120px]">
+              <img
+                id="preview-imagen-principal"
+                src="{{ url_for('static', filename='images/default_plan.png') }}"
+                alt="Imagen del plan"
+                class="h-full w-full rounded-lg object-cover object-center shadow-2xl transition duration-300 group-hover:brightness-75"
+              />
+              <div class="absolute bottom-[-12px] left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition duration-300">
+                <button
+                  type="button"
+                  onclick="abrirModalPlan()"
+                  class="bg-white shadow-md p-1 rounded-full hover:bg-gray-100 hover:cursor-pointer"
+                >
+                  <img
+                    src="{{ url_for('static',filename='images/lapiz_icono.png')}}"
+                    class="w-[23px] h-[23px]"
+                  />
+                </button>
+              </div>
+            </div>
+            <div class="flex flex-col gap-y-1.5">
+              <p class="font-bold text-2xl">Imagen del Plan</p>
+              <p class="text-primary font-bold text-sm">Recomendado: 500x500px</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campo oculto para el nombre de la imagen -->
+        <input type="hidden" id="nombre_imagen_plan" name="imagen" value="default_plan.png">
+
         <!-- Descripción -->
         <div>
-          <label for="descripcion" class="block text-sm font-medium mb-2"
-            >Descripción del Plan</label
-          >
+          <label for="descripcion" class="block text-sm font-medium mb-2">Descripción del Plan</label>
           <textarea
             id="descripcion"
             name="descripcion"
@@ -56,24 +71,24 @@
           ></textarea>
         </div>
 
-                <!-- Duración y Precio en fila -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Duración -->
-                    <div>
-                        <label for="duracion" class="block text-sm font-medium mb-2">Duración del Plan (meses)</label>
-                        <input type="number" 
-                               id="duracion" 
-                               name="duracion" 
-                               required
-                               class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                               placeholder="Ej: 3">
-                    </div>
+        <!-- Duración y Precio en fila -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Duración -->
+          <div>
+            <label for="duracion" class="block text-sm font-medium mb-2">Duración del Plan (meses)</label>
+            <input 
+              type="number" 
+              id="duracion" 
+              name="duracion" 
+              required
+              class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+              placeholder="Ej: 3"
+            >
+          </div>
 
           <!-- Precio -->
           <div>
-            <label for="precio" class="block text-sm font-medium mb-2"
-              >Precio ($)</label
-            >
+            <label for="precio" class="block text-sm font-medium mb-2">Precio ($)</label>
             <input
               type="number"
               id="precio"
@@ -82,7 +97,7 @@
               required
               class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
               placeholder="0"
-            />
+            >
           </div>
         </div>
 
@@ -105,5 +120,8 @@
     </div>
   </div>
 </div>
+
+<!-- Incluimos el modal para la imagen del plan -->
+{% include "components/modales/modal_plan_image.html" %}
 
 {% endblock %}

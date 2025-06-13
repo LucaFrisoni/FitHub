@@ -102,7 +102,6 @@ def post_producto():
         "Imagen": str  
     }
 
-
     missing = [r for r in required if r not in body]
     if missing:
         return jsonify({"error": "Campos faltantes", "missing": missing}), 400
@@ -126,18 +125,17 @@ def post_producto():
 
         cursor.execute(
             """
-
-            INSERT INTO productos (Nombre, Descripcion, Codigo, Cantidad, Precio, Categoria, Imagen)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO productos (Nombre, Categoria, Descripcion, Codigo, Imagen, Cantidad, Precio)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
             """,
             (
                 body["Nombre"],
+                body["Categoria"],
                 body["Descripcion"],
                 body["Codigo"],
+                body["Imagen"],
                 body["Cantidad"],
-                body["Precio"],
-                body["Categoria"],
-                body["Imagen"]
+                body["Precio"]
             ),
         )
 
@@ -200,20 +198,25 @@ def put_producto(id):
         if cursor.fetchone():
             return jsonify({"error": "El código ya existe en otro producto"}), 409
 
-        set_clauses = []
-        params = []
-        for field in required:
-            set_clauses.append(f"{field} = %s")
-            params.append(body[field])
-        params.append(id)
-
-        query = f"""
+        cursor.execute(
+            """
             UPDATE productos
-            SET {', '.join(set_clauses)}
+            SET Nombre = %s, Categoria = %s, Descripcion = %s, Codigo = %s, 
+                Imagen = %s, Cantidad = %s, Precio = %s
             WHERE ID_producto = %s
-        """
-
-        cursor.execute(query, params)
+            """,
+            (
+                body["Nombre"],
+                body["Categoria"],
+                body["Descripcion"],
+                body["Codigo"],
+                body["Imagen"],
+                body["Cantidad"],
+                body["Precio"],
+                id
+            )
+        )
+        
         conn.commit()
 
         if cursor.rowcount == 0:

@@ -45,7 +45,40 @@
       </div>
       {% endif %}
 
-      <form method="POST" class="space-y-6" id="form-editar">
+      <form method="POST" class="space-y-6" id="form-editar" enctype="multipart/form-data">
+        <!-- Sección de imagen -->
+        <div class="flex justify-between pb-[24px] w-full">
+          <div class="flex gap-x-6 items-center">
+            <div class="relative group h-[120px] w-[120px]">
+              <img
+                id="preview-imagen-principal"
+                src="{% if plan.Imagen and plan.Imagen != 'default_plan.png' %}{{ url_for('static', filename='images/uploads/planes/' + plan.Imagen) }}{% else %}{{ url_for('static', filename='images/default_plan.png') }}{% endif %}"
+                alt="Imagen del plan"
+                class="h-full w-full rounded-lg object-cover object-center shadow-2xl transition duration-300 group-hover:brightness-75"
+              />
+              <div class="absolute bottom-[-12px] left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition duration-300">
+                <button
+                  type="button"
+                  onclick="abrirModalPlan()"
+                  class="bg-white shadow-md p-1 rounded-full hover:bg-gray-100 hover:cursor-pointer"
+                >
+                  <img
+                    src="{{ url_for('static',filename='images/lapiz_icono.png')}}"
+                    class="w-[23px] h-[23px]"
+                  />
+                </button>
+              </div>
+            </div>
+            <div class="flex flex-col gap-y-1.5">
+              <p class="font-bold text-2xl">Imagen del Plan</p>
+              <p class="text-primary font-bold text-sm">Recomendado: 500x500px</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campo oculto para el nombre de la imagen -->
+        <input type="hidden" id="nombre_imagen_plan" name="imagen" value="{{ plan.Imagen if plan.Imagen else 'default_plan.png' }}">
+
         <!-- Descripción -->
         <div>
           <label for="descripcion" class="block text-sm font-medium mb-2">
@@ -58,28 +91,26 @@
             required
             minlength="10"
             class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none"
-          >
-{{ plan.Descripcion if plan.Descripcion else '' }}</textarea
-          >
+          >{{ plan.Descripcion if plan.Descripcion else '' }}</textarea>
           <small class="text-gray-400">Mínimo 10 caracteres</small>
         </div>
 
-                <!-- Duración y Precio en fila -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Duración -->
-                    <div>
-                        <label for="duracion" class="block text-sm font-medium mb-2">
-                            Duración (meses) <span class="text-red-400">*</span>
-                        </label>
-                        <input type="number" 
-                               id="duracion" 
-                               name="duracion" 
-                               value="{{ plan.DuracionPlan if plan.DuracionPlan else '' }}"
-                               required
-                               minlength="3"
-                               class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition">
-                        <small class="text-gray-400">Ej: 3</small>
-                    </div>
+        <!-- Duración y Precio en fila -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Duración -->
+          <div>
+            <label for="duracion" class="block text-sm font-medium mb-2">
+              Duración (meses) <span class="text-red-400">*</span>
+            </label>
+            <input type="number" 
+                   id="duracion" 
+                   name="duracion" 
+                   value="{{ plan.DuracionPlan if plan.DuracionPlan else '' }}"
+                   required
+                   min="1"
+                   class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition">
+            <small class="text-gray-400">Ej: 3</small>
+          </div>
 
           <!-- Precio -->
           <div>
@@ -100,25 +131,25 @@
           </div>
         </div>
 
-                <!-- Información adicional -->
-                <div class="bg-white/5 rounded-lg p-4">
-                    <h3 class="font-semibold mb-3 flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Información del Plan
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div class="bg-white/5 p-3 rounded">
-                            <span class="block text-gray-300 text-xs">ID</span>
-                            <span class="font-mono text-lg">{{ plan.ID_Plan }}</span>
-                        </div>
-                        <div class="bg-white/5 p-3 rounded">
-                            <span class="block text-gray-300 text-xs">Duración Actual(meses)</span>
-                            <span class="font-mono text-lg">{{ plan.DuracionPlan }}</span>
-                        </div>
-                    </div>
-                </div>
+        <!-- Información adicional -->
+        <div class="bg-white/5 rounded-lg p-4">
+          <h3 class="font-semibold mb-3 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Información del Plan
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div class="bg-white/5 p-3 rounded">
+              <span class="block text-gray-300 text-xs">ID</span>
+              <span class="font-mono text-lg">{{ plan.ID_Plan }}</span>
+            </div>
+            <div class="bg-white/5 p-3 rounded">
+              <span class="block text-gray-300 text-xs">Duración Actual(meses)</span>
+              <span class="font-mono text-lg">{{ plan.DuracionPlan }}</span>
+            </div>
+          </div>
+        </div>
 
         <!-- Botones -->
         <div class="flex justify-end space-x-4 pt-6 border-t border-white/10">
@@ -166,7 +197,189 @@
   </div>
 </div>
 
+<!-- Modal para subir imagen del plan -->
+<div
+  id="modal-imagen-plan"
+  class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50"
+>
+  <div class="bg-white rounded-lg p-6 max-w-md mx-4">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+      Cambiar imagen del plan
+    </h3>
+    <div class="flex flex-col justify-center items-center space-y-8">
+      <!-- Preview -->
+      <img
+        id="preview-imagen-plan"
+        src="{% if plan.Imagen and plan.Imagen != 'default_plan.png' %}{{ url_for('static', filename='images/uploads/planes/' + plan.Imagen) }}{% else %}{{ url_for('static', filename='images/default_plan.png') }}{% endif %}"
+        alt="Vista previa"
+        class="h-32 w-32 rounded-lg object-cover shadow"
+      />
+
+      <form
+        id="form-subir-imagen-plan"
+        method="POST"
+        enctype="multipart/form-data"
+        action="{{ url_for('subir_imagen_plan') }}"
+      >
+        <input
+          id="imagen_plan_prev"
+          type="file"
+          name="foto"
+          accept=".jpg,.jpeg,.png"
+          onchange="previewFotoPlan(this)"
+          class="mb-4 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/85"
+          required
+        />
+
+        <!-- Loader oculto por defecto -->
+        <div id="loader" class="hidden justify-center items-center">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <span class="ml-2 text-gray-600">Subiendo imagen...</span>
+        </div>
+
+        <!-- Formatos aceptados -->
+        <div id="format-plan" class="flex justify-center w-full">
+          <p class="text-stone-400 text-sm">
+            Solo se aceptan formatos:
+            <span class="font-bold text-stone-400 text-sm">jpg, jpeg, png</span>
+          </p>
+        </div>
+
+        <div class="flex justify-end space-x-3 mt-6">
+          <button
+            type="button"
+            onclick="cerrarModalPlan()"
+            class="px-4 py-2 text-white bg-black hover:bg-black/85 transition cursor-pointer rounded-lg"
+          >
+            Cancelar
+          </button>
+          <button
+            id="btn-submit-plan"
+            type="submit"
+            class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/85 transition cursor-pointer"
+          >
+            Subir
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>
+  // Imagen actual del plan para restaurar al cerrar el modal
+  const previewOriginalPlan = "{% if plan.Imagen and plan.Imagen != 'default_plan.png' %}{{ url_for('static', filename='images/uploads/planes/' + plan.Imagen) }}{% else %}{{ url_for('static', filename='images/default_plan.png') }}{% endif %}";
+
+  document
+    .getElementById("form-subir-imagen-plan")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+      
+      // Mostrar loader
+      mostrarLoaderPlan();
+      
+      const formData = new FormData(this);
+      
+      fetch(this.action, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          // Actualizar vista previa principal
+          const previewPrincipal = document.getElementById("preview-imagen-principal");
+          if (previewPrincipal) {
+            previewPrincipal.src = data.url;
+          }
+          
+          // Actualizar campo oculto con el nombre de la imagen
+          const hiddenInput = document.getElementById("nombre_imagen_plan");
+          if (hiddenInput) {
+            hiddenInput.value = data.filename;
+          }
+          
+          // Cerrar modal
+          cerrarModalPlan();
+          
+          // Marcar que el formulario ha cambiado
+          formChanged = true;
+          
+          console.log("Imagen subida correctamente");
+        } else {
+          alert('Error: ' + (data.error || 'Error desconocido'));
+          ocultarLoaderPlan();
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error al subir la imagen: ' + error.message);
+        ocultarLoaderPlan();
+      });
+    });
+
+  function mostrarLoaderPlan() {
+    document.getElementById("loader").classList.add("flex");
+    document.getElementById("loader").classList.remove("hidden");
+
+    document.getElementById("btn-submit-plan").disabled = true;
+
+    document.getElementById("format-plan").classList.remove("flex");
+    document.getElementById("format-plan").classList.add("hidden");
+
+    document.getElementById("imagen_plan_prev").classList.add("hidden");
+  }
+
+  function ocultarLoaderPlan() {
+    document.getElementById("loader").classList.add("hidden");
+    document.getElementById("loader").classList.remove("flex");
+
+    document.getElementById("btn-submit-plan").disabled = false;
+
+    document.getElementById("format-plan").classList.add("flex");
+    document.getElementById("format-plan").classList.remove("hidden");
+
+    document.getElementById("imagen_plan_prev").classList.remove("hidden");
+  }
+
+  function abrirModalPlan() {
+    document.getElementById("modal-imagen-plan").classList.add("flex");
+    document.getElementById("modal-imagen-plan").classList.remove("hidden");
+    
+    // Resetear el preview del modal a la imagen actual
+    document.getElementById("preview-imagen-plan").src = previewOriginalPlan;
+  }
+
+  function previewFotoPlan(input) {
+    const preview = document.getElementById("preview-imagen-plan");
+    const file = input.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function cerrarModalPlan() {
+    document.getElementById("modal-imagen-plan").classList.add("hidden");
+    document.getElementById("modal-imagen-plan").classList.remove("flex");
+
+    // Restaurar vista previa a la imagen actual del plan
+    document.getElementById("preview-imagen-plan").src = previewOriginalPlan;
+    document.getElementById("form-subir-imagen-plan").reset();
+    
+    // Asegurar que el loader está oculto
+    ocultarLoaderPlan();
+  }
+
   // Validación en tiempo real
   document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("form-editar");
@@ -184,9 +397,9 @@
       }
 
       // Validar duración
-      const duracion = document.getElementById("duracion").value.trim();
-      if (!duracion || duracion.length < 3) {
-        errors.push("La duración debe tener al menos 3 caracteres");
+      const duracion = parseInt(document.getElementById("duracion").value);
+      if (isNaN(duracion) || duracion < 1) {
+        errors.push("La duración debe ser un número válido mayor a 0");
         isValid = false;
       }
 
