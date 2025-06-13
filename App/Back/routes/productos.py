@@ -99,7 +99,7 @@ def post_producto():
         "Cantidad": int,
         "Precio": int,
         "Categoria": str,
-        "Imagen": str,
+        "Imagen": str  
     }
 
 
