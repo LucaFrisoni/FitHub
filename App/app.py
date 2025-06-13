@@ -56,6 +56,7 @@ app.register_blueprint(compras_bp, url_prefix="/api/compras")
 app.register_blueprint(detallecompras_bp, url_prefix="/api/detallecompras")
 
 # ------------------Check-conexion-bd------------------
+
 try:
     conn = get_connection()
     conn.close()
@@ -323,17 +324,19 @@ def login():
     # Obtener datos del formulario
     email = request.form.get("email")
     contraseña = request.form.get("contraseña")
-    # Validaciones básicas
+
     if not email or not contraseña:
         return render_template(
             "auth/login.html", error="Email y contraseña son obligatorios."
         )
 
+    cursor = None
+    conn = None  # <-- AGREGADO
+
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        # Buscar usuario
         cursor.execute("SELECT * FROM usuarios WHERE Email = %s", (email,))
         user = cursor.fetchone()
 
@@ -343,7 +346,6 @@ def login():
         if not check_pwd(contraseña, user["Contrasenia"]):
             return render_template("auth/login.html", error="Contraseña incorrecta.")
 
-        # Crear objeto User y loguear
         usuario = User(
             user["ID_usuario"],
             user["Nombre"],
@@ -361,6 +363,7 @@ def login():
         session["toast_exitoso"] = "Login exitoso"
 
         return redirect("/")
+
     except Exception as ex:
         return render_template(
             "auth/login.html", error="Error en el servidor. Intentalo más tarde."

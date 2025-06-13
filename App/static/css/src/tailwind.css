@@ -39,4 +39,6 @@
     @apply text-yellow-400;
   }
 }
-
+html {
+  scroll-behavior: smooth;
+}
