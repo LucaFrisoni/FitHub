@@ -232,3 +232,70 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+// Funcionalidad de los checkboxes de días
+const dayCheckboxes = document.querySelectorAll('.day-checkbox');
+
+dayCheckboxes.forEach(checkbox => {
+  checkbox.addEventListener('change', function () {
+    const label = this.nextElementSibling;
+    if (this.checked) {
+      label.classList.add('bg-yellow-400', 'text-gray-800', 'font-semibold');
+      label.classList.remove('bg-white', 'text-gray-700');
+    } else {
+      label.classList.remove('bg-yellow-400', 'text-gray-800', 'font-semibold');
+      label.classList.add('bg-white', 'text-gray-700');
+    }
+  });
+});
+
+// Funcionalidad del botón reservar
+const reserveButtons = document.querySelectorAll('button');
+reserveButtons.forEach(button => {
+  if (button.textContent.trim() === 'RESERVAR') {
+    button.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      // Obtener días seleccionados
+      const selectedDays = [];
+      dayCheckboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+          selectedDays.push(checkbox.value);
+        }
+      });
+
+      // Obtener otros valores del formulario
+      const trainingType = document.querySelector('select').value;
+      const startTime = document.querySelectorAll('input[type="time"]')[0].value;
+      const endTime = document.querySelectorAll('input[type="time"]')[1].value;
+      const comments = document.querySelector('textarea').value;
+
+      if (selectedDays.length === 0) {
+        alert('Por favor selecciona al menos un día para tu reserva.');
+        return;
+      }
+
+      // Mostrar confirmación
+      const message = `¡Reserva realizada con éxito!
+             
+      Días: ${selectedDays.join(', ')}
+      Entrenamiento: ${trainingType}
+      Horario: ${startTime} - ${endTime}
+      ${comments ? 'Comentarios: ' + comments : ''}`;
+
+      alert(message);
+    });
+  }
+});
+
+// Mejorar la experiencia táctil en móviles
+const touchElements = document.querySelectorAll('.day-button, button, select, input, textarea');
+touchElements.forEach(element => {
+  element.addEventListener('touchstart', function () {
+    this.style.transform = 'scale(0.98)';
+  });
+
+  element.addEventListener('touchend', function () {
+    this.style.transform = 'scale(1)';
+  });
+});
