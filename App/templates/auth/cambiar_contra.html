@@ -10,13 +10,7 @@
   {% include "components/button/go_back.html" %}
 
   <!-- logo -->
-  <div class="flex items-center justify-center w-1/2">
-    <img
-      class="min-w-[474px] max-h-[514px]"
-      src="{{ url_for('static',filename='images/logo.png')}}"
-      alt="logo"
-    />
-  </div>
+  {% include "components/logo.html" %}
   <!-- form -->
   <div class="w-1/2 flex justify-center items-center">
     <div
@@ -134,16 +128,7 @@
           </p>
         </div>
         <!-- boton -->
-
-        <div class="flex items-center justify-center w-[70%] pt-6">
-          <button
-            id="chpw-btn"
-            type="submit"
-            class="cursor-pointer p-3 w-full bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition"
-          >
-            Continuar
-          </button>
-        </div>
+        {% include "components/button/auth.html" %}
       </form>
       <hr class="w-full text-black/20 mt-8" />
       <!-- textos -->

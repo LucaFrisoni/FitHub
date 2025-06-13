@@ -33,13 +33,18 @@ from flask_login import (
 import requests
 from werkzeug.utils import secure_filename
 
-# --------------------------------------------Rutas||Back--------------------------------------------
 app = Flask(__name__)
 
 APP_SECRET_KEY = os.getenv("APP_SECRET_KEY")
 app.secret_key = "APP_SECRET_KEY"
+# ------------------Upload Foto------------------
+UPLOAD_FOLDER_PROFILE = "static/images/uploads/perfil"
+EXTENSIONES_PERMITIDAS = {"png", "jpg", "jpeg"}
 
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER_PROFILE
 init_docs(app)
+
+# --------------------------------------------Rutas||Back--------------------------------------------
 
 
 app.register_blueprint(planes_bp, url_prefix="/api/planes")
@@ -89,20 +94,14 @@ def load_user(user_id):
     return None
 
 
-# ------------------Upload Foto------------------
-UPLOAD_FOLDER_PROFILE = "static/images/uploads/perfil"
-EXTENSIONES_PERMITIDAS = {"png", "jpg", "jpeg"}
-
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER_PROFILE
-
 # --------------------------------------------Rutas||Front--------------------------------------------
 
 
 @app.route("/")
 def home():
-    # si existe la session login, la devuelve y luego la borra, sino usa False
-    login = session.pop("login", False)
-    return render_template("home.html", login=login, user=current_user)
+    # si existe la session toast_exitoso, la devuelve y luego la borra, sino usa False
+    toast_exitoso = session.pop("toast_exitoso", False)
+    return render_template("home.html", toast_exitoso=toast_exitoso, user=current_user)
 
 
 @app.errorhandler(404)
@@ -192,13 +191,12 @@ def producto(id):
 def user():
     if request.method == "GET":
         # si existe la session login, la devuelve y luego la borra, sino usa False
-        usuario_editado = session.pop("usuario_editado", False)
-        imagen_perfil_editada = session.pop("imagen_perfil_editada", False)
+        toast_exitoso = session.pop("toast_exitoso", False)
+
         return render_template(
             "user.html",
             user=current_user,
-            usuario_editado=usuario_editado,
-            imagen_perfil_editada=imagen_perfil_editada,
+            toast_exitoso=toast_exitoso,
         )
 
     payload = {
@@ -230,7 +228,7 @@ def user():
                 usuario["ID_rol"],
             )
             # Guardar en session si querés mostrar algo en el User
-            session["usuario_editado"] = True
+            session["toast_exitoso"] = "Usuario editado"
             login_user(nuevo_usuario)
             return redirect("/user")
         else:
@@ -300,7 +298,7 @@ def subir_foto_perfil():
             )
 
             login_user(nuevo_usuario)
-            session["imagen_perfil_editada"] = True
+            session["toast_exitoso"] = "Imagen de Perfil cambiada"
             return redirect("/user")
         else:
             try:
@@ -317,15 +315,10 @@ def subir_foto_perfil():
 # ----------------------Rutas||Auth----------------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    # si existe la session login, la devuelve y luego la borra, sino usa False
-    usuario_creado = session.pop("usuario_creado", False)
-    contraseña_cambiada = session.pop("contraseña_cambiada", False)
+    # si existe la session toast_exitoso, la devuelve y luego la borra, sino usa False
+    toast_exitoso = session.pop("toast_exitoso", False)
     if request.method == "GET":
-        return render_template(
-            "auth/login.html",
-            usuario_creado=usuario_creado,
-            contraseña_cambiada=contraseña_cambiada,
-        )
+        return render_template("auth/login.html", toast_exitoso=toast_exitoso)
 
     # Obtener datos del formulario
     email = request.form.get("email")
@@ -365,7 +358,7 @@ def login():
         login_user(usuario)
 
         # Guardar en session si querés mostrar algo en el home
-        session["login"] = True
+        session["toast_exitoso"] = "Login exitoso"
 
         return redirect("/")
     except Exception as ex:
@@ -435,7 +428,7 @@ def registro():
 
         if response.status_code == 201:
             # Guardar en session si querés mostrar algo en el login
-            session["usuario_creado"] = True
+            session["toast_exitoso"] = "Usuario creado"
             return redirect("/login")
         elif response.status_code == 409:
             return render_template("auth/registro.html", error="Email ya registrado.")
@@ -495,7 +488,7 @@ def cambiarcontra():
         )
 
         if response.status_code == 200:
-            session["contraseña_cambiada"] = True
+            session["toast_exitoso"] = "Contraseña cambiada"
             return redirect("/login")
         else:
             try:

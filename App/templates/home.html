@@ -1,52 +1,7 @@
 {% extends "base.html" %} {% block content %}
 <div class="w-full h-full">
   <!-- toast -->
-  {% if login %}
-
-  <div
-    id="alert-login"
-    role="alert"
-    class="fixed bottom-4 right-4 mb-4 flex w-[10%] p-3 text-sm text-white bg-emerald-500 rounded-md z-10"
-  >
-    <div class="flex items-center justify-center">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-8 w-8 p-1 shrink-0 stroke-current"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
-      <p class="font-bold">Login exitoso</p>
-      <button
-        id="button_alert_login"
-        class="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute right-1"
-        type="button"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          class="h-5 w-5"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M6 18L18 6M6 6l12 12"
-          ></path>
-        </svg>
-      </button>
-    </div>
-  </div>
-
-  {% endif %}
+  {% if toast_exitoso %} {% include "components/toasts/exito.html" %} {%endif %}
 
   <img
     src="{{ url_for('static', filename='images/fondo.png') }}"
@@ -78,10 +33,12 @@
       <p
         class="text-stone-100 text-[150%] max-w-[50%] pt-[1.5%] pb-[1.8%] text-center"
       >
-      En Fithub, el entrenamiento no es un reto ni una meta a corto plazo. Creemos que superarse día a día y mejorar 
-      la salud a través del deporte debe ser parte natural de tu rutina. Por eso, nos enfocamos en ayudarte a
-      encontrar un estilo de vida saludable que puedas sostener en el tiempo, disfrutando el proceso, celebrando 
-      cada paso y construyendo algo que te haga sentir bien, hoy y siempre.
+        En Fithub, el entrenamiento no es un reto ni una meta a corto plazo.
+        Creemos que superarse día a día y mejorar la salud a través del deporte
+        debe ser parte natural de tu rutina. Por eso, nos enfocamos en ayudarte
+        a encontrar un estilo de vida saludable que puedas sostener en el
+        tiempo, disfrutando el proceso, celebrando cada paso y construyendo algo
+        que te haga sentir bien, hoy y siempre.
       </p>
 
       <!-- Botones -->
@@ -132,10 +89,11 @@
       <p
         class="text-[1.10vw] pt-[1%] max-w-[40vw] min-w-[40vw] line-clamp-5 overflow-x-auto"
       >
-      Desde nuestros humildes inicios en una pequeña sala equipada con pasión y dedicación, hemos crecido gracias a la confianza de nuestra comunidad. 
-      Cada persona a la cual le cambiamos su vida nos inspira a seguir 
-      innovando y mejorando para brindarte un lugar donde entrenar, 
-      conectar y crecer disfrutando del proceso.
+        Desde nuestros humildes inicios en una pequeña sala equipada con pasión
+        y dedicación, hemos crecido gracias a la confianza de nuestra comunidad.
+        Cada persona a la cual le cambiamos su vida nos inspira a seguir
+        innovando y mejorando para brindarte un lugar donde entrenar, conectar y
+        crecer disfrutando del proceso.
       </p>
     </article>
     <!-- Texto -->
@@ -258,10 +216,10 @@
             >
               <!-- PLAN 1 -->
               <div
-              class="z-5 pt-[2%] ml-[5%] hover:shadow-[inset_0_0_100px_rgba(255,255,255,0.6)] flex flex-col bg-secondary w-[27%] h-[90%] rounded-[1%] items-center overflow-hidden hover:h-[100%] transition-all duration-300"              
+                class="z-5 pt-[2%] ml-[5%] hover:shadow-[inset_0_0_100px_rgba(255,255,255,0.6)] flex flex-col bg-secondary w-[27%] h-[90%] rounded-[1%] items-center overflow-hidden hover:h-[100%] transition-all duration-300"
               >
                 <h2
-                class="leading-none m-0 pb-[15%] z-100 text-[1.5vw] font-bold text-shadow-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary"                
+                  class="leading-none m-0 pb-[15%] z-100 text-[1.5vw] font-bold text-shadow-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary"
                 >
                   BODYBUILDING
                 </h2>
@@ -270,7 +228,9 @@
                   alt="plan1 deberia ir aca..."
                   class="rounded-[2%] border-primary border-[0.3vw] h-[16.5vw] w-[16.5vw] translate-y-[-2vw]"
                 />
-                <ul class="list-disc list-outside font-semi-bold pl-8 text-gray-900 text-base text-left leading-relaxed">
+                <ul
+                  class="list-disc list-outside font-semi-bold pl-8 text-gray-900 text-base text-left leading-relaxed"
+                >
                   <li>Rutina de entrenamiento</li>
                   <li>Plan de alimentación</li>
                   <li>Videos con la técnica de todos los ejercicios</li>
@@ -282,10 +242,10 @@
 
               <!-- PLAN 2 -->
               <div
-              class="z-5 pt-[2%] ml-[5%] hover:shadow-[inset_0_0_100px_rgba(255,255,255,0.6)] flex flex-col bg-secondary w-[27%] h-[90%] rounded-[1%] items-center overflow-hidden hover:h-[100%] transition-all duration-300"              
+                class="z-5 pt-[2%] ml-[5%] hover:shadow-[inset_0_0_100px_rgba(255,255,255,0.6)] flex flex-col bg-secondary w-[27%] h-[90%] rounded-[1%] items-center overflow-hidden hover:h-[100%] transition-all duration-300"
               >
                 <h2
-                class="leading-none m-0 pb-[15%] z-100 text-[1.5vw] font-bold text-shadow-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary"                
+                  class="leading-none m-0 pb-[15%] z-100 text-[1.5vw] font-bold text-shadow-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary"
                 >
                   SPINNING
                 </h2>
@@ -294,21 +254,26 @@
                   alt="plan2 deberia ir aca..."
                   class="rounded-[2%] border-primary border-[0.3vw] h-[16.5vw] w-[16.5vw] translate-y-[-2vw]"
                 />
-                <ul class="list-disc list-outside font-semi-bold pl-8 text-gray-900 text-base text-left leading-relaxed">
+                <ul
+                  class="list-disc list-outside font-semi-bold pl-8 text-gray-900 text-base text-left leading-relaxed"
+                >
                   <li>Clases dinámicas semanales</li>
                   <li>Plan de alimentación</li>
-                  <li>Videos mostrando todas las posiciones correctas para andar según <br>tu postura ideal</li>
+                  <li>
+                    Videos mostrando todas las posiciones correctas para andar
+                    según <br />tu postura ideal
+                  </li>
                   <li>Programa de objetivos mensuales ajustados a tu nivel</li>
                 </ul>
-              
               </div>
               <!-- PLAN 2 FIN -->
 
               <!-- PLAN 3 -->
               <div
-              class="z-5 pt-[2%] ml-[5%] hover:shadow-[inset_0_0_100px_rgba(255,255,255,0.6)] flex flex-col bg-secondary w-[27%] h-[90%] rounded-[1%] items-center overflow-hidden hover:h-[100%] transition-all duration-300"              >
+                class="z-5 pt-[2%] ml-[5%] hover:shadow-[inset_0_0_100px_rgba(255,255,255,0.6)] flex flex-col bg-secondary w-[27%] h-[90%] rounded-[1%] items-center overflow-hidden hover:h-[100%] transition-all duration-300"
+              >
                 <h2
-                class="leading-none m-0 pb-[15%] z-100 text-[1.5vw] font-bold text-shadow-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary"                
+                  class="leading-none m-0 pb-[15%] z-100 text-[1.5vw] font-bold text-shadow-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mix-blend-darken [text-shadow:_2px_2px_4px_rgba(0,0,0,0.5)] text-primary"
                 >
                   SPORT-FOCUSED
                 </h2>
@@ -317,9 +282,17 @@
                   alt="plan3 deberia ir aca..."
                   class="rounded-[2%] border-primary border-[0.3vw] h-[16.5vw] w-[16.5vw] translate-y-[-2vw]"
                 />
-                <ul class="list-disc list-outside font-semi-bold pl-8 text-gray-900 text-base text-left leading-relaxed">
-                  <li>Plan de entrenamiento específico <br> para tu deporte</li>
-                  <li>Plan nutricional optimizado para un alto rendimiento deportivo</li>
+                <ul
+                  class="list-disc list-outside font-semi-bold pl-8 text-gray-900 text-base text-left leading-relaxed"
+                >
+                  <li>
+                    Plan de entrenamiento específico <br />
+                    para tu deporte
+                  </li>
+                  <li>
+                    Plan nutricional optimizado para un alto rendimiento
+                    deportivo
+                  </li>
                   <li>Evaluación y ajuste según tus necesidades deportivas</li>
                 </ul>
               </div>

@@ -4,22 +4,16 @@
   style="background-image: url('{{ url_for('static', filename='images/login_imagen.jpeg') }}')"
 >
   <!-- toast -->
-  {% if error %} {% include "components/toasts/error.html" %} {% endif %} {% if
-  usuario_creado %} {% include "components/toasts/usuario_creado.html" %} {%
-  endif %} {% if contraseña_cambiada %} {% include
-  "components/toasts/contraseña_cambiada.html" %} {% endif %}
+
+  {% if error %} {% include "components/toasts/error.html" %} {% endif %}
+  <div></div>
+  {% if toast_exitoso %} {% include "components/toasts/exito.html" %} {%endif %}
 
   <!-- Flecha para atras -->
   {% include "components/button/go_back.html" %}
 
   <!-- logo -->
-  <div class="flex items-center justify-center w-1/2">
-    <img
-      class="min-w-[474px] max-h-[514px]"
-      src="{{ url_for('static',filename='images/logo.png')}}"
-      alt="logo"
-    />
-  </div>
+  {% include "components/logo.html" %}
   <!-- form -->
   <div class="w-1/2 flex justify-center items-center">
     <div
@@ -93,14 +87,7 @@
         </div>
 
         <!-- boton -->
-        <div class="flex items-center justify-center w-[70%] pt-6">
-          <button
-            type="submit"
-            class="cursor-pointer p-3 w-full bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition"
-          >
-            Continuar
-          </button>
-        </div>
+        {% include "components/button/auth.html" %}
 
         <!-- botones auth terceros -->
         <div class="w-[70%] flex justify-between pt-8">
