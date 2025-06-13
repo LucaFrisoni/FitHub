@@ -4,60 +4,13 @@
   style="background-image: url('{{ url_for('static', filename='images/cambiarcontra_imagen.jpg') }}')"
 >
   <!-- toast -->
-  {% if error %}
-  <div
-    id="alert-login"
-    role="alert"
-    class="fixed bottom-4 right-4 mb-4 flex w-fit p-3 text-sm text-white bg-red-500 rounded-md z-10"
-  >
-    <div class="flex items-center justify-center">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-8 w-8 p-1 shrink-0 stroke-current"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
-      <p class="font-bold pr-6">{{ error }}</p>
-      <button
-        id="button_alert_login"
-        class="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute right-1"
-        type="button"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          class="h-5 w-5"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M6 18L18 6M6 6l12 12"
-          ></path>
-        </svg>
-      </button>
-    </div>
-  </div>
+  {% if error %} {% include "components/toasts/error.html" %} {% endif %}
 
-  {% endif %}
+  <!-- Flecha para atras -->
+  {% include "components/button/go_back.html" %}
 
   <!-- logo -->
-  <div class="flex items-center justify-center w-1/2">
-    <img
-      class="min-w-[474px] max-h-[514px]"
-      src="{{ url_for('static',filename='images/logo.png')}}"
-      alt="logo"
-    />
-  </div>
+  {% include "components/logo.html" %}
   <!-- form -->
   <div class="w-1/2 flex justify-center items-center">
     <div
@@ -65,6 +18,7 @@
     >
       <p class="font-bold text-2xl">Cambiar contraseña</p>
       <form
+        id="chpw-form"
         method="POST"
         action="{{ url_for('cambiarcontra') }}"
         class="flex flex-col items-center justify-center pt-10 gap-y-4"
@@ -174,14 +128,7 @@
           </p>
         </div>
         <!-- boton -->
-        <div class="flex items-center justify-center w-[70%] pt-6">
-          <button
-            type="submit"
-            class="cursor-pointer p-3 w-full bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition"
-          >
-            Continuar
-          </button>
-        </div>
+        {% include "components/button/auth.html" %}
       </form>
       <hr class="w-full text-black/20 mt-8" />
       <!-- textos -->

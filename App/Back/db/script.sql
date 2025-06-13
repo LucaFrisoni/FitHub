@@ -7,6 +7,10 @@ CREATE TABLE roles (
      Tipo_rol VARCHAR(50)
  );
 
+
+INSERT INTO roles (ID_rol, Tipo_rol) VALUES (1, 'Admin');
+INSERT INTO roles (ID_rol, Tipo_rol) VALUES (2, 'Usuario');
+
 -- Tabla de usuarios
 CREATE TABLE usuarios (
     ID_usuario INT PRIMARY KEY AUTO_INCREMENT,
@@ -18,7 +22,7 @@ CREATE TABLE usuarios (
     Usuario VARCHAR(50),
     Imagen VARCHAR(255) DEFAULT NULL,
     Contrasenia VARCHAR(100),
-    ID_rol INT DEFAULT 1,
+    ID_rol INT DEFAULT 2,
     FOREIGN KEY (ID_rol) REFERENCES roles(ID_rol)
 );
 
@@ -58,6 +62,7 @@ CREATE TABLE productos (
     Categoria VARCHAR(100),
     Descripcion VARCHAR(255),
     Codigo VARCHAR(50),
+    Imagen VARCHAR(255) DEFAULT NULL,
     Cantidad INT,
     Precio INT
 );
@@ -83,6 +88,4 @@ CREATE TABLE detallecompras (
 );
 
 
-INSERT INTO roles (ID_rol, Tipo_rol) VALUES (1, 'Admin');
-INSERT INTO roles (ID_rol, Tipo_rol) VALUES (2, 'Usuario');
-ALTER TABLE productos ADD COLUMN Imagen VARCHAR(255) NULL;
+

@@ -4,60 +4,55 @@
 >
   <!-- Barra superior con botón atrás y carrito -->
   <div class="flex justify-between items-center mb-8">
-    <!-- Botón atrás -->
-    <a
-      href="{{ url_for('tienda') }}"
-      class="inline-flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white w-10 h-10 rounded-full shadow-lg"
-    >
-      ←
-    </a>
+    <!-- Flecha para atras -->
+    {% include "components/button/go_back.html" %}
 
     <!-- Carrito (con imagen personalizada) -->
     <a
-  href="{{ url_for('ver_carrito') }}"
-  class="inline-block p-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white shadow-lg"
->
-  <img
-    src="{{ url_for('static', filename='images/carrito.png') }}"
-    alt="Carrito"
-    class="h-6 w-6 object-contain"
-  />
-</a>
+      href="{{ url_for('ver_carrito') }}"
+      class="inline-block p-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white shadow-lg"
+    >
+      <img
+        src="{{ url_for('static', filename='images/carrito.png') }}"
+        alt="Carrito"
+        class="h-6 w-6 object-contain"
+      />
+    </a>
   </div>
 
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <div class="mb-6">
-        {% for message in messages %}
-          <div class="bg-green-500 text-white px-4 py-3 rounded-lg mb-2 shadow-lg flash-message">
-            <div class="flex items-center">
-              <span class="text-sm font-medium">✓ {{ message }}</span>
-            </div>
-          </div>
-        {% endfor %}
+  {% with messages = get_flashed_messages() %} {% if messages %}
+  <div class="mb-6">
+    {% for message in messages %}
+    <div
+      class="bg-green-500 text-white px-4 py-3 rounded-lg mb-2 shadow-lg flash-message"
+    >
+      <div class="flex items-center">
+        <span class="text-sm font-medium">✓ {{ message }}</span>
       </div>
-      
-      <script>
-        // Auto-ocultar mensajes después de 3 segundos
-        setTimeout(function() {
-          const flashMessages = document.querySelectorAll('.flash-message');
-          flashMessages.forEach(function(message) {
-            message.style.transition = 'opacity 0.5s ease-out';
-            message.style.opacity = '0';
-            setTimeout(() => message.remove(), 500);
-          });
-        }, 3000);
-      </script>
-    {% endif %}
-  {% endwith %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <script>
+    // Auto-ocultar mensajes después de 3 segundos
+    setTimeout(function () {
+      const flashMessages = document.querySelectorAll(".flash-message");
+      flashMessages.forEach(function (message) {
+        message.style.transition = "opacity 0.5s ease-out";
+        message.style.opacity = "0";
+        setTimeout(() => message.remove(), 500);
+      });
+    }, 3000);
+  </script>
+  {% endif %} {% endwith %}
 
   <!-- Contenido principal -->
   <div class="flex flex-col md:flex-row items-center md:items-start gap-10">
     <!-- Imagen del producto -->
     <div class="w-full md:w-1/2">
       <img
-        src="{{ url_for('static', filename='images/' ~ producto.Imagen) }}" 
-          alt="{{ producto.Nombre }}"
+        src="{{ url_for('static', filename='images/' ~ producto.Imagen) }}"
+        alt="{{ producto.Nombre }}"
         class="w-full h-auto object-contain rounded-lg shadow-lg bg-white p-4"
       />
     </div>
@@ -67,9 +62,15 @@
       <h1 class="text-4xl font-bold mb-4">{{ producto.Nombre }}</h1>
       <p class="text-lg mb-4">{{ producto.Descripcion }}</p>
       <span class="text-3xl font-bold block mb-6">${{ producto.Precio }}</span>
-      <form method="POST" action="{{ url_for('agregar_carrito', producto_id=producto.ID_Producto) }}">
-        <button type="submit" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/95 hover:shadow-lg transition cursor-pointer">
-            Agregar al carrito
+      <form
+        method="POST"
+        action="{{ url_for('agregar_carrito', producto_id=producto.ID_Producto) }}"
+      >
+        <button
+          type="submit"
+          class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/95 hover:shadow-lg transition cursor-pointer"
+        >
+          Agregar al carrito
         </button>
       </form>
     </div>

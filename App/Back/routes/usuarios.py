@@ -109,6 +109,45 @@ def editar_usuario():
             conn.close()
 
 
+@usuarios_bp.route("/editar-foto", methods=["PUT"])
+def editar_foto():
+    data = request.get_json()
+    email = data.get("Email")
+    nueva_imagen = data.get("Imagen")
+
+    if not email or not nueva_imagen:
+        return jsonify({"error": "Faltan datos requeridos"}), 400
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Actualizar imagen
+        query = "UPDATE usuarios SET Imagen = %s WHERE Email = %s"
+        cursor.execute(query, (nueva_imagen, email))
+        conn.commit()
+        # Obtener usuario actualizado
+        cursor.execute("SELECT * FROM usuarios WHERE Email = %s", (email,))
+        usuario = cursor.fetchone()
+        if not usuario:
+            return jsonify({"error": "Usuario no encontrado"}), 404
+
+        return jsonify({"usuario": usuario}), 200
+
+    except Exception as ex:
+        print("Excepcion")
+        return (
+            jsonify(
+                {"error": f"Error del servidor al cambiar la foto usuario: {str(ex)}"}
+            ),
+            500,
+        )
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Tabla: USUARIOS
 # ─────────────────────────────────────────────────────────────────────────────
@@ -145,7 +184,7 @@ def post_usuario():
 
     missing = [r for r in required if r not in body]
     if missing:
-      
+
         return jsonify({"error": "bad request", "missing": missing}), 400
 
     badtype = [r for r in required if not isinstance(body.get(r), required[r])]

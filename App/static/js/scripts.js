@@ -17,7 +17,7 @@ function updateprice(plan, dias) {
 
 document.addEventListener("DOMContentLoaded", () => {
   // Código del primer bloque...
-  // ------------------------------------------updateprice y botones .button-dias
+  //------------------------------------------------------------------------------------updateprice y botones .button-dias
   const botonesdias = document.querySelectorAll(".button-dias");
   botonesdias.forEach((boton) => {
     boton.addEventListener("click", () => {
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  //------------------------------------------ Cambio de imagen según el deporte
+  //------------------------------------------------------------------------------------Cambio de imagen según el deporte
   const selectdeporte = document.querySelector("select[id^='deporte-']");
   const imagen = document.getElementById("imagen-deporte");
   if (selectdeporte && imagen) {
@@ -56,7 +56,42 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  //------------------------------------------ Funcionalidad toast: cerrar al click en la X
+  //------------------------------------------------------------------------------------Mobile Navbar
+  const burger = document.getElementById("burger-button");
+  const mobileMenu = document.getElementById("mobile-menu");
+  const miPerfil = document.getElementById("mobile-menu-item-miperfil");
+  const cerrarSesion = document.getElementById("mobile-menu-item-cerrarsesion");
+
+  function mostrarMenu() {
+    mobileMenu.classList.remove("opacity-0", "scale-95", "pointer-events-none");
+    mobileMenu.classList.add("opacity-100", "scale-100");
+  }
+  function ocultarMenu() {
+    mobileMenu.classList.remove("opacity-100", "scale-100");
+    mobileMenu.classList.add("opacity-0", "scale-95", "pointer-events-none");
+  }
+
+  burger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (mobileMenu.classList.contains("opacity-0")) {
+      mostrarMenu();
+    } else {
+      ocultarMenu();
+    }
+  });
+
+  // Cierra el menú si se hace clic fuera
+  document.addEventListener("click", (e) => {
+    if (!mobileMenu.contains(e.target) && !burger.contains(e.target)) {
+      ocultarMenu();
+    }
+  });
+
+  // Cierra el menú al hacer clic en los ítems
+  miPerfil.addEventListener("click", ocultarMenu);
+  cerrarSesion.addEventListener("click", ocultarMenu);
+
+  //------------------------------------------------------------------------------------Funcionalidad toast: cerrar al click en la X
   const botonCerrar = document.getElementById("button_alert_login");
   if (botonCerrar) {
     botonCerrar.onclick = () => {
@@ -73,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, 3000);
 
-  //------------------------------------------ Funcion para que aparezca la barra amarilla debajo del logo de la ruta actual
+  //------------------------------------------------------------------------------------Funcion para que aparezca la barra amarilla debajo del logo de la ruta actual
   const links = document.querySelectorAll(".nav-link");
   const actualruta = window.location.pathname;
   let linkactivo = null;
@@ -98,17 +133,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  //------------------------------------------ Funcionalidad del Menu
+  //------------------------------------------------------------------------------------Funcionalidad del Menu
   const avatar = document.getElementById("menu-user-avatar");
   const menu = document.getElementById("menu-ul");
-  const miPerfil = document.getElementById("menu-item-miperfil");
-  const cerrarSesion = document.getElementById("menu-item-cerrarsesion");
+  const miPerfil2 = document.getElementById("menu-item-miperfil");
+  const cerrarSesion2 = document.getElementById("menu-item-cerrarsesion");
 
-  function mostrarMenu() {
+  function mostrarMenu2() {
     menu.classList.remove("opacity-0", "scale-95", "pointer-events-none");
     menu.classList.add("opacity-100", "scale-100");
   }
-  function ocultarMenu() {
+  function ocultarMenu2() {
     menu.classList.remove("opacity-100", "scale-100");
     menu.classList.add("opacity-0", "scale-95", "pointer-events-none");
   }
@@ -116,24 +151,24 @@ document.addEventListener("DOMContentLoaded", () => {
   avatar.addEventListener("click", (e) => {
     e.stopPropagation();
     if (menu.classList.contains("opacity-0")) {
-      mostrarMenu();
+      mostrarMenu2();
     } else {
-      ocultarMenu();
+      ocultarMenu2();
     }
   });
 
   // Cierra el menú si se hace clic fuera
   document.addEventListener("click", (e) => {
     if (!menu.contains(e.target) && !avatar.contains(e.target)) {
-      ocultarMenu();
+      ocultarMenu2();
     }
   });
 
   // Cierra el menú al hacer clic en los ítems
-  miPerfil.addEventListener("click", ocultarMenu);
-  cerrarSesion.addEventListener("click", ocultarMenu);
+  miPerfil2.addEventListener("click", ocultarMenu2);
+  cerrarSesion2.addEventListener("click", ocultarMenu2);
 
-  //------------------------------------------ UserInputs
+  //------------------------------------------------------------------------------------UserInputs
   const button = document.getElementById("editar_perfil");
   const button_guardar = document.getElementById("guardar_perfil");
   const button_cancelar = document.getElementById("cancelar_perfil");
@@ -232,3 +267,35 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+// Slide para las ventas y productos
+
+let currentIndex = 0;
+const images = document.querySelectorAll("#carrusel img");
+const totalImages = images.length;
+
+function updateCarousel() {
+  const container = document.getElementById("carrusel");
+  container.style.transform = `translateX(-${currentIndex * 100}%)`;
+}
+
+function nextSlide() {
+  currentIndex = (currentIndex + 1) % totalImages;
+  updateCarousel();
+}
+
+function prevSlide() {
+  currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+  updateCarousel();
+}
+setInterval(nextSlide, 3000);
+
+//Animacion de titulo
+const titulo = document.getElementById("titulo-animado");
+const texto = titulo.innerText;
+const letras = texto.split("").map((char) => {
+  if (char === " ") return `<span class="inline-block">&nbsp;</span>`;
+  if (char === "*") return "<br>";
+  return `<span class="inline-block transition hover:-translate-y-[0.2vw]">${char}</span>`;
+});
+titulo.innerHTML = letras.join("");

@@ -28,8 +28,8 @@
         <p class="pl-3 text-2xl font-bold tracking-wide">FITHUB</p>
       </div>
 
-      <!-- Iconos -->
-      <div class="flex items-center pt-2.5">
+      <!-- Navegacion principal -->
+      <div class="hidden lg:flex items-center pt-2.5">
         <a
           class="nav-link relative flex flex-col items-center pl-10 pr-10 cursor-pointer hover:fithub-text-primaryy transition"
           href="{{ url_for('home') }}"
@@ -79,18 +79,214 @@
         </a>
       </div>
 
-      <!-- Boton - Light/Dark mode - gradiente de colores -->
+      <!--Panel derecho:Boton - Light/Dark mode  -->
       <div
-        class="flex items-center justify-center bg-cover w-[300px] h-full"
+        class="flex items-center lg:justify-center bg-cover w-[300px] h-full justify-end"
         style="background-image: url('{{ url_for('static', filename='images/gradiente.png') }}')"
       >
+        <!-- Botón Hamburguesa (solo en mobile) -->
+        <div
+          id="burger-button"
+          class="lg:hidden flex flex-col justify-center items-center w-10 h-10 mr-2 cursor-pointer hover:bg-slate-200/40 transition duration-300 ease-in-out rounded-2xl p-2 z-20"
+        >
+          <span class="w-6 h-0.5 bg-black mb-1"></span>
+          <span class="w-6 h-0.5 bg-black mb-1"></span>
+          <span class="w-6 h-0.5 bg-black"></span>
+          <div>
+            <ul
+              id="mobile-menu"
+              class="absolute mt-3 right-0 z-10 min-w-[180px] overflow-auto rounded-lg border border-slate-200 bg-white p-1.5 shadow-sm focus:outline-none transition-all duration-200 ease-out opacity-0 scale-95 pointer-events-none"
+            >
+              <!-- Navegacion Mobile -->
+              <div>
+                <!-- Home Item -->
+                <a
+                  class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+                  href="{{ url_for('home') }}"
+                >
+                  <img
+                    src="{{ url_for('static',filename='images/home.png') }}"
+                    class="w-5 h-5"
+                  />
+                  <p class="text-slate-800 font-medium ml-2">Home</p></a
+                >
+                <!-- Planes Item -->
+                <a
+                  class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+                  href="{{ url_for('planes') }}"
+                >
+                  <img
+                    src="{{ url_for('static',filename='images/planes.svg') }}"
+                    class="w-5 h-5"
+                    alt="admin-icono"
+                  />
+                  <p class="text-slate-800 font-medium ml-2">Planes</p>
+                </a>
+                <!-- Tienda Item -->
+                <a
+                  class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+                  href="{{ url_for('tienda') }}"
+                >
+                  <img
+                    src="{{ url_for('static',filename='images/store.svg') }}"
+                    class="w-5 h-5"
+                    alt="admin-icono"
+                  />
+                  <p class="text-slate-800 font-medium ml-2">Tienda</p>
+                </a>
+                <!-- Reservas Item -->
+                <a
+                  class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+                  href="{{ url_for('reservas') }}"
+                >
+                  <img
+                    src="{{ url_for('static',filename='images/schedule.png') }}"
+                    class="w-5 h-5"
+                    alt="admin-icono"
+                  />
+                  <p class="text-slate-800 font-medium ml-2">Reserva</p>
+                </a>
+              </div>
+              {% if user.is_authenticated %}
+              <div>
+                <!-- Mi perfil Item -->
+                <a
+                  id="mobile-menu-item-miperfil"
+                  href="{{ url_for('user') }}"
+                  role="menuitem"
+                  class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    class="w-5 h-5 text-slate-400"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-5.5-2.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM10 12a5.99 5.99 0 0 0-4.793 2.39A6.483 6.483 0 0 0 10 16.5a6.483 6.483 0 0 0 4.793-2.11A5.99 5.99 0 0 0 10 12Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+
+                  <p class="text-slate-800 font-medium ml-2">Mi Perfil</p>
+                </a>
+
+                {% if user.id_rol == 1 %}
+                <div>
+                  <a
+                    href="{{ url_for('admin_panel') }}"
+                    role="menuitem"
+                    class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+                  >
+                    <img
+                      src="{{ url_for('static',filename='images/admin_icono.png')}}"
+                      class="w-5 h-5"
+                      alt="admin-icono"
+                    />
+
+                    <p class="text-slate-800 font-medium ml-2">Adm Productos</p>
+                  </a>
+
+                  <a
+                    href="{{ url_for('admin_planes') }}"
+                    role="menuitem"
+                    class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+                  >
+                    <img
+                      src="{{ url_for('static',filename='images/admin_icono.png')}}"
+                      class="w-5 h-5"
+                      alt="admin-icono"
+                    />
+
+                    <p class="text-slate-800 font-medium ml-2">Adm Planes</p>
+                  </a>
+
+                  <a
+                    href="{{ url_for('admin_reservas') }}"
+                    role="menuitem"
+                    class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+                  >
+                    <img
+                      src="{{ url_for('static',filename='images/admin_icono.png')}}"
+                      class="w-5 h-5"
+                      alt="admin-icono"
+                    />
+
+                    <p class="text-slate-800 font-medium ml-2">Adm Reservas</p>
+                  </a>
+                </div>
+                {% endif %}
+                <!-- Cerrar Sesión Item -->
+                <hr class="my-2 border-slate-200" role="menuitem" />
+                <form action="{{ url_for('logout') }}" method="POST">
+                  <button
+                    type="submit"
+                    id="mobile-menu-item-cerrarsesion"
+                    class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-red-100 focus:bg-red-100 active:bg-red-100"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      class="w-5 h-5 text-red-500"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M3 4.25A2.25 2.25 0 0 1 5.25 2h5.5A2.25 2.25 0 0 1 13 4.25v2a.75.75 0 0 1-1.5 0v-2a.75.75 0 0 0-.75-.75h-5.5a.75.75 0 0 0-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 0 0 .75-.75v-2a.75.75 0 0 1 1.5 0v2A2.25 2.25 0 0 1 10.75 18h-5.5A2.25 2.25 0 0 1 3 15.75V4.25Z"
+                        clip-rule="evenodd"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        d="M19 10a.75.75 0 0 0-.75-.75H8.704l1.048-.943a.75.75 0 1 0-1.004-1.114l-2.5 2.25a.75.75 0 0 0 0 1.114l2.5 2.25a.75.75 0 1 0 1.004-1.114l-1.048-.943h9.546A.75.75 0 0 0 19 10Z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+
+                    <p class="text-red-500 font-medium ml-2">Cerrar Sesión</p>
+                  </button>
+                </form>
+              </div>
+            </ul>
+            {% else %}
+            <!-- Iniciar Sesión Item -->
+            <hr class="my-2 border-slate-200" role="menuitem" />
+            <a
+              class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+              href="{{ url_for('login') }}"
+            >
+              <img
+                src="{{ url_for('static',filename='images/login_icono.png') }}"
+                class="w-5 h-5"
+                alt="admin-icono"
+              />
+              <p class="text-slate-800 font-medium ml-2">Login</p></a
+            >
+            <!-- Light Mode Item -->
+            <hr class="my-2 border-slate-200" role="menuitem" />
+            <a
+              role="menuitem"
+              class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+            >
+              <img
+                src="{{ url_for('static',filename='images/sun.svg') }}"
+                class="w-5 h-5"
+                alt="admin-icono"
+              />
+              <p class="text-slate-800 font-medium ml-2">Light Mode</p>
+            </a>
+
+            {% endif %}
+          </div>
+        </div>
+
         <!-- Sol -->
         <div
-          class="hover:bg-slate-200/40 transition duration-300 ease-in-out rounded-2xl p-2 cursor-pointer"
+          class="hidden lg:flex hover:bg-slate-200/40 transition duration-300 ease-in-out rounded-2xl p-2 cursor-pointer"
         >
           <img
             class="min-w-[40px] min-h-[40px]"
-            src="{{ url_for('static',filename='images/sun.svg')}}"
+            src="{{ url_for('static',filename='images/sun.svg') }}"
             alt="logo"
           />
         </div>
@@ -98,7 +294,7 @@
         {% if user.is_authenticated %}
         <div
           id="menu-user-avatar"
-          class="hover:bg-slate-200/40 transition duration-300 ease-in-out rounded-full p-2 cursor-pointer ml-15 relative"
+          class="hidden lg:flex hover:bg-slate-200/40 transition duration-300 ease-in-out rounded-full p-2 cursor-pointer ml-15 relative"
         >
           <img
             alt="user-image"
@@ -136,73 +332,47 @@
             <a
               href="{{ url_for('admin_panel') }}"
               role="menuitem"
-              class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-red-50 focus:bg-red-50 active:bg-red-50"
+              class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                class="w-5 h-5 text-red-500"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 1l-7 4v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+              <img
+                src="{{ url_for('static',filename='images/admin_icono.png')}}"
+                class="w-5 h-5"
+                alt="admin-icono"
+              />
 
-              <p class="text-red-600 font-medium ml-2">Adm Productos</p>
+              <p class="text-slate-800 font-medium ml-2">Adm Productos</p>
             </a>
-            {% endif %}
 
-            {% if user.id_rol == 1 %}
             <a
               href="{{ url_for('admin_planes') }}"
               role="menuitem"
-              class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-red-50 focus:bg-red-50 active:bg-red-50"
+              class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                class="w-5 h-5 text-red-500"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 1l-7 4v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+              <img
+                src="{{ url_for('static',filename='images/admin_icono.png')}}"
+                class="w-5 h-5"
+                alt="admin-icono"
+              />
 
-              <p class="text-red-600 font-medium ml-2">Adm Planes</p>
+              <p class="text-slate-800 font-medium ml-2">Adm Planes</p>
             </a>
-            {% endif %}
 
-            {% if user.id_rol == 1 %}
             <a
               href="{{ url_for('admin_reservas') }}"
               role="menuitem"
-              class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-red-50 focus:bg-red-50 active:bg-red-50"
+              class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                class="w-5 h-5 text-red-500"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 1l-7 4v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+              <img
+                src="{{ url_for('static',filename='images/admin_icono.png')}}"
+                class="w-5 h-5"
+                alt="admin-icono"
+              />
 
-              <p class="text-red-600 font-medium ml-2">Adm Reservas</p>
+              <p class="text-slate-800 font-medium ml-2">Adm Reservas</p>
             </a>
             {% endif %}
-
-            <hr class="my-2 border-slate-200" role="menuitem" />
             <!-- Cerrar Sesión Item -->
+            <hr class="my-2 border-slate-200" role="menuitem" />
             <form action="{{ url_for('logout') }}" method="POST">
               <button
                 type="submit"
@@ -231,19 +401,18 @@
               </button>
             </form>
           </ul>
-        </div>
-
-        {% else %}
-        <a href="{{ url_for('login') }}">
-          <button
-            type="button"
-            class="cursor-pointer p-3 ml-6 bg-black hover:bg-black/90 transition font-bold text-stone-100 rounded-xl shadow-sm"
+          {% else %}
+          <a class="hidden lg:flex" href="{{ url_for('login') }}">
+            <button
+              type="button"
+              class="cursor-pointer p-3 ml-6 bg-black hover:bg-black/90 transition font-bold text-stone-100 rounded-xl shadow-sm"
+            >
+              Iniciar sesion
+            </button></a
           >
-            Iniciar sesion
-          </button></a
-        >
-        {% endif %}
+        </div>
       </div>
+      {% endif %}
     </nav>
     {% endblock %}
 
