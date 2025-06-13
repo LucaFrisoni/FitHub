@@ -31,7 +31,8 @@ CREATE TABLE planes (
     ID_Plan INT PRIMARY KEY AUTO_INCREMENT,
     Precio INT,
     Descripcion VARCHAR(255),
-    DuracionPlan VARCHAR(50)
+    DuracionPlan VARCHAR(50),
+    Imagen VARCHAR(255) DEFAULT NULL
 );
 
 -- Tabla de Alquileres de Plan

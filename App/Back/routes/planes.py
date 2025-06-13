@@ -50,7 +50,7 @@ def get_plan(id):
 def post_plan():
     body = request.get_json()
 
-    required = {"Precio": int, "Descripcion": str, "DuracionPlan": str}
+    required = {"Precio": int, "Descripcion": str, "DuracionPlan": str, "Imagen": str}
 
     missing = [r for r in required if r not in body]
     if missing:
@@ -75,10 +75,10 @@ def post_plan():
 
         cursor.execute(
             """
-            INSERT INTO planes (Precio, Descripcion, DuracionPlan)
-            VALUES (%s, %s, %s)
+            INSERT INTO planes (Precio, Descripcion, DuracionPlan, Imagen)
+            VALUES (%s, %s, %s, %s)
             """,
-            (body["Precio"], body["Descripcion"], body["DuracionPlan"]),
+            (body["Precio"], body["Descripcion"], body["DuracionPlan"], body["Imagen"]),
         )
 
         new_id = cursor.lastrowid
@@ -102,7 +102,7 @@ def put_plan(id):
     if not body:
         return jsonify({"error": "No se proporcionaron datos para actualizar"}), 400
 
-    required = {"Precio": int, "Descripcion": str, "DuracionPlan": str}
+    required = {"Precio": int, "Descripcion": str, "DuracionPlan": str, "Imagen": str}
 
     missing = [r for r in required if r not in body]
     if missing:
