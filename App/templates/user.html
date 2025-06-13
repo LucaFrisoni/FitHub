@@ -1,105 +1,47 @@
 {% extends "base.html" %} {% block content %}
 <div class="px-[80px] pt-[150px]">
-  <!-- toast -->
-  {% if error %}
-  <div
-    id="alert-login"
-    role="alert"
-    class="fixed bottom-4 right-4 mb-4 flex w-fit p-3 text-sm text-white bg-red-500 rounded-md z-10"
-  >
-    <div class="flex items-center justify-center">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-8 w-8 p-1 shrink-0 stroke-current"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
-      <p class="font-bold pr-6">{{ error }}</p>
-      <button
-        id="button_alert_login"
-        class="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute right-1"
-        type="button"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          class="h-5 w-5"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M6 18L18 6M6 6l12 12"
-          ></path>
-        </svg>
-      </button>
-    </div>
+  <!-- toasts -->
+  <div>
+    {% if error %} {% include "components/toasts/error.html" %} {% endif %}
+    <div></div>
+    {% if usuario_editado %} {% include "components/toasts/user_editado.html" %}
+    {%endif %}
+    <div></div>
+    {% if imagen_perfil_editada %} {% include
+    "components/toasts/user_imagen_editada.html" %} {% endif %}
   </div>
-
-  {% endif %} {% if usuario_editado %}
-  <div
-    id="alert-login"
-    role="alert"
-    class="fixed bottom-4 right-4 mb-4 flex w-fit p-3 text-sm text-white bg-emerald-500 rounded-md z-10"
-  >
-    <div class="flex items-center justify-center">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-8 w-8 p-1 shrink-0 stroke-current"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
-      <p class="font-bold pr-6">Usuario editado exitosamente</p>
-      <button
-        id="button_alert_login"
-        class="flex items-center justify-center transition-all w-8 h-8 rounded-md text-white hover:bg-white/10 active:bg-white/10 absolute right-1"
-        type="button"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          class="h-5 w-5"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M6 18L18 6M6 6l12 12"
-          ></path>
-        </svg>
-      </button>
-    </div>
-  </div>
-
-  {% endif %}
 
   <!-- User header -->
   <div class="flex justify-between pb-[24px]">
     <!-- image y titulos -->
     <div class="flex gap-x-6 items-center">
-      <img
-        src="https://docs.material-tailwind.com/img/face-2.jpg"
-        alt="avatar"
-        class="relative inline-block h-30 w-30 !rounded-full object-cover object-center shadow-2xl"
-      />
+      <div class="relative group h-[120px] w-[120px]">
+        <img
+          src="{% if user['imagen'] %}
+          {{ url_for('static', filename='images/uploads/perfil/' ~ user['imagen']) }}
+        {% else %}
+          {{ url_for('static', filename='images/default_user.png') }}
+        {% endif %}"
+          alt="avatar"
+          class="h-full w-full rounded-full object-cover object-center shadow-2xl transition duration-300 group-hover:brightness-75"
+        />
+        <!-- Lápiz -->
+        <div
+          class="absolute bottom-[-12px] left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition duration-300"
+        >
+          <button
+            onclick="abrirModal()"
+            class="bg-white shadow-md p-1 rounded-full hover:bg-gray-100 hover:cursor-pointer"
+          >
+            <!-- Ícono de lápiz -->
+            <img
+              src="{{ url_for('static',filename='images/lapiz_icono.png')}}"
+              class="w-[23px] h-[23xp]"
+            />
+          </button>
+        </div>
+      </div>
+
       <div class="flex flex-col gap-y-1.5">
         <p class="font-bold text-2xl">
           {{ user["nombre"] }} {{ user["apellido"] }}
@@ -121,6 +63,7 @@
       </div>
       <div class="flex items-center justify-center pr-10">
         <button
+          onclick="abrirModal()"
           type="button"
           class="cursor-pointer p-3 px-5 ml-6 bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition"
         >
@@ -457,6 +400,8 @@
       </button>
     </div>
   </div>
+  <!-- Modal subir foto -->
+  {% include "components/modales/modal_user_profile.html" %}
 </div>
 
 {% endblock %}
