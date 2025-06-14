@@ -92,17 +92,19 @@ document.addEventListener("DOMContentLoaded", () => {
   cerrarSesion.addEventListener("click", ocultarMenu);
 
   //------------------------------------------------------------------------------------Funcionalidad toast: cerrar al click en la X
-  const botonCerrar = document.getElementById("button_alert_login");
+  const botonCerrar = document.getElementById("button_alert");
+
   if (botonCerrar) {
-    botonCerrar.onclick = () => {
-      const alertLogin = document.getElementById("alert-login");
-      if (alertLogin) alertLogin.classList.add("hidden");
+    botonCerrar.onclick = (e) => {
+      e.preventDefault();
+      const alert = document.getElementById("toast-alert");
+      if (alert) alert.classList.add("hidden");
     };
   }
 
   // Ocultar toast después de 8 segundos
   setTimeout(() => {
-    const alertBox = document.getElementById("alert-login");
+    const alertBox = document.getElementById("toast-alert");
     if (alertBox) {
       alertBox.classList.add("hidden");
     }
@@ -266,36 +268,39 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+  //------------------------------------------------------------------------------------Home
+  // Slide para las ventas y productos
+
+  let currentIndex = 0;
+  const images = document.querySelectorAll("#carrusel img");
+  const totalImages = images.length;
+
+  function updateCarousel() {
+    const container = document.getElementById("carrusel");
+    if (!container) return;
+    container.style.transform = `translateX(-${currentIndex * 100}%)`;
+  }
+
+  function nextSlide() {
+    currentIndex = (currentIndex + 1) % totalImages;
+    updateCarousel();
+  }
+
+  function prevSlide() {
+    currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+    updateCarousel();
+  }
+  setInterval(nextSlide, 3000);
+
+  //Animacion de titulo
+  const titulo = document.getElementById("titulo-animado");
+  if (titulo) {
+    const texto = titulo.innerText;
+    const letras = texto.split("").map((char) => {
+      if (char === " ") return `<span class="inline-block">&nbsp;</span>`;
+      if (char === "*") return "<br>";
+      return `<span class="inline-block transition hover:-translate-y-[0.2vw]">${char}</span>`;
+    });
+    titulo.innerHTML = letras.join("");
+  }
 });
-
-// Slide para las ventas y productos
-
-let currentIndex = 0;
-const images = document.querySelectorAll("#carrusel img");
-const totalImages = images.length;
-
-function updateCarousel() {
-  const container = document.getElementById("carrusel");
-  container.style.transform = `translateX(-${currentIndex * 100}%)`;
-}
-
-function nextSlide() {
-  currentIndex = (currentIndex + 1) % totalImages;
-  updateCarousel();
-}
-
-function prevSlide() {
-  currentIndex = (currentIndex - 1 + totalImages) % totalImages;
-  updateCarousel();
-}
-setInterval(nextSlide, 3000);
-
-//Animacion de titulo
-const titulo = document.getElementById("titulo-animado");
-const texto = titulo.innerText;
-const letras = texto.split("").map((char) => {
-  if (char === " ") return `<span class="inline-block">&nbsp;</span>`;
-  if (char === "*") return "<br>";
-  return `<span class="inline-block transition hover:-translate-y-[0.2vw]">${char}</span>`;
-});
-titulo.innerHTML = letras.join("");

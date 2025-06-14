@@ -640,6 +640,9 @@
   .h-\[600px\] {
     height: 600px;
   }
+  .h-\[620px\] {
+    height: 620px;
+  }
   .h-auto {
     height: auto;
   }
@@ -658,8 +661,8 @@
   .max-h-\[50px\] {
     max-height: 50px;
   }
-  .max-h-\[514px\] {
-    max-height: 514px;
+  .max-h-\[190px\] {
+    max-height: 190px;
   }
   .min-h-\[40px\] {
     min-height: 40px;
@@ -748,6 +751,9 @@
   .w-\[70vw\] {
     width: 70vw;
   }
+  .w-\[80\%\] {
+    width: 80%;
+  }
   .w-\[80px\] {
     width: 80px;
   }
@@ -772,6 +778,12 @@
   .w-\[300px\] {
     width: 300px;
   }
+  .w-\[330px\] {
+    width: 330px;
+  }
+  .w-\[480px\] {
+    width: 480px;
+  }
   .w-\[570px\] {
     width: 570px;
   }
@@ -786,6 +798,9 @@
   }
   .w-px {
     width: 1px;
+  }
+  .w-screen {
+    width: 100vw;
   }
   .max-w-2xl {
     max-width: var(--container-2xl);
@@ -807,6 +822,9 @@
   }
   .max-w-\[50\%\] {
     max-width: 50%;
+  }
+  .max-w-\[150px\] {
+    max-width: 150px;
   }
   .max-w-\[800px\] {
     max-width: 800px;
@@ -837,9 +855,6 @@
   }
   .min-w-\[200px\] {
     min-width: 200px;
-  }
-  .min-w-\[474px\] {
-    min-width: 474px;
   }
   .min-w-\[640px\] {
     min-width: 640px;
@@ -1385,6 +1400,18 @@
   .bg-gradient-to-r {
     --tw-gradient-position: to right in oklab;
     background-image: linear-gradient(var(--tw-gradient-stops));
+  }
+  .bg-\[url\(\/static\/images\/cambiarcontra_imagen\.jpg\)\] {
+    background-image: url(/static/images/cambiarcontra_imagen.jpg);
+  }
+  .bg-\[url\(\/static\/images\/gradiente\.png\)\] {
+    background-image: url(/static/images/gradiente.png);
+  }
+  .bg-\[url\(\/static\/images\/login_imagen\.jpeg\)\] {
+    background-image: url(/static/images/login_imagen.jpeg);
+  }
+  .bg-\[url\(\/static\/images\/registro_imagen\.jpg\)\] {
+    background-image: url(/static/images/registro_imagen.jpg);
   }
   .bg-\[url\(\/static\/images\/reserva_fondo\.png\)\] {
     background-image: url(/static/images/reserva_fondo.png);
@@ -2578,6 +2605,16 @@
       margin-left: 40px;
     }
   }
+  .sm\:w-\[70\%\] {
+    @media (width >= 40rem) {
+      width: 70%;
+    }
+  }
+  .sm\:w-\[480px\] {
+    @media (width >= 40rem) {
+      width: 480px;
+    }
+  }
   .sm\:grid-cols-2 {
     @media (width >= 40rem) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2638,9 +2675,24 @@
       display: none;
     }
   }
+  .lg\:max-h-\[414px\] {
+    @media (width >= 64rem) {
+      max-height: 414px;
+    }
+  }
+  .lg\:w-1\/2 {
+    @media (width >= 64rem) {
+      width: calc(1/2 * 100%);
+    }
+  }
   .lg\:w-3\/5 {
     @media (width >= 64rem) {
       width: calc(3/5 * 100%);
+    }
+  }
+  .lg\:min-w-\[374px\] {
+    @media (width >= 64rem) {
+      min-width: 374px;
     }
   }
   .lg\:flex-row {
@@ -2651,6 +2703,21 @@
   .lg\:justify-center {
     @media (width >= 64rem) {
       justify-content: center;
+    }
+  }
+  .xl\:max-h-\[514px\] {
+    @media (width >= 80rem) {
+      max-height: 514px;
+    }
+  }
+  .xl\:w-\[570px\] {
+    @media (width >= 80rem) {
+      width: 570px;
+    }
+  }
+  .xl\:min-w-\[474px\] {
+    @media (width >= 80rem) {
+      min-width: 474px;
     }
   }
 }
