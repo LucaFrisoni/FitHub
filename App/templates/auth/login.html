@@ -8,13 +8,15 @@
   <div></div>
   {% if toast_exitoso %} {% include "components/toasts/exito.html" %} {%endif %}
 
-  <!-- Flecha para atras -->
-  <!-- {% include "components/button/go_back.html" %} -->
   <div class="w-full flex flex-col lg:flex-row justify-center items-center">
+    <!-- Flecha para atras -->
+    <div class="absolute w-full h-full">
+      {% include "components/button/go_back.html" %}
+    </div>
     <!-- logo -->
     {% include "components/logo.html" %}
     <!-- form -->
-    <div class="lg:w-1/2 w-screen flex justify-center items-center">
+    <div class="lg:w-1/2 w-screen flex justify-center items-center z-10">
       <div
         class="w-[330px] sm:w-[480px] xl:w-[570px] h-[620px] bg-stone-100 rounded-lg shadow-md flex flex-col p-6 border"
       >
