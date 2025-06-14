@@ -1,9 +1,10 @@
+import os
+import re
 from flask import Blueprint, jsonify, request
-from Back.models.user import User
 from Back.db.db import get_connection
 from Back.util.log import devolver_error
 from Back.util.util import *
-
+from werkzeug.utils import secure_filename
 
 usuarios_bp = Blueprint("usuarios", __name__)
 
@@ -36,7 +37,7 @@ def get_usuario(id):
         cursor.execute("SELECT * FROM usuarios WHERE ID_Usuario = %s", (id,))
         usuario = cursor.fetchone()
         if usuario:
-            return jsonify(usuario)
+            return jsonify({"usuario": usuario})
         else:
             return jsonify({"error": "Usuario no encontrado"}), 404
     except Exception as ex:
@@ -109,37 +110,51 @@ def editar_usuario():
             conn.close()
 
 
+EXTENSIONES_PERMITIDAS = {"png", "jpg", "jpeg"}
+
+
 @usuarios_bp.route("/editar-foto", methods=["PUT"])
 def editar_foto():
-    data = request.get_json()
-    email = data.get("Email")
-    nueva_imagen = data.get("Imagen")
+    user_id = request.form.get("Id")
+    email = request.form.get("Email")
+    nueva_imagen = request.files.get("foto")
 
-    if not email or not nueva_imagen:
-        return jsonify({"error": "Faltan datos requeridos"}), 400
+    if not user_id:
+        return jsonify({"error": "Falta el id del usuario"}), 400
+    if not email:
+        return jsonify({"error": "Falta el email"}), 400
+    if not nueva_imagen:
+        return jsonify({"error": "No se adjuntó ninguna imagen"}), 400
+    if nueva_imagen.filename == "":
+        return jsonify({"error": "No seleccionaste ninguna imagen."}), 400
+
+    extension = nueva_imagen.filename.rsplit(".", 1)[1].lower()
+
+    if extension not in EXTENSIONES_PERMITIDAS:
+        return jsonify({"error": "Formato no permitido."}), 400
+
+    filename = secure_filename(f"user_{user_id}.{extension}")
+    filepath = os.path.join("static/images/uploads/perfil", filename)
+    nueva_imagen.save(filepath)
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
         # Actualizar imagen
         query = "UPDATE usuarios SET Imagen = %s WHERE Email = %s"
-        cursor.execute(query, (nueva_imagen, email))
+        cursor.execute(query, (filename, email))
         conn.commit()
         # Obtener usuario actualizado
         cursor.execute("SELECT * FROM usuarios WHERE Email = %s", (email,))
         usuario = cursor.fetchone()
         if not usuario:
             return jsonify({"error": "Usuario no encontrado"}), 404
-
         return jsonify({"usuario": usuario}), 200
 
     except Exception as ex:
         print("Excepcion")
-        return (
-            jsonify(
-                {"error": f"Error del servidor al cambiar la foto usuario: {str(ex)}"}
-            ),
-            500,
+        return jsonify(
+            {"error": f"Error del servidor al cambiar la foto usuario: {str(ex)}"}
         )
     finally:
         if cursor:
@@ -168,10 +183,46 @@ def editar_foto():
 # --------------------------------------------Auth--------------------------------------------
 
 
+@usuarios_bp.route("/login", methods=["POST"])
+def verificacion_login():
+    body = request.get_json()
+
+    email = body.get("Email")
+    contraseña = body.get("Contraseña")
+
+    if not email:
+        return jsonify({"error": "Falta el email"}), 400
+    if not email or not contraseña:
+        return jsonify({"error": "Falta la contraseña"}), 400
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("SELECT * FROM usuarios WHERE Email = %s", (email,))
+        user = cursor.fetchone()
+
+        if not user:
+            return jsonify({"error": "Usuario no encontrado"}), 404
+
+        if not check_pwd(contraseña, user["Contrasenia"]):
+            return jsonify({"error": "Contraseña incorrecta"}), 401
+
+        return jsonify({"usuario": user}), 200
+
+    except Exception as ex:
+        return devolver_error(ruta="usuarios/login", metodo="POST", ex=ex)
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
 @usuarios_bp.route("/registro", methods=["POST"])
 def post_usuario():
     body = request.get_json()
-    print("Body recibido:", body)
     required = {
         "Email": str,
         "Usuario": str,
@@ -184,12 +235,29 @@ def post_usuario():
 
     missing = [r for r in required if r not in body]
     if missing:
-
-        return jsonify({"error": "bad request", "missing": missing}), 400
+        return (
+            jsonify(
+                {
+                    "error": f"El campo '{missing}' es obligatorio.",
+                }
+            ),
+            400,
+        )
 
     badtype = [r for r in required if not isinstance(body.get(r), required[r])]
     if badtype:
-        return jsonify({"error": "bad request", "type error": badtype}), 400
+        return jsonify({"error": f"El campo '{badtype}' tiene un error de tipo."}), 400
+
+    # Validar contraseña
+    if not re.match(r"^(?=.*[A-Z])(?=.*\d).{8,}$", body.get("Contrasenia")):
+        return (
+            jsonify(
+                {
+                    "error": "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número."
+                }
+            ),
+            400,
+        )
 
     try:
         conn = get_connection()
@@ -234,11 +302,25 @@ def change_password():
 
     email = body.get("Email")
     nueva_contra = body.get("Contraseña")
+    nueva_contra2 = body.get("Contraseña2")
 
     if not email:
         return jsonify({"error": "Email no proporcionado"}), 400
     if not nueva_contra:
         return jsonify({"error": "Contraseña no proporcionada"}), 400
+
+    if nueva_contra != nueva_contra2:
+        return jsonify({"error": "Las contraseñas no coinciden"}), 400
+
+    if not re.match(r"^(?=.*[A-Z])(?=.*\d).{8,}$", nueva_contra):
+        return (
+            jsonify(
+                {
+                    "error": "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número."
+                }
+            ),
+            400,
+        )
 
     try:
         conn = get_connection()
