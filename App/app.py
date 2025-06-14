@@ -125,9 +125,33 @@ def planes():
 
 
 @app.route("/reservas")
-# @login_required
+#@login_required
 def reservas():
     return render_template("reservas.html", user=current_user)
+
+@app.route("/procesar_reservas", methods=['POST'])
+#@login_required
+def procesar_reservas():
+    try:
+        #recibo los datos JSON desde JS
+        datos = request.get_json()
+
+        #extraigo los valores
+        selected_days = datos.get('dias')
+        start_h = datos.get('entrada')
+        end_h = datos.get('salida')
+        comments_posted = datos.get('comentarios')
+
+        print(f"Días: {selected_days}")
+        print(f"Horario: {start_h} - {end_h}")
+        print(f"Comentarios: {comments_posted}")
+
+        return jsonify({"success": True, "message": "Reserva recibida"})
+
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+    
 
 
 @app.route("/tienda", methods=["GET"])

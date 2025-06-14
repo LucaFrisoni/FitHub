@@ -233,6 +233,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+
+// -------------------- RESERVAS ----------------------
 // Funcionalidad de los checkboxes de días
 const dayCheckboxes = document.querySelectorAll('.day-checkbox');
 
@@ -250,9 +252,9 @@ dayCheckboxes.forEach(checkbox => {
 });
 
 // Funcionalidad del botón reservar
-const reserveButtons = document.querySelectorAll('button');
+const reserveButtons = document.getElementById("button-reserva");
 reserveButtons.forEach(button => {
-  if (button.textContent.trim() === 'RESERVAR') {
+  if (button.textContent.trim() === 'RESERVAR') { //mira si tiene la Palabra
     button.addEventListener('click', function (e) {
       e.preventDefault();
 
@@ -275,19 +277,48 @@ reserveButtons.forEach(button => {
         return;
       }
 
-      // Mostrar confirmación
-      const message = `¡Reserva realizada con éxito!
-             
-      Días: ${selectedDays.join(', ')}
-      Entrenamiento: ${trainingType}
-      Horario: ${startTime} - ${endTime}
-      ${comments ? 'Comentarios: ' + comments : ''}`;
+      // Manejar el envío del formulario
+      document.getElementById('miFormulario').addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-      alert(message);
+        // guardado de datos
+        const datos_reserva = {
+          dias: trainingType,
+          entrada: startTime,
+          salida: endTime,
+          comentarios: comments
+        };
+
+        // Enviar los datos de la reserva a Flask usando Fetch API
+        const respuesta_reserva = await fetch('/procesar_reservas', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(datos_reserva)
+        });
+
+        // Mostrar confirmación
+        try {
+          const response = await fetch('/procesar_reserva', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+
+          const result = await response.json();
+          if (result.success) {
+            alert("¡Reserva exitosa!");
+          } else {
+            alert(`Error: ${result.error}`);
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      });
     });
-  }
+  };
 });
-
 // Mejorar la experiencia táctil en móviles
 const touchElements = document.querySelectorAll('.day-button, button, select, input, textarea');
 touchElements.forEach(element => {

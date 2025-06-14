@@ -8,10 +8,19 @@ reservas_bp = Blueprint("reservas", __name__)
 
 @reservas_bp.route("/")
 def get_reservas():
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM Reservas")
-    reservas = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return jsonify(reservas)
+    conn = None
+    cursor = None
+    
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM Reservas")
+        reservas = cursor.fetchall()
+        return jsonify(reservas)
+    except Exception as ex:
+        return devolver_error(ruta="reservas", ex=ex)
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
