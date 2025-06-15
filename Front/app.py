@@ -8,6 +8,7 @@ from flask import (
     session,
     url_for,
     flash,
+    jsonify,
 )
 from functools import wraps
 from flask_login import (
@@ -406,6 +407,69 @@ def admin_required(f):
     return decorated_function
 
 
+@app.route("/subir-imagen-producto", methods=["POST"])
+def subir_imagen_producto():
+    try:
+        # Verificar que se envió un archivo
+        if "foto" not in request.files:
+            return jsonify({
+                "success": False,
+                "error": "No se seleccionó ningún archivo"
+            }), 400
+
+        foto = request.files["foto"]
+
+        if foto.filename == "":
+            return jsonify({
+                "success": False,
+                "error": "El nombre del archivo está vacío"
+            }), 400
+
+        # Verificar extensión del archivo
+        if '.' not in foto.filename:
+            return jsonify({
+                "success": False,
+                "error": "Archivo sin extensión válida"
+            }), 400
+            
+        extension = foto.filename.rsplit(".", 1)[1].lower()
+        
+        # Definir extensiones permitidas si no están definidas
+        EXTENSIONES_PERMITIDAS = {'jpg', 'jpeg', 'png'}
+        
+        if extension not in EXTENSIONES_PERMITIDAS:
+            return jsonify({
+                "success": False,
+                "error": f"Formato no permitido. Formatos aceptados: {', '.join(EXTENSIONES_PERMITIDAS)}"
+            }), 400
+
+        # Generar nombre único para el archivo
+        filename = f"producto_{uuid.uuid4().hex}.{extension}"
+        
+        # Asegurarse de que el directorio existe
+        upload_dir = os.path.join(app.static_folder, 'images/uploads/productos')
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir)
+        
+        filepath = os.path.join(upload_dir, filename)
+        
+        # Guardar la imagen
+        foto.save(filepath)
+        
+        # Retornar respuesta exitosa
+        return jsonify({
+            "success": True,
+            "filename": filename,
+            "url": url_for('static', filename=f'images/uploads/productos/{filename}')
+        })
+
+    except Exception as e:
+        app.logger.error(f"Error al subir imagen de producto: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": "Error interno del servidor al guardar la imagen"
+        }), 500
+
 @app.route("/admin")
 @login_required
 @admin_required
@@ -448,10 +512,11 @@ def nuevo_producto():
     codigo = request.form.get("codigo")
     cantidad = request.form.get("cantidad")
     precio = request.form.get("precio")
+    categoria = request.form.get("categoria")
     imagen = request.form.get("imagen")
 
     # Validaciones básicas
-    if not all([nombre, descripcion, codigo, cantidad, precio, imagen]):
+    if not all([nombre, descripcion, codigo, cantidad, precio, categoria, imagen]):  # ← INCLUIR categoria
         return render_template(
             "admin/nuevo_producto.html",
             error="Todos los campos son obligatorios.",
@@ -465,7 +530,8 @@ def nuevo_producto():
             "Codigo": codigo,
             "Cantidad": int(cantidad),
             "Precio": int(precio),
-            "Imagen": imagen,  # Asumiendo que la imagen es una URL o un nombre de archivo
+            "Categoria": categoria, 
+            "Imagen": imagen, 
         }
 
         response = requests.post(f"{API_HOST}/api/productos/", json=payload)
@@ -503,14 +569,15 @@ def editar_producto(id):
         except Exception as e:
             return "Error del servidor", 500
 
-    # POST - Actualizar producto
     nombre = request.form.get("nombre")
     descripcion = request.form.get("descripcion")
     codigo = request.form.get("codigo")
     cantidad = request.form.get("cantidad")
     precio = request.form.get("precio")
+    categoria = request.form.get("categoria")
+    imagen = request.form.get("imagen")
 
-    if not all([nombre, descripcion, codigo, cantidad, precio]):
+    if not all([nombre, descripcion, codigo, cantidad, precio, categoria, imagen]):
         try:
             response = requests.get(f"{API_HOST}/api/productos/{id}")
             producto = response.json() if response.status_code == 200 else {}
@@ -530,6 +597,8 @@ def editar_producto(id):
             "Codigo": codigo,
             "Cantidad": int(cantidad),
             "Precio": int(precio),
+            "Categoria": categoria,
+            "Imagen": imagen,
         }
 
         response = requests.put(
@@ -573,6 +642,69 @@ def eliminar_producto(id):
         return redirect("/admin")
 
 
+@app.route("/subir-imagen-plan", methods=["POST"])
+def subir_imagen_plan():
+    try:
+        # Verificar que se envió un archivo
+        if "foto" not in request.files:
+            return jsonify({
+                "success": False,
+                "error": "No se seleccionó ningún archivo"
+            }), 400
+
+        foto = request.files["foto"]
+
+        if foto.filename == "":
+            return jsonify({
+                "success": False,
+                "error": "El nombre del archivo está vacío"
+            }), 400
+
+        # Verificar extensión del archivo
+        if '.' not in foto.filename:
+            return jsonify({
+                "success": False,
+                "error": "Archivo sin extensión válida"
+            }), 400
+            
+        extension = foto.filename.rsplit(".", 1)[1].lower()
+        
+        # Definir extensiones permitidas si no están definidas
+        EXTENSIONES_PERMITIDAS = {'jpg', 'jpeg', 'png'}
+        
+        if extension not in EXTENSIONES_PERMITIDAS:
+            return jsonify({
+                "success": False,
+                "error": f"Formato no permitido. Formatos aceptados: {', '.join(EXTENSIONES_PERMITIDAS)}"
+            }), 400
+
+        # Generar nombre único para el archivo
+        filename = f"plan_{uuid.uuid4().hex}.{extension}"
+        
+        # Asegurarse de que el directorio existe
+        upload_dir = os.path.join(app.static_folder, 'images/uploads/planes')
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir)
+        
+        filepath = os.path.join(upload_dir, filename)
+        
+        # Guardar la imagen
+        foto.save(filepath)
+        
+        # Retornar respuesta exitosa
+        return jsonify({
+            "success": True,
+            "filename": filename,
+            "url": url_for('static', filename=f'images/uploads/planes/{filename}')
+        })
+
+    except Exception as e:
+        app.logger.error(f"Error al subir imagen de plan: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": "Error interno del servidor al guardar la imagen"
+        }), 500
+
 @app.route("/admin/planes")
 @login_required
 @admin_required
@@ -582,6 +714,14 @@ def admin_planes():
         response = requests.get(f"{API_HOST}/api/planes/")
         if response.status_code == 200:
             planes = response.json()
+            for plan in planes:
+                if plan.get("Imagen"):
+                    plan["imagen_url"] = url_for(
+                        'static', 
+                        filename=f'images/uploads/planes/{plan["Imagen"]}'
+                    )
+                else:
+                    plan["imagen_url"] = url_for('static', filename='images/default_plan.png')
         else:
             planes = []
     except Exception as e:
@@ -613,6 +753,7 @@ def nuevo_plan():
     descripcion = request.form.get("descripcion")
     duracion = request.form.get("duracion")
     precio = request.form.get("precio")
+    imagen = request.form.get("imagen")
 
     # Validaciones básicas
     if not all([descripcion, duracion, precio]):
@@ -627,6 +768,7 @@ def nuevo_plan():
             "Descripcion": descripcion,
             "DuracionPlan": duracion,
             "Precio": int(precio),
+            "Imagen": imagen
         }
 
         response = requests.post(f"{API_HOST}/api/planes/", json=payload)
@@ -668,6 +810,7 @@ def editar_plan(id):
     descripcion = request.form.get("descripcion")
     duracion = request.form.get("duracion")
     precio = request.form.get("precio")
+    imagen = request.form.get("imagen")
 
     if not all([descripcion, duracion, precio]):
         try:
@@ -687,6 +830,7 @@ def editar_plan(id):
             "Descripcion": descripcion,
             "DuracionPlan": duracion,
             "Precio": int(precio),
+            "Imagen": imagen
         }
 
         response = requests.put(f"{API_HOST}/api/planes/{id}", json=payload)
