@@ -606,6 +606,9 @@
   .h-\[21\%\] {
     height: 21%;
   }
+  .h-\[23px\] {
+    height: 23px;
+  }
   .h-\[23xp\] {
     height: 23xp;
   }
@@ -1258,6 +1261,10 @@
   .border-t {
     border-top-style: var(--tw-border-style);
     border-top-width: 1px;
+  }
+  .border-b-2 {
+    border-bottom-style: var(--tw-border-style);
+    border-bottom-width: 2px;
   }
   .border-black {
     border-color: var(--color-black);
@@ -2829,6 +2836,7 @@
       justify-content: center;
     }
   }
+<<<<<<< HEAD
   .xl\:max-h-\[514px\] {
     @media (width >= 80rem) {
       max-height: 514px;
@@ -2843,6 +2851,11 @@
     @media (width >= 80rem) {
       min-width: 474px;
 >>>>>>> origin/DevBranch:Front/static/css/main.css
+=======
+  .\[\&\>option\]\:text-black {
+    &>option {
+      color: var(--color-black);
+>>>>>>> origin/DevBranch
     }
   }
 }

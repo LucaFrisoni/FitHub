@@ -1,0 +1,174 @@
+<div
+  id="modal-imagen-plan"
+  class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50"
+>
+  <div class="bg-white rounded-lg p-6 max-w-md mx-4">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+      Subir imagen del plan
+    </h3>
+    <div class="flex flex-col justify-center items-center space-y-8">
+      <!-- Preview -->
+      <img
+        id="preview-imagen-plan"
+        src="{{ url_for('static', filename='images/default_plan.png') }}"
+        alt="Vista previa"
+        class="h-32 w-32 rounded-lg object-cover shadow"
+      />
+
+      <form
+        id="form-subir-imagen-plan"
+        method="POST"
+        enctype="multipart/form-data"
+        action="{{ url_for('subir_imagen_plan') }}"
+      >
+        <input
+          id="imagen_plan_prev"
+          type="file"
+          name="foto"
+          accept=".jpg,.jpeg,.png"
+          onchange="previewFotoPlan(this)"
+          class="mb-4 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/85"
+          required
+        />
+
+        <!-- Loader oculto por defecto -->
+        {% include "components/loader.html" %}
+
+        <!-- Formatos aceptados -->
+        <div id="format-plan" class="flex justify-center w-full">
+          <p class="text-stone-400 text-sm">
+            Solo se aceptan formatos:
+            <span class="font-bold text-stone-400 text-sm">jpg, jpeg, png</span>
+          </p>
+        </div>
+
+        <div class="flex justify-end space-x-3 mt-6">
+          <button
+            type="button"
+            onclick="cerrarModalPlan()"
+            class="px-4 py-2 text-white bg-black hover:bg-black/85 transition cursor-pointer rounded-lg"
+          >
+            Cancelar
+          </button>
+          <button
+            id="btn-submit-plan"
+            type="submit"
+            class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/85 transition cursor-pointer"
+          >
+            Subir
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Imagen por defecto para restaurar al cerrar el modal
+  const previewOriginalPlan = "{{ url_for('static', filename='images/default_plan.png') }}";
+
+  document
+    .getElementById("form-subir-imagen-plan")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+      
+      // Mostrar loader
+      mostrarLoaderPlan();
+      
+      const formData = new FormData(this);
+      
+      fetch(this.action, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          // Actualizar vista previa principal
+          const previewPrincipal = document.getElementById("preview-imagen-principal");
+          if (previewPrincipal) {
+            previewPrincipal.src = data.url;
+          }
+          
+          // Actualizar campo oculto con el nombre de la imagen
+          const hiddenInput = document.getElementById("nombre_imagen_plan");
+          if (hiddenInput) {
+            hiddenInput.value = data.filename;
+          }
+          
+          // Cerrar modal
+          cerrarModalPlan();
+          
+          // Opcional: mostrar mensaje de éxito
+          console.log("Imagen subida correctamente");
+        } else {
+          alert('Error: ' + (data.error || 'Error desconocido'));
+          ocultarLoaderPlan();
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error al subir la imagen: ' + error.message);
+        ocultarLoaderPlan();
+      });
+    });
+
+  function mostrarLoaderPlan() {
+    document.getElementById("loader").classList.add("flex");
+    document.getElementById("loader").classList.remove("hidden");
+
+    document.getElementById("btn-submit-plan").disabled = true;
+
+    document.getElementById("format-plan").classList.remove("flex");
+    document.getElementById("format-plan").classList.add("hidden");
+
+    document.getElementById("imagen_plan_prev").classList.add("hidden");
+  }
+
+  function ocultarLoaderPlan() {
+    document.getElementById("loader").classList.add("hidden");
+    document.getElementById("loader").classList.remove("flex");
+
+    document.getElementById("btn-submit-plan").disabled = false;
+
+    document.getElementById("format-plan").classList.add("flex");
+    document.getElementById("format-plan").classList.remove("hidden");
+
+    document.getElementById("imagen_plan_prev").classList.remove("hidden");
+  }
+
+  function abrirModalPlan() {
+    document.getElementById("modal-imagen-plan").classList.add("flex");
+    document.getElementById("modal-imagen-plan").classList.remove("hidden");
+  }
+
+  function previewFotoPlan(input) {
+    const preview = document.getElementById("preview-imagen-plan");
+    const file = input.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function cerrarModalPlan() {
+    document.getElementById("modal-imagen-plan").classList.add("hidden");
+    document.getElementById("modal-imagen-plan").classList.remove("flex");
+
+    // Restaurar vista previa a la imagen por defecto
+    document.getElementById("preview-imagen-plan").src = previewOriginalPlan;
+    document.getElementById("form-subir-imagen-plan").reset();
+    
+    // Asegurar que el loader está oculto
+    ocultarLoaderPlan();
+  }
+</script>
