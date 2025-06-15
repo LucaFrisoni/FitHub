@@ -129,27 +129,19 @@ def planes():
 def reservas():
     return render_template("reservas.html", user=current_user)
 
-@app.route("/procesar_reservas", methods=['POST'])
-#@login_required
-def procesar_reservas():
-    try:
-        #recibo los datos JSON desde JS
-        datos = request.get_json()
-
-        #extraigo los valores
-        selected_days = datos.get('dias')
-        start_h = datos.get('entrada')
-        end_h = datos.get('salida')
-        comments_posted = datos.get('comentarios')
-
-        print(f"Días: {selected_days}")
-        print(f"Horario: {start_h} - {end_h}")
-        print(f"Comentarios: {comments_posted}")
-
-        return jsonify({"success": True, "message": "Reserva recibida"})
-
-    except Exception as e:
-        return jsonify({"error": str(e)})
+@app.route('/procesar_reserva', methods=['POST'])
+def procesar_reserva():
+    data = request.get_json()
+    
+    dias = data['dias']  # Lista de días: ['lunes', 'martes', ...]
+    tipo_entrenamiento = data['tipo_entrenamiento']  # 'Bodybuilding', 'Spinning', etc.
+    hora_inicio = data['hora_inicio']  # '09:00'
+    hora_fin = data['hora_fin']  # '10:00'
+    comentarios = data['comentarios']  # Texto del textarea
+    
+    # Tu lógica de procesamiento aquí
+    
+    return jsonify({'success': True})
 
     
 
