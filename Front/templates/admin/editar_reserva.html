@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-white pt-24 px-6">
+    <div class="max-w-2xl mx-auto mt-20 pb-20">
+        <!-- Header -->
+        <div class="flex items-center mb-8">
+            <a href="{{ url_for('admin_reservas') }}" 
+               class="mr-4 bg-white/10 hover:bg-white/20 p-2 rounded-lg transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </a>
+            <div>
+                <h1 class="text-3xl font-bold">Editar Reserva</h1>
+                <p class="text-gray-300">Modifica la información de la reserva</p>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-8">
+            {% if errors %}
+            <div class="bg-red-500/20 border border-red-500 text-red-100 px-4 py-3 rounded mb-6">
+                <strong>Errores encontrados:</strong>
+                <ul class="mt-2 list-disc list-inside">
+                    {% for error in errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <form method="POST" class="space-y-6" id="form-editar">
+                <!-- Usuario -->
+                <div>
+                    <label for="usuario" class="block text-sm font-medium mb-2">
+                        Usuario <span class="text-red-400">*</span>
+                    </label>
+                    <select id="usuario" name="usuario" required
+                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition">
+                        <option value="">Selecciona un usuario</option>
+                        {% for usuario in usuarios %}
+                        <option value="{{ usuario.ID_usuario }}" 
+                                {% if reserva.ID_Usuario == usuario.ID_usuario %}selected{% endif %}>
+                            {{ usuario.Nombre }} {{ usuario.Apellido }} - {{ usuario.Email }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Plan -->
+                <div>
+                    <label for="plan" class="block text-sm font-medium mb-2">
+                        Plan <span class="text-red-400">*</span>
+                    </label>
+                    <select id="plan" name="plan" required
+                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition">
+                        <option value="">Selecciona un plan</option>
+                        {% for plan in planes %}
+                        <option value="{{ plan.ID_Plan }}" 
+                                {% if reserva.ID_Plan == plan.ID_Plan %}selected{% endif %}>
+                            {{ plan.Descripcion }} - ${{ plan.Precio }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Nota -->
+                <div>
+                    <label for="nota" class="block text-sm font-medium mb-2">Nota</label>
+                    <textarea id="nota" 
+                              name="nota" 
+                              rows="3" 
+                              class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none"
+                              placeholder="Agrega una nota sobre la reserva...">{{ reserva.Nota if reserva.Nota else '' }}</textarea>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="bg-white/5 rounded-lg p-4">
+                    <h3 class="font-semibold mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Información de la Reserva
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="bg-white/5 p-3 rounded">
+                            <span class="block text-gray-300 text-xs">ID Reserva</span>
+                            <span class="font-mono text-lg">{{ reserva.ID_AlquilerPlan }}</span>
+                        </div>
+                        <div class="bg-white/5 p-3 rounded">
+                            <span class="block text-gray-300 text-xs">Fecha de Creación</span>
+                            <span class="font-mono text-lg">{% if reserva.fecha_creacion %}{{ reserva.fecha_creacion.strftime('%d/%m/%Y') }}{% else %}N/A{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex justify-end space-x-4 pt-6 border-t border-white/10">
+                    <a href="{{ url_for('admin_reservas') }}" 
+                       class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Cancelar
+                    </a>
+                    <button type="submit" 
+                            class="px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-semibold transition flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Actualizar Reserva
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Validación en tiempo real
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('form-editar');
+    
+    // Validación antes del envío
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        let errors = [];
+        
+        // Validar usuario
+        const usuario = document.getElementById('usuario').value;
+        if (!usuario) {
+            errors.push('Debes seleccionar un usuario');
+            isValid = false;
+        }
+        
+        // Validar plan
+        const plan = document.getElementById('plan').value;
+        if (!plan) {
+            errors.push('Debes seleccionar un plan');
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Por favor, corrige los siguientes errores:\n\n' + errors.join('\n'));
+        }
+    });
+});
+
+// Confirmación antes de salir con cambios no guardados
+let formChanged = false;
+const form = document.getElementById('form-editar');
+
+form.addEventListener('input', function() {
+    formChanged = true;
+});
+
+window.addEventListener('beforeunload', function(e) {
+    if (formChanged) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+
+// No mostrar confirmación al enviar el formulario
+form.addEventListener('submit', function() {
+    formChanged = false;
+});
+</script>
+
+{% endblock %}

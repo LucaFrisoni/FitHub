@@ -1,0 +1,405 @@
+{% extends "base.html" %} {% block content %}
+<div class="px-[30px] sm:px-[80px] pt-[150px]">
+  <!-- toasts -->
+
+  {% if error %} {% include "components/toasts/error.html" %} {% endif %}
+  <div></div>
+  {% if toast_exitoso %} {% include "components/toasts/exito.html" %} {%endif %}
+
+  <!-- User header -->
+  <div class="bp-user_profile:flex justify-between pb-[24px] w-full">
+    <!-- image y titulos -->
+    <div class="flex gap-x-6 items-center">
+      <div class="relative group h-[120px] w-[120px]">
+        <img
+          src="{% if user['imagen'] %}
+          {{ url_for('static', filename='images/uploads/perfil/' ~ user['imagen']) }}
+        {% else %}
+          {{ url_for('static', filename='images/default_user.png') }}
+        {% endif %}"
+          alt="avatar"
+          class="h-full w-full rounded-full object-cover object-center shadow-2xl transition duration-300 group-hover:brightness-75"
+        />
+        <!-- Lápiz -->
+        <div
+          class="absolute bottom-[-12px] left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition duration-300"
+        >
+          <button
+            onclick="abrirModal()"
+            class="bg-white shadow-md p-1 rounded-full hover:bg-gray-100 hover:cursor-pointer"
+          >
+            <!-- Ícono de lápiz -->
+            <img
+              src="{{ url_for('static',filename='images/lapiz_icono.png')}}"
+              class="w-[23px] h-[23xp]"
+            />
+          </button>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-y-1.5">
+        <p class="font-bold text-2xl">
+          {{ user["nombre"] }} {{ user["apellido"] }}
+        </p>
+        <p class="text-primary font-bold text-sm">{{ user["usuario"] }}</p>
+        <p class="font-extralight text-sm text-black">{{ user["email"] }}</p>
+      </div>
+    </div>
+    <!-- botones -->
+    <div class="gap-x-2 flex mt-10">
+      <div class="flex items-center justify-center">
+        <button
+          id="editar_perfil"
+          type="button"
+          class="opacity-100 scale-100 cursor-pointer py-2 px-3 sm:py-3 sm:px-5 bg-black font-bold text-stone-100 rounded-xl shadow-md hover:bg-black/85 hover:shadow-lg transition duration-300 ease-in-out"
+        >
+          Editar Pefil
+        </button>
+      </div>
+      <div class="flex items-center justify-center mr-10">
+        <button
+          onclick="abrirModal()"
+          type="button"
+          class="cursor-pointer py-2 px-3 sm:py-3 sm:px-5 ml-6 bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition"
+        >
+          Cambiar foto
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <hr class="pb-[24px]" />
+
+  <form action="{{ url_for('user') }}" method="POST">
+    <!-- UserBio -->
+    <div>
+      <div class="sm:flex-row w-full justify-between flex flex-col">
+        <!-- 1 -->
+        <div class="w-full max-w-[800px] min-w-[200px]">
+          <label class="block mb-2 text-sm text-black font-bold">Nombre</label>
+          <div class="relative">
+            <input
+              name="nombre"
+              placeholder=" "
+              disabled
+              value="{{ user['nombre'] }}"
+              id="user_nombre"
+              class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 border-black rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <label
+              for="user_nombre"
+              class="absolute cursor-text bg-stone-100 px-1 left-2.5 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+            >
+              {{ user['nombre'] }}
+            </label>
+          </div>
+        </div>
+        <!-- 2 -->
+        <div
+          class="w-full max-w-[800px] min-w-[200px] sm:ml-[40px] sm:mt-0 mt-6"
+        >
+          <label class="block mb-2 text-sm text-black font-bold">
+            Apellido
+          </label>
+          <div class="relative">
+            <input
+              name="apellido"
+              disabled
+              value="{{ user['apellido'] }}"
+              placeholder=" "
+              id="user_apellido"
+              class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 border-black rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <label
+              for="user_apellido"
+              class="absolute cursor-text bg-stone-100 px-1 left-2.5 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+            >
+              {{ user['apellido'] }}
+            </label>
+          </div>
+        </div>
+      </div>
+      <!-- 3 -->
+      <div class="w-full my-6">
+        <div class="w-full min-w-[200px]">
+          <label class="block mb-2 text-sm text-black font-bold">
+            Usuario
+          </label>
+          <div class="relative">
+            <input
+              disabled
+              value="{{ user['usuario'] }}"
+              name="usuario"
+              placeholder=" "
+              id="user_usuario"
+              class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <label
+              for="user_usuario"
+              class="absolute cursor-text bg-stone-100 px-1 left-2.5 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+            >
+              {{ user['usuario'] }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr class="pb-[24px]" />
+    <!-- User datos -->
+    <div>
+      <div class="sm:flex-row w-full justify-between flex flex-col">
+        <!-- 1 -->
+        <div class="w-full max-w-[800px] min-w-[200px]">
+          <label class="block mb-2 text-sm text-black font-bold">
+            Direccion Email
+          </label>
+          <div class="relative">
+            <input
+              disabled
+              name="email"
+              placeholder=" "
+              id="email"
+              class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <img
+              src="{{ url_for('static',filename='images/mail_icono.png')}}"
+              class="absolute w-5 h-4 top-3 left-2.5"
+            />
+            <div
+              class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
+            ></div>
+            <label
+              for="email"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+            >
+              {{ user['email'] }}
+            </label>
+          </div>
+        </div>
+        <!-- 2 -->
+        <div
+          class="w-full max-w-[800px] min-w-[200px] sm:ml-[40px] sm:mt-0 mt-6"
+        >
+          <label class="block mb-2 text-sm text-black font-bold">
+            Numero de telefono
+          </label>
+          <div class="relative">
+            <input
+              disabled
+              value="{{ user['telefono'] }}"
+              name="telefono"
+              id="user_telefono"
+              placeholder=" "
+              class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <img
+              src="{{ url_for('static',filename='images/telefono_icono.png')}}"
+              class="absolute w-4 h-5 top-2 left-3"
+            />
+            <div
+              class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
+            ></div>
+            <label
+              for="user_telefono"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+            >
+              {{ user['telefono'] }}
+            </label>
+          </div>
+        </div>
+      </div>
+      <!-- 3 -->
+      <div class="w-full my-6">
+        <div class="w-full min-w-[200px]">
+          <label class="block mb-2 text-sm text-black font-bold">
+            Fecha de Nacimiento
+          </label>
+          <div class="relative">
+            <input
+              name="nacimiento"
+              disabled
+              placeholder=" "
+              value="{{ user['fecha_nacimiento'] }}"
+              id="user_nacimiento"
+              type="date"
+              class="peer w-full bg-transparent placeholder:text-stone-400 text-slate-700 text-sm border-2 rounded-md px-10 py-2 transition duration-300 ease focus:outline-none focus:border-stone-300 shadow-sm focus:shadow"
+            />
+            <img
+              src="{{ url_for('static',filename='images/torta_icono.png')}}"
+              class="absolute w-6 h-6 top-1.5 left-2"
+            />
+            <div
+              class="absolute top-0 left-9 h-full w-px bg-black peer-focus:bg-stone-300 transition-all"
+            ></div>
+            <label
+              for="user_nacimiento"
+              class="absolute cursor-text bg-stone-100 px-1 left-10 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90"
+            >
+              {{ user['fecha_nacimiento'] }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flex w-full justify-end mb-8">
+      <div class="flex items-center justify-center">
+        <button
+          id="cancelar_perfil"
+          type="button"
+          class="opacity-0 scale-95 pointer-none: cursor-pointer py-2 px-3 sm:py-3 sm:px-5 bg-black font-bold text-stone-100 rounded-xl shadow-md hover:bg-black/85 hover:shadow-lg transition duration-300 ease-in-out"
+        >
+          Cancelar
+        </button>
+      </div>
+
+      <div class="flex items-center justify-center">
+        <button
+          id="guardar_perfil"
+          type="submit"
+          class="opacity-0 scale-95 pointer-none: cursor-pointer py-2 px-3 sm:py-3 sm:px-5 ml-6 bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition duration-300 ease-in-out"
+        >
+          Guardar
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <hr class="pb-[24px]" />
+
+  <!--Mis compras -->
+  <div
+    class="w-full h-[350px] border-2 border-b-black mb-[24px] rounded-2xl bg-white relative"
+  >
+    <div class="h-[40px] w-full">
+      <p class="font-bold pl-3 pt-3">Mis compras</p>
+    </div>
+    <!-- Card -->
+    <div
+      class="flex flex-col items-center gap-y-2 ml-8 mt-3 w-[180px] bg-stone-100 rounded-2xl shadow-md hover:-translate-y-2 transition-transform duration-300 ease-in-out"
+    >
+      <img
+        src="{{ url_for('static',filename='images/producto_prueba.png')}}"
+        class="pt-4"
+        alt="producto"
+      />
+      <p class="font-bold px-1">Nombre del producto</p>
+      <p class="text-primary font-bold text-2xl">$30000</p>
+      <div class="flex w-full justify-between px-2">
+        <p class="text-xs font-extralight">Comprado el</p>
+        <p class="text-xs font-extralight">31/05/2025</p>
+      </div>
+    </div>
+    <!-- botones -->
+    <div class="h-[24px] w-[80px] absolute right-4 bottom-6">
+      <button
+        class="rounded-md bg-stone-100 p-2.5 border border-transparent text-center text-sm transition-all shadow-sm hover:shadow-lg cursor-pointer hover:bg-black active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+        type="button"
+      >
+        <img
+          src="{{ url_for('static',filename='images/flecha_izq_icono.png')}}"
+        />
+      </button>
+      <button
+        class="rounded-md bg-stone-100 p-2.5 border border-transparent text-center text-sm transition-all shadow-sm hover:shadow-lg cursor-pointer hover:bg-black active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+        type="button"
+      >
+        <img
+          src="{{ url_for('static',filename='images/flecha_der_icono.png')}}"
+        />
+      </button>
+    </div>
+  </div>
+
+  <hr class="pb-[24px]" />
+
+  <!--Historial Reservas -->
+  <div
+    class="w-full h-[350px] border-2 border-b-black rounded-2xl mb-8 bg-white flex flex-col px-4"
+  >
+    <!-- Título -->
+    <div class="h-[40px] pt-3">
+      <p class="font-bold">Historial Reservas</p>
+    </div>
+
+    <!-- Contenido principal: cuadro de reservas -->
+    <div class="flex-1 mt-2 bg-stone-100 rounded-xl mx-4">
+      <!-- titulos -->
+      <div class="flex px-6 py-2 justify-between">
+        <div class="w-1/3 flex items-center">
+          <p class="font-bold text-lg">Reserva</p>
+          <img
+            class="pl-2"
+            src="{{ url_for('static',filename='images/reserva_icono.png')}}"
+            alt="logo"
+          />
+        </div>
+        <div class="w-1/3 flex items-center">
+          <p class="font-bold text-lg">Día</p>
+          <img
+            class="pl-2"
+            src="{{ url_for('static',filename='images/calendario_icono.png')}}"
+            alt="logo"
+          />
+        </div>
+        <div class="w-1/3 flex items-center">
+          <p class="font-bold text-lg">Horario</p>
+          <img
+            class="pl-2"
+            src="{{ url_for('static',filename='images/reloj_icono.png')}}"
+            alt="logo"
+          />
+        </div>
+      </div>
+      <!-- reservas -->
+      <div class="flex px-6 py-2 justify-between group">
+        <div class="w-1/3 flex items-center">
+          <div
+            class="w-full flex items-center bg-white shadow-md h-[32px] rounded-l-md peer group-hover:bg-stone-100 transition"
+          >
+            <p class="pl-3">Boxeo</p>
+          </div>
+        </div>
+        <div class="w-1/3 flex items-center relative">
+          <div
+            class="w-full flex items-center bg-white shadow-md h-[32px] group-hover:bg-stone-100 transition"
+          >
+            <p class="pl-3">Boxeo</p>
+          </div>
+          <div class="absolute top-0 left-0 h-full w-px bg-black"></div>
+          <div class="absolute top-0 right-0 h-full w-px bg-black"></div>
+        </div>
+        <div class="w-1/3 flex items-center">
+          <div
+            class="w-full flex items-center bg-white shadow-md h-[32px] rounded-r-md group-hover:bg-stone-100 transition"
+          >
+            <p class="pl-3">Boxeo</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones al final -->
+    <div class="flex justify-end items-center h-[40px] gap-2 my-2 mx-3">
+      <button
+        class="rounded-md bg-stone-100 p-2.5 border border-transparent text-center text-sm transition-all shadow-sm hover:shadow-lg cursor-pointer hover:bg-black active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+        type="button"
+      >
+        <img
+          src="{{ url_for('static',filename='images/flecha_izq_icono.png')}}"
+        />
+      </button>
+      <button
+        class="rounded-md bg-stone-100 p-2.5 border border-transparent text-center text-sm transition-all shadow-sm hover:shadow-lg cursor-pointer hover:bg-black active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+        type="button"
+      >
+        <img
+          src="{{ url_for('static',filename='images/flecha_der_icono.png')}}"
+        />
+      </button>
+    </div>
+  </div>
+  <!-- Modal subir foto -->
+  {% include "components/modales/modal_user_profile.html" %}
+</div>
+
+{% endblock %}
