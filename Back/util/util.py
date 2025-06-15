@@ -1,20 +1,30 @@
-from datetime import datetime
+from datetime import date, datetime
 import bcrypt
+
 
 def obtener_fecha(iso_str: str) -> datetime:
     return datetime.fromisoformat(iso_str)
 
-def encryptar_pwd(passwd: str) -> str: 
+
+def formatear_fecha_ddmmaaaa(fecha):
+    if isinstance(fecha, (datetime, date)):
+        return fecha.strftime("%Y-%m-%d")
+    return fecha
+
+
+def encryptar_pwd(passwd: str) -> str:
     return bcrypt.hashpw(passwd.encode(), bcrypt.gensalt()).decode()
 
-def check_pwd(passwd: str, hashed: str) -> bool: 
+
+def check_pwd(passwd: str, hashed: str) -> bool:
     return bcrypt.checkpw(passwd.encode(), hashed.encode())
+
 
 def is_type(obj, required_type) -> bool:
     """
-    ESte metodo se usa porque en las request HTTP, 
+    ESte metodo se usa porque en las request HTTP,
     todo es casteado a 'string'
-    """ 
+    """
     try:
         if required_type == int:
             int(obj)
@@ -24,10 +34,11 @@ def is_type(obj, required_type) -> bool:
     except Exception as e:
         return False
 
+
 def convert_value(value, target_type):
     """Convierte el valor al tipo especificado"""
     from datetime import datetime
-    
+
     try:
         if target_type == int:
             return int(value)
@@ -37,10 +48,10 @@ def convert_value(value, target_type):
             # Solo formato ISO: 2024-12-25T14:30:00 o 2024-12-25T14:30:00Z
             try:
                 # Primero intentar con Z (UTC)
-                if value.endswith('Z'):
-                    return datetime.strptime(value, '%Y-%m-%dT%H:%M:%SZ')
+                if value.endswith("Z"):
+                    return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
                 else:
-                    return datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
+                    return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
             except ValueError:
                 return None
         else:

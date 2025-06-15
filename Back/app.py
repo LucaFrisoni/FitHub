@@ -4,6 +4,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 
+from db.db import get_connection
 from routes.planes import planes_bp
 from routes.productos import productos_bp
 from routes.horariosentrenamiento import horarios_bp
@@ -28,5 +29,14 @@ app.register_blueprint(roles_bp, url_prefix="/api/roles")
 app.register_blueprint(compras_bp, url_prefix="/api/compras")
 app.register_blueprint(detallecompras_bp, url_prefix="/api/detallecompras")
 
-if __name__ == '__main__':
+# ------------------Check-conexion-bd------------------
+try:
+    conn = get_connection()
+    conn.close()
+    print("\033[92m------Conectado a la base de datos exitosamente.\033[0m")
+except Exception as e:
+    print("\033[91mError al conectar con la base de datos:", e, "\033[0m")
+
+
+if __name__ == "__main__":
     app.run(port=5000, debug=True)
