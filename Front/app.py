@@ -108,19 +108,99 @@ def planes():
 def reservas():
     return render_template("reservas.html", user=current_user)
 
+
 @app.route('/procesar_reserva', methods=['POST'])
+#@login_required
 def procesar_reserva():
     data = request.get_json()
     
-    dias = data['dias']  # Lista de días: ['lunes', 'martes', ...]
-    tipo_entrenamiento = data['tipo_entrenamiento']  # 'Bodybuilding', 'Spinning', etc.
-    hora_inicio = data['hora_inicio']  # '09:00'
-    hora_fin = data['hora_fin']  # '10:00'
-    comentarios = data['comentarios']  # Texto del textarea
+    # Obtener datos del request
+    dias = data.get('dias', [])  # Lista de días: ['lunes', 'martes', ...]
+    tipo_entrenamiento = data.get('tipo_entrenamiento')  # 'Bodybuilding', 'Spinning', etc.
+    hora_inicio = data.get('hora_inicio')  # '09:00'
+    hora_fin = data.get('hora_fin')  # '10:00'
+    comentarios = data.get('comentarios', '')  # Texto del textarea
     
-    # Tu lógica de procesamiento aquí
+    # Validar datos requeridos
+    if not all([dias, tipo_entrenamiento, hora_inicio, hora_fin]):
+        return jsonify({
+            'success': False, 
+            'error': 'Faltan datos requeridos'
+        }), 400
     
-    return jsonify({'success': True})
+    # Obtener ID del usuario actual
+    id_usuario = current_user.id
+    
+    try:
+        # Verificar si el usuario tiene algún plan comprado (alquiler activo)
+        response_alquileres = requests.get(f"{API_HOST}/api/alquileres/")
+        if response_alquileres.status_code != 200:
+            return jsonify({
+                'success': False,
+                'error': 'Error al verificar planes del usuario'
+            }), 500
+            
+        alquileres = response_alquileres.json()
+        
+        # Buscar si el usuario tiene algún alquiler activo
+        plan_usuario = None
+        for alquiler in alquileres:
+            if alquiler.get('ID_Usuario') == id_usuario:
+                plan_usuario = alquiler.get('ID_Plan')
+                break
+        
+        if not plan_usuario:
+            return jsonify({
+                'success': False,
+                'error': 'El usuario no tiene ningún plan activo. Debe comprar un plan primero.'
+            }), 400
+        
+        # Construir horario completo
+        horario_completo = f"{hora_inicio} - {hora_fin}"
+        if comentarios:
+            horario_completo += f" | Comentarios: {comentarios}"
+        
+        # Convertir lista de días a string
+        dias_str = ", ".join(dias)
+        
+        # Preparar datos para el endpoint de horarios
+        payload_horario = {
+            "Dias": dias_str,
+            "Horario": horario_completo,
+            "ID_Plan": plan_usuario,
+            "ID_Usuario": id_usuario
+        }
+        
+        # Realizar request al backend para guardar en la base de datos
+        response_horario = requests.post(
+            f"{API_HOST}/api/horariosentrenamiento/", 
+            json=payload_horario
+        )
+        
+        if response_horario.status_code == 201:
+            return jsonify({
+                'success': True,
+                'message': 'Reserva creada exitosamente',
+                'id_horario': response_horario.json().get('id'),
+                'id_plan': plan_usuario
+            })
+        else:
+            error_msg = response_horario.json().get('error', 'Error al crear la reserva')
+            return jsonify({
+                'success': False,
+                'error': error_msg
+            }), 500
+            
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            'success': False,
+            'error': 'Error de conexión con el servidor'
+        }), 500
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': 'Error interno del servidor'
+        }), 500
 
 
 @app.route("/tienda", methods=["GET"])
