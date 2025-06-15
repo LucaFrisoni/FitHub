@@ -28,3 +28,5 @@ app.register_blueprint(roles_bp, url_prefix="/api/roles")
 app.register_blueprint(compras_bp, url_prefix="/api/compras")
 app.register_blueprint(detallecompras_bp, url_prefix="/api/detallecompras")
 
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)
