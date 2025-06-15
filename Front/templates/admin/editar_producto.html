@@ -1,0 +1,403 @@
+{% extends "base.html" %} {% block content %}
+
+<div
+  class="min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-white pt-24 px-6"
+>
+  <div class="max-w-2xl mx-auto pb-20">
+    <!-- Header -->
+    <div class="flex items-center mb-8 mt-20">
+      <a
+        href="{{ url_for('admin_panel') }}"
+        class="mr-4 bg-white/10 hover:bg-white/20 p-2 rounded-lg transition"
+      >
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 19l-7-7 7-7"
+          ></path>
+        </svg>
+      </a>
+      <div>
+        <h1 class="text-3xl font-bold">Editar Producto</h1>
+        <p class="text-gray-300">Modifica la información del producto</p>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-8">
+      {% if errors %}
+      <div
+        class="bg-red-500/20 border border-red-500 text-red-100 px-4 py-3 rounded mb-6"
+      >
+        <strong>Errores encontrados:</strong>
+        <ul class="mt-2 list-disc list-inside">
+          {% for error in errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if error %}
+      <div class="bg-red-500/20 border border-red-500 text-red-100 px-4 py-3 rounded mb-6">
+        <strong>Error:</strong> {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="POST" class="space-y-6" id="form-editar" enctype="multipart/form-data">
+        <!-- Sección de imagen -->
+        <div class="flex justify-between pb-[24px] w-full">
+          <div class="flex gap-x-6 items-center">
+            <div class="relative group h-[120px] w-[120px]">
+              <img
+                id="preview-imagen-principal"
+                src="{% if producto.Imagen and producto.Imagen != 'default_producto.png' %}{{ url_for('static', filename='images/uploads/productos/' + producto.Imagen) }}{% else %}{{ url_for('static', filename='images/default_producto.png') }}{% endif %}"
+                alt="Imagen del producto"
+                class="h-full w-full rounded-lg object-cover object-center shadow-2xl transition duration-300 group-hover:brightness-75"
+              />
+              <div class="absolute bottom-[-12px] left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition duration-300">
+                <button
+                  type="button"
+                  onclick="abrirModalProducto()"
+                  class="bg-white shadow-md p-1 rounded-full hover:bg-gray-100 hover:cursor-pointer"
+                >
+                  <img
+                    src="{{ url_for('static',filename='images/lapiz_icono.png')}}"
+                    class="w-[23px] h-[23px]"
+                  />
+                </button>
+              </div>
+            </div>
+            <div class="flex flex-col gap-y-1.5">
+              <p class="font-bold text-2xl">Imagen del Producto</p>
+              <p class="text-primary font-bold text-sm">Recomendado: 500x500px</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campo oculto para el nombre de la imagen -->
+        <input type="hidden" id="nombre_imagen_producto" name="imagen" value="{{ producto.Imagen if producto.Imagen else 'default_producto.png' }}">
+
+        <!-- Nombre -->
+        <div>
+          <label for="nombre" class="block text-sm font-medium mb-2">
+            Nombre del Producto <span class="text-red-400">*</span>
+          </label>
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            value="{{ producto.Nombre if producto.Nombre else '' }}"
+            required
+            minlength="3"
+            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+          />
+          <small class="text-gray-400">Mínimo 3 caracteres</small>
+        </div>
+
+        <!-- Descripción -->
+        <div>
+          <label for="descripcion" class="block text-sm font-medium mb-2">
+            Descripción <span class="text-red-400">*</span>
+          </label>
+          <textarea
+            id="descripcion"
+            name="descripcion"
+            rows="3"
+            required
+            minlength="10"
+            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none"
+          >{{ producto.Descripcion if producto.Descripcion else '' }}</textarea>
+          <small class="text-gray-400">Mínimo 10 caracteres</small>
+        </div>
+
+        <!-- Código -->
+        <div>
+          <label for="codigo" class="block text-sm font-medium mb-2">
+            Código del Producto <span class="text-red-400">*</span>
+          </label>
+          <input
+            type="text"
+            id="codigo"
+            name="codigo"
+            value="{{ producto.Codigo if producto.Codigo else '' }}"
+            required
+            minlength="3"
+            style="text-transform: uppercase"
+            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+          />
+          <small class="text-gray-400">Código único, mínimo 3 caracteres</small>
+        </div>
+
+        <!-- Cantidad y Precio en fila -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Cantidad -->
+          <div>
+            <label for="cantidad" class="block text-sm font-medium mb-2">
+              Cantidad en Stock <span class="text-red-400">*</span>
+            </label>
+            <input
+              type="number"
+              id="cantidad"
+              name="cantidad"
+              value="{{ producto.Cantidad if producto.Cantidad is not none else '' }}"
+              min="0"
+              required
+              class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+            />
+            <small class="text-gray-400">Unidades disponibles</small>
+          </div>
+
+          <!-- Precio -->
+          <div>
+            <label for="precio" class="block text-sm font-medium mb-2">
+              Precio ($) <span class="text-red-400">*</span>
+            </label>
+            <input
+              type="number"
+              id="precio"
+              name="precio"
+              value="{{ producto.Precio if producto.Precio is not none else '' }}"
+              min="0"
+              step="0.01"
+              required
+              class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+            />
+            <small class="text-gray-400">Precio de venta</small>
+          </div>
+        </div>
+
+        <!-- Categoría -->
+        <div>
+          <label for="categoria" class="block text-sm font-medium mb-2">Categoría</label>
+          <select
+            id="categoria"
+            name="categoria"
+            required
+            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+          >
+            <option value="">Selecciona una categoría</option>
+            <option value="Suplementos" {% if producto.Categoria == 'Suplementos' %}selected{% endif %}>Suplementos</option>
+            <option value="Equipamiento" {% if producto.Categoria == 'Equipamiento' %}selected{% endif %}>Equipamiento</option>
+            <option value="Ropa Deportiva" {% if producto.Categoria == 'Ropa Deportiva' %}selected{% endif %}>Ropa Deportiva</option>
+            <option value="Accesorios" {% if producto.Categoria == 'Accesorios' %}selected{% endif %}>Accesorios</option>
+            <option value="Nutrición" {% if producto.Categoria == 'Nutrición' %}selected{% endif %}>Nutrición</option>
+          </select>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="bg-white/5 rounded-lg p-4">
+          <h3 class="font-semibold mb-3 flex items-center">
+            <svg
+              class="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            Información del Producto
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div class="bg-white/5 p-3 rounded">
+              <span class="block text-gray-300 text-xs">ID</span>
+              <span class="font-mono text-lg">{{ producto.ID_Producto }}</span>
+            </div>
+            <div class="bg-white/5 p-3 rounded">
+              <span class="block text-gray-300 text-xs">Código Actual</span>
+              <span class="font-mono text-lg">{{ producto.Codigo }}</span>
+            </div>
+            <div class="bg-white/5 p-3 rounded">
+              <span class="block text-gray-300 text-xs">Valor Total Stock</span>
+              <span class="font-bold text-lg text-primary">
+                ${{ (producto.Precio * producto.Cantidad) if (producto.Precio
+                and producto.Cantidad) else 0 }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Indicador de stock -->
+        {% if producto.Cantidad is not none %}
+        <div class="bg-white/5 rounded-lg p-4">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium">Estado del Stock:</span>
+            <span
+              class="px-3 py-1 rounded-full text-xs font-medium {% if producto.Cantidad <= 5 %}bg-red-500/20 text-red-300 {% elif producto.Cantidad <= 10 %}bg-yellow-500/20 text-yellow-300 {% else %}bg-green-500/20 text-green-300{% endif %}"
+            >
+              {% if producto.Cantidad <= 5 %}Stock Crítico {% elif
+              producto.Cantidad <= 10 %}Stock Bajo {% else %}Stock Normal{%
+              endif %}
+            </span>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Botones -->
+        <div class="flex justify-end space-x-4 pt-6 border-t border-white/10">
+          <a
+            href="{{ url_for('admin_panel') }}"
+            class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition flex items-center"
+          >
+            <svg
+              class="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
+            Cancelar
+          </a>
+          <button
+            type="submit"
+            class="px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-semibold transition flex items-center"
+          >
+            <svg
+              class="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            Actualizar Producto
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Incluimos el modal para la imagen del producto -->
+{% include "components/modales/modal_producto_image.html" %}
+
+<script>
+  // Validación en tiempo real
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("form-editar");
+    const inputs = form.querySelectorAll("input, textarea");
+
+    // Convertir código a mayúsculas automáticamente
+    const codigoInput = document.getElementById("codigo");
+    if (codigoInput) {
+      codigoInput.addEventListener("input", function () {
+        this.value = this.value.toUpperCase();
+      });
+    }
+
+    // Validación antes del envío
+    form.addEventListener("submit", function (e) {
+      let isValid = true;
+      let errors = [];
+
+      // Validar nombre
+      const nombre = document.getElementById("nombre").value.trim();
+      if (!nombre || nombre.length < 3) {
+        errors.push("El nombre debe tener al menos 3 caracteres");
+        isValid = false;
+      }
+
+      // Validar descripción
+      const descripcion = document.getElementById("descripcion").value.trim();
+      if (!descripcion || descripcion.length < 10) {
+        errors.push("La descripción debe tener al menos 10 caracteres");
+        isValid = false;
+      }
+
+      // Validar código
+      const codigo = document.getElementById("codigo").value.trim();
+      if (!codigo || codigo.length < 3) {
+        errors.push("El código debe tener al menos 3 caracteres");
+        isValid = false;
+      }
+
+      // Validar cantidad
+      const cantidad = parseInt(document.getElementById("cantidad").value);
+      if (isNaN(cantidad) || cantidad < 0) {
+        errors.push("La cantidad debe ser un número válido mayor o igual a 0");
+        isValid = false;
+      }
+
+      // Validar precio
+      const precio = parseFloat(document.getElementById("precio").value);
+      if (isNaN(precio) || precio < 0) {
+        errors.push("El precio debe ser un número válido mayor o igual a 0");
+        isValid = false;
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+        alert(
+          "Por favor, corrige los siguientes errores:\n\n" + errors.join("\n")
+        );
+      }
+    });
+
+    // Mostrar contador de caracteres
+    const descripcionTextarea = document.getElementById("descripcion");
+    if (descripcionTextarea) {
+      const contador = document.createElement("div");
+      contador.className = "text-xs text-gray-400 mt-1 text-right";
+      contador.id = "contador-descripcion";
+      descripcionTextarea.parentNode.appendChild(contador);
+
+      function actualizarContador() {
+        const length = descripcionTextarea.value.length;
+        contador.textContent = `${length} caracteres`;
+        contador.className =
+          length < 10
+            ? "text-xs text-red-400 mt-1 text-right"
+            : "text-xs text-gray-400 mt-1 text-right";
+      }
+
+      descripcionTextarea.addEventListener("input", actualizarContador);
+      actualizarContador();
+    }
+  });
+
+  // Confirmación antes de salir con cambios no guardados
+  let formChanged = false;
+  const form = document.getElementById("form-editar");
+  const originalData = new FormData(form);
+
+  form.addEventListener("input", function () {
+    formChanged = true;
+  });
+
+  window.addEventListener("beforeunload", function (e) {
+    if (formChanged) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  });
+
+  // No mostrar confirmación al enviar el formulario
+  form.addEventListener("submit", function () {
+    formChanged = false;
+  });
+</script>
+
+{% endblock %}
