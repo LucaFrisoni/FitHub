@@ -70,39 +70,48 @@ document.addEventListener("DOMContentLoaded", () => {
     mobileMenu.classList.remove("opacity-100", "scale-100");
     mobileMenu.classList.add("opacity-0", "scale-95", "pointer-events-none");
   }
-
-  burger.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (mobileMenu.classList.contains("opacity-0")) {
-      mostrarMenu();
-    } else {
-      ocultarMenu();
-    }
-  });
+  if (burger) {
+    burger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (mobileMenu.classList.contains("opacity-0")) {
+        mostrarMenu();
+      } else {
+        ocultarMenu();
+      }
+    });
+  }
 
   // Cierra el menú si se hace clic fuera
-  document.addEventListener("click", (e) => {
-    if (!mobileMenu.contains(e.target) && !burger.contains(e.target)) {
-      ocultarMenu();
-    }
-  });
+  if (mobileMenu) {
+    document.addEventListener("click", (e) => {
+      if (!mobileMenu.contains(e.target) && !burger.contains(e.target)) {
+        ocultarMenu();
+      }
+    });
+  }
 
   // Cierra el menú al hacer clic en los ítems
-  miPerfil.addEventListener("click", ocultarMenu);
-  cerrarSesion.addEventListener("click", ocultarMenu);
+  if (miPerfil) {
+    miPerfil.addEventListener("click", ocultarMenu);
+  }
+  if (cerrarSesion) {
+    cerrarSesion.addEventListener("click", ocultarMenu);
+  }
 
   //------------------------------------------------------------------------------------Funcionalidad toast: cerrar al click en la X
-  const botonCerrar = document.getElementById("button_alert_login");
+  const botonCerrar = document.getElementById("button_alert");
+
   if (botonCerrar) {
-    botonCerrar.onclick = () => {
-      const alertLogin = document.getElementById("alert-login");
-      if (alertLogin) alertLogin.classList.add("hidden");
+    botonCerrar.onclick = (e) => {
+      e.preventDefault();
+      const alert = document.getElementById("toast-alert");
+      if (alert) alert.classList.add("hidden");
     };
   }
 
   // Ocultar toast después de 8 segundos
   setTimeout(() => {
-    const alertBox = document.getElementById("alert-login");
+    const alertBox = document.getElementById("toast-alert");
     if (alertBox) {
       alertBox.classList.add("hidden");
     }
@@ -147,26 +156,33 @@ document.addEventListener("DOMContentLoaded", () => {
     menu.classList.remove("opacity-100", "scale-100");
     menu.classList.add("opacity-0", "scale-95", "pointer-events-none");
   }
-
-  avatar.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (menu.classList.contains("opacity-0")) {
-      mostrarMenu2();
-    } else {
-      ocultarMenu2();
-    }
-  });
+  if (avatar) {
+    avatar.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (menu.classList.contains("opacity-0")) {
+        mostrarMenu2();
+      } else {
+        ocultarMenu2();
+      }
+    });
+  }
 
   // Cierra el menú si se hace clic fuera
-  document.addEventListener("click", (e) => {
-    if (!menu.contains(e.target) && !avatar.contains(e.target)) {
-      ocultarMenu2();
-    }
-  });
+  if (menu) {
+    document.addEventListener("click", (e) => {
+      if (!menu.contains(e.target) && !avatar.contains(e.target)) {
+        ocultarMenu2();
+      }
+    });
+  }
 
   // Cierra el menú al hacer clic en los ítems
-  miPerfil2.addEventListener("click", ocultarMenu2);
-  cerrarSesion2.addEventListener("click", ocultarMenu2);
+  if (miPerfil2) {
+    miPerfil2.addEventListener("click", ocultarMenu2);
+  }
+  if (cerrarSesion2) {
+    cerrarSesion2.addEventListener("click", ocultarMenu2);
+  }
 
   //------------------------------------------------------------------------------------UserInputs
   const button = document.getElementById("editar_perfil");
@@ -179,29 +195,33 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("user_usuario"),
     document.getElementById("user_telefono"),
     document.getElementById("user_nacimiento"),
-  ];
+  ].filter((input) => input !== null); // <- Esta línea evita errores;
 
   const valoresOriginales = {};
 
   // Guardamos los valores originales una vez y preparamos los listeners de los inputs
-  inputs.forEach((input) => {
-    valoresOriginales[input.name] = input.value;
+  if (inputs.length > 0) {
+    inputs.forEach((input) => {
+      valoresOriginales[input.name] = input.value;
 
-    const label = input.parentElement.querySelector(`label[for="${input.id}"]`);
+      const label = input.parentElement.querySelector(
+        `label[for="${input.id}"]`
+      );
 
-    input.addEventListener("input", () => {
-      if (label) {
-        if (
-          input.value !== valoresOriginales[input.name] &&
-          input.value !== ""
-        ) {
-          label.classList.add("opacity-0", "scale-95");
-        } else {
-          label.classList.remove("opacity-0", "scale-95");
+      input.addEventListener("input", () => {
+        if (label) {
+          if (
+            input.value !== valoresOriginales[input.name] &&
+            input.value !== ""
+          ) {
+            label.classList.add("opacity-0", "scale-95");
+          } else {
+            label.classList.remove("opacity-0", "scale-95");
+          }
         }
-      }
+      });
     });
-  });
+  }
 
   function mostrarBotones() {
     button.classList.remove("opacity-100", "scale-100");
@@ -237,65 +257,72 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  button.addEventListener("click", (e) => {
-    e.preventDefault();
-    mostrarBotones();
+  if (button) {
+    button.addEventListener("click", (e) => {
+      e.preventDefault();
+      mostrarBotones();
 
-    // Habilitamos todos los inputs
-    inputs.forEach((input) => {
-      input.disabled = false;
+      // Habilitamos todos los inputs
+      inputs.forEach((input) => {
+        input.disabled = false;
+      });
+
+      // Hacemos foco en el primer campo
+      inputs[0].focus();
     });
+  }
+  if (button_cancelar) {
+    button_cancelar.addEventListener("click", (e) => {
+      e.preventDefault();
+      ocultarBtones();
 
-    // Hacemos foco en el primer campo
-    inputs[0].focus();
-  });
-
-  button_cancelar.addEventListener("click", (e) => {
-    e.preventDefault();
-    ocultarBtones();
-
-    // Restauramos valores originales y deshabilitamos inputs
-    inputs.forEach((input) => {
-      input.value = valoresOriginales[input.name];
-      input.disabled = true;
-      const label = input.parentElement.querySelector(
-        `label[for="${input.id}"]`
-      );
-      if (label) {
-        label.classList.remove("opacity-0", "scale-95");
-      }
+      // Restauramos valores originales y deshabilitamos inputs
+      inputs.forEach((input) => {
+        input.value = valoresOriginales[input.name];
+        input.disabled = true;
+        const label = input.parentElement.querySelector(
+          `label[for="${input.id}"]`
+        );
+        if (label) {
+          label.classList.remove("opacity-0", "scale-95");
+        }
+      });
     });
-  });
+  }
+
+  //------------------------------------------------------------------------------------Home
+  // Slide para las ventas y productos
+
+  let currentIndex = 0;
+  const images = document.querySelectorAll("#carrusel img");
+  const totalImages = images.length;
+
+  function updateCarousel() {
+    const container = document.getElementById("carrusel");
+    if (!container) return;
+    container.style.transform = `translateX(-${currentIndex * 100}%)`;
+  }
+
+  function nextSlide() {
+    currentIndex = (currentIndex + 1) % totalImages;
+    updateCarousel();
+  }
+
+  function prevSlide() {
+    currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+    updateCarousel();
+  }
+  setInterval(nextSlide, 3000);
+
+  //Animacion de titulo
+  const titulo = document.getElementById("titulo-animado");
+  if (titulo) {
+    const texto = titulo.innerText;
+    const letras = texto.split("").map((char) => {
+      if (char === " ") return `<span class="inline-block">&nbsp;</span>`;
+      if (char === "*") return "<br>";
+      return `<span class="inline-block transition hover:-translate-y-[0.2vw]">${char}</span>`;
+    });
+    titulo.innerHTML = letras.join("");
+  }
 });
-
-// Slide para las ventas y productos
-
-let currentIndex = 0;
-const images = document.querySelectorAll("#carrusel img");
-const totalImages = images.length;
-
-function updateCarousel() {
-  const container = document.getElementById("carrusel");
-  container.style.transform = `translateX(-${currentIndex * 100}%)`;
-}
-
-function nextSlide() {
-  currentIndex = (currentIndex + 1) % totalImages;
-  updateCarousel();
-}
-
-function prevSlide() {
-  currentIndex = (currentIndex - 1 + totalImages) % totalImages;
-  updateCarousel();
-}
-setInterval(nextSlide, 3000);
-
-//Animacion de titulo
-const titulo = document.getElementById("titulo-animado");
-const texto = titulo.innerText;
-const letras = texto.split("").map((char) => {
-  if (char === " ") return `<span class="inline-block">&nbsp;</span>`;
-  if (char === "*") return "<br>";
-  return `<span class="inline-block transition hover:-translate-y-[0.2vw]">${char}</span>`;
-});
-titulo.innerHTML = letras.join("");

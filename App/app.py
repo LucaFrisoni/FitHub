@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-import re
 from flask import (
     Flask,
     render_template,
@@ -11,7 +10,6 @@ from flask import (
     flash,
 )
 from functools import wraps
-from Back.util.util import check_pwd
 from Back.models.user import User
 from Back.routes.planes import planes_bp
 from Back.routes.productos import productos_bp
@@ -31,7 +29,7 @@ from flask_login import (
     current_user,
 )
 import requests
-from werkzeug.utils import secure_filename
+
 
 app = Flask(__name__)
 
@@ -39,8 +37,6 @@ APP_SECRET_KEY = os.getenv("APP_SECRET_KEY")
 app.secret_key = "APP_SECRET_KEY"
 # ------------------Upload Foto------------------
 UPLOAD_FOLDER_PROFILE = "static/images/uploads/perfil"
-EXTENSIONES_PERMITIDAS = {"png", "jpg", "jpeg"}
-
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER_PROFILE
 init_docs(app)
 
@@ -74,24 +70,24 @@ login_manager.login_view = (
 
 @login_manager.user_loader
 def load_user(user_id):
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM usuarios WHERE ID_usuario = %s", (user_id,))
-    user = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    if user:
-        return User(
-            user["ID_usuario"],
-            user["Nombre"],
-            user["Apellido"],
-            user["Email"],
-            user["Telefono"],
-            user["FechaNacimiento"],
-            user["Usuario"],
-            user.get("Imagen") or None,
-            user["ID_rol"],
-        )
+    try:
+        response = requests.get(f"http://localhost:3000/api/usuarios/{user_id}")
+        if response.status_code == 200:
+            data = response.json()
+            usuario = data.get("usuario")
+            return User(
+                usuario["ID_usuario"],
+                usuario["Nombre"],
+                usuario["Apellido"],
+                usuario["Email"],
+                usuario["Telefono"],
+                usuario["FechaNacimiento"],
+                usuario["Usuario"],
+                usuario.get("Imagen"),
+                usuario["ID_rol"],
+            )
+    except Exception as e:
+        print(f"Error cargando usuario desde API: {e}")
     return None
 
 
@@ -241,47 +237,28 @@ def user():
         )
 
 
-def allowed_file(filename):
-    return (
-        "." in filename and filename.rsplit(".", 1)[1].lower() in EXTENSIONES_PERMITIDAS
-    )
-
-
 @app.route("/subir-foto-perfil", methods=["POST"])
+@login_required
 def subir_foto_perfil():
-    if "foto" not in request.files:
+
+    foto = request.files["foto"]
+    if not foto:
         return render_template(
             "user.html", user=current_user, error="Falta adjuntar una imagen."
         )
 
-    foto = request.files["foto"]
-
-    if foto.filename == "":
-        return render_template(
-            "user.html", user=current_user, error="No seleccionaste ninguna imagen."
-        )
-
-    extension = foto.filename.rsplit(".", 1)[1].lower()
-
-    if extension not in EXTENSIONES_PERMITIDAS:
-        return render_template(
-            "user.html", user=current_user, error="Formato no permitido."
-        )
-
-    filename = secure_filename(f"user_{current_user.id}.{extension}")
-    filepath = os.path.join("static/images/uploads/perfil", filename)
-    foto.save(filepath)
-
-    # Llamada a la API para actualizar imagen en la DB
-    payload = {
-        "Email": current_user.email,
-        "Imagen": filename,
-    }
-
     try:
+        # Enviamos datos como form-data
+        files = {"foto": (foto.filename, foto, foto.content_type)}
+        data = {
+            "Id": current_user.id,
+            "Email": current_user.email,
+        }
+
         response = requests.put(
-            "http://localhost:3000/api/usuarios/editar-foto", json=payload
+            "http://localhost:3000/api/usuarios/editar-foto", data=data, files=files
         )
+
         if response.status_code == 200:
             data = response.json()
             usuario = data["usuario"]
@@ -302,11 +279,9 @@ def subir_foto_perfil():
             session["toast_exitoso"] = "Imagen de Perfil cambiada"
             return redirect("/user")
         else:
-            try:
-                error_msg = response.json().get("error", "Error inesperado")
-            except Exception:
-                error_msg = f"Error inesperado, status code {response.status_code}"
-                return render_template("user.html", user=current_user, error=error_msg)
+            error_msg = response.json().get("error", "Error inesperado")
+            return render_template("user.html", user=current_user, error=error_msg)
+
     except Exception as ex:
         return render_template(
             "user.html", error="Error en el servidor. Intentalo más tarde."
@@ -316,64 +291,49 @@ def subir_foto_perfil():
 # ----------------------Rutas||Auth----------------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    # si existe la session toast_exitoso, la devuelve y luego la borra, sino usa False
     toast_exitoso = session.pop("toast_exitoso", False)
+
     if request.method == "GET":
         return render_template("auth/login.html", toast_exitoso=toast_exitoso)
 
-    # Obtener datos del formulario
     email = request.form.get("email")
     contraseña = request.form.get("contraseña")
 
-    if not email or not contraseña:
-        return render_template(
-            "auth/login.html", error="Email y contraseña son obligatorios."
-        )
-
-    cursor = None
-    conn = None  # <-- AGREGADO
-
     try:
-        conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        cursor.execute("SELECT * FROM usuarios WHERE Email = %s", (email,))
-        user = cursor.fetchone()
-
-        if not user:
-            return render_template("auth/login.html", error="Usuario no encontrado.")
-
-        if not check_pwd(contraseña, user["Contrasenia"]):
-            return render_template("auth/login.html", error="Contraseña incorrecta.")
-
-        usuario = User(
-            user["ID_usuario"],
-            user["Nombre"],
-            user["Apellido"],
-            user["Email"],
-            user["Telefono"],
-            user["FechaNacimiento"],
-            user["Usuario"],
-            user.get("Imagen") or None,
-            user["ID_rol"],
+        # Llamada a la API
+        payload = {"Email": email, "Contraseña": contraseña}
+        response = requests.post(
+            "http://localhost:3000/api/usuarios/login", json=payload
         )
-        login_user(usuario)
 
-        # Guardar en session si querés mostrar algo en el home
-        session["toast_exitoso"] = "Login exitoso"
+        if response.status_code == 200:
+            data = response.json()
+            user = data["usuario"]
 
-        return redirect("/")
+            usuario = User(
+                user["ID_usuario"],
+                user["Nombre"],
+                user["Apellido"],
+                user["Email"],
+                user["Telefono"],
+                user["FechaNacimiento"],
+                user["Usuario"],
+                user.get("Imagen") or None,
+                user["ID_rol"],
+            )
 
-    except Exception as ex:
+            login_user(usuario)
+            session["toast_exitoso"] = "Login exitoso"
+            return redirect("/")
+
+        else:
+            error = response.json().get("error", "Error desconocido")
+            return render_template("auth/login.html", error=error)
+
+    except Exception:
         return render_template(
-            "auth/login.html", error="Error en el servidor. Intentalo más tarde."
+            "auth/login.html", error="Error del servidor. Intentalo más tarde."
         )
-
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
 
 
 @app.route("/registro", methods=["GET", "POST"])
@@ -389,30 +349,6 @@ def registro():
     apellido = request.form.get("apellido")
     nacimiento = request.form.get("nacimiento")
     telefono = request.form.get("telefono")
-
-    # Validar campos
-    campos = [email, contraseña, nombre_usuario, nombre, apellido, nacimiento, telefono]
-    nombres_campos = [
-        "email",
-        "contraseña",
-        "nombre de usuario",
-        "nombre",
-        "apellido",
-        "nacimiento",
-        "teléfono",
-    ]
-    for valor, nombre_campo in zip(campos, nombres_campos):
-        if not valor:
-            return render_template(
-                "auth/registro.html", error=f"El campo '{nombre_campo}' es obligatorio."
-            )
-
-    # Validar contraseña
-    if not re.match(r"^(?=.*[A-Z])(?=.*\d).{8,}$", contraseña):
-        return render_template(
-            "auth/registro.html",
-            error="La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.",
-        )
 
     try:
         payload = {
@@ -436,9 +372,8 @@ def registro():
         elif response.status_code == 409:
             return render_template("auth/registro.html", error="Email ya registrado.")
         else:
-            return render_template(
-                "auth/registro.html", error="Registro fallido. Verificá los datos."
-            )
+            error = response.json().get("error", "Error desconocido")
+            return render_template("auth/registro.html", error=error)
 
     except Exception:
         return render_template(
@@ -463,27 +398,11 @@ def cambiarcontra():
     nueva_contraseña = request.form.get("nueva_contraseña")
     nueva_contraseña2 = request.form.get("nueva_contraseña2")
 
-    # Validaciones
-    if not email or not nueva_contraseña or not nueva_contraseña2:
-        return render_template(
-            "auth/cambiar_contra.html", error="Todos los campos son obligatorios."
-        )
-
-    if nueva_contraseña != nueva_contraseña2:
-        return render_template(
-            "auth/cambiar_contra.html", error="Las contraseñas no coinciden."
-        )
-
-    if not re.match(r"^(?=.*[A-Z])(?=.*\d).{8,}$", nueva_contraseña):
-        return render_template(
-            "auth/cambiar_contra.html",
-            error="La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.",
-        )
-
     try:
         payload = {
             "Email": email,
             "Contraseña": nueva_contraseña,
+            "Contraseña2": nueva_contraseña2,
         }
 
         response = requests.post(
