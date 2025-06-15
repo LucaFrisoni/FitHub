@@ -353,14 +353,6 @@
   .z-100 {
     z-index: 100;
   }
-<<<<<<< HEAD:App/static/css/main.css
-=======
-  .col-end-1 {
-    grid-column-end: 1;
-  }
-  .col-end-2 {
-    grid-column-end: 2;
-  }
   .container {
     width: 100%;
     @media (width >= 850px) {
@@ -382,7 +374,6 @@
       max-width: 96rem;
     }
   }
->>>>>>> origin/DevBranch:Front/static/css/main.css
   .m-0 {
     margin: calc(var(--spacing) * 0);
   }
@@ -425,19 +416,17 @@
   .mt-10 {
     margin-top: calc(var(--spacing) * 10);
   }
-<<<<<<< HEAD:App/static/css/main.css
-  .mt-22 {
-    margin-top: calc(var(--spacing) * 22);
-=======
   .mt-18 {
     margin-top: calc(var(--spacing) * 18);
   }
   .mt-20 {
     margin-top: calc(var(--spacing) * 20);
   }
+  .mt-22 {
+    margin-top: calc(var(--spacing) * 22);
+  }
   .mt-\[-9vw\] {
     margin-top: -9vw;
->>>>>>> origin/DevBranch:Front/static/css/main.css
   }
   .mt-\[1\.5vw\] {
     margin-top: 1.5vw;
@@ -541,16 +530,11 @@
   .inline-block {
     display: inline-block;
   }
-<<<<<<< HEAD:App/static/css/main.css
-  .inline-flex {
-    display: inline-flex;
+  .h-0\.5 {
+    height: calc(var(--spacing) * 0.5);
   }
   .h-3 {
     height: calc(var(--spacing) * 3);
-=======
-  .h-0\.5 {
-    height: calc(var(--spacing) * 0.5);
->>>>>>> origin/DevBranch:Front/static/css/main.css
   }
   .h-4 {
     height: calc(var(--spacing) * 4);
@@ -849,15 +833,9 @@
   .max-w-xs {
     max-width: var(--container-xs);
   }
-<<<<<<< HEAD:App/static/css/main.css
   .min-w-0 {
     min-width: calc(var(--spacing) * 0);
   }
-  .min-w-\[33\%\] {
-    min-width: 33%;
-  }
-=======
->>>>>>> origin/DevBranch:Front/static/css/main.css
   .min-w-\[40px\] {
     min-width: 40px;
   }
@@ -867,15 +845,9 @@
   .min-w-\[50px\] {
     min-width: 50px;
   }
-<<<<<<< HEAD:App/static/css/main.css
-=======
-  .min-w-\[70px\] {
-    min-width: 70px;
-  }
   .min-w-\[120px\] {
     min-width: 120px;
   }
->>>>>>> origin/DevBranch:Front/static/css/main.css
   .min-w-\[180px\] {
     min-width: 180px;
   }
@@ -1119,9 +1091,6 @@
   .gap-x-6 {
     column-gap: calc(var(--spacing) * 6);
   }
-  .gap-x-32 {
-    column-gap: calc(var(--spacing) * 32);
-  }
   .space-x-2 {
     :where(& > :not(:last-child)) {
       --tw-space-x-reverse: 0;
@@ -1319,9 +1288,6 @@
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-black) 50%, transparent);
     }
-  }
-  .bg-blue-600 {
-    background-color: var(--color-blue-600);
   }
   .bg-emerald-500 {
     background-color: var(--color-emerald-500);
@@ -1537,9 +1503,6 @@
   .px-6 {
     padding-inline: calc(var(--spacing) * 6);
   }
-  .px-8 {
-    padding-inline: calc(var(--spacing) * 8);
-  }
   .px-10 {
     padding-inline: calc(var(--spacing) * 10);
   }
@@ -1572,9 +1535,6 @@
   }
   .py-12 {
     padding-block: calc(var(--spacing) * 12);
-  }
-  .py-20 {
-    padding-block: calc(var(--spacing) * 20);
   }
   .py-\[2vw\] {
     padding-block: 2vw;
@@ -2305,17 +2265,17 @@
       }
     }
   }
-  .hover\:bg-gray-100 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-gray-100);
-      }
-    }
-  }
   .hover\:bg-gray-50 {
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-gray-50);
+      }
+    }
+  }
+  .hover\:bg-gray-100 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-gray-100);
       }
     }
   }
@@ -2633,21 +2593,6 @@
       box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
     }
   }
-<<<<<<< HEAD:App/static/css/main.css
-  .sm\:h-4 {
-    @media (width >= 40rem) {
-      height: calc(var(--spacing) * 4);
-    }
-  }
-  .sm\:w-4 {
-    @media (width >= 40rem) {
-      width: calc(var(--spacing) * 4);
-    }
-  }
-  .sm\:min-w-\[70px\] {
-    @media (width >= 40rem) {
-      min-width: 70px;
-=======
   .bp-user_profile\:flex {
     @media (width >= 850px) {
       display: flex;
@@ -2663,6 +2608,16 @@
       margin-left: 40px;
     }
   }
+  .sm\:h-4 {
+    @media (width >= 40rem) {
+      height: calc(var(--spacing) * 4);
+    }
+  }
+  .sm\:w-4 {
+    @media (width >= 40rem) {
+      width: calc(var(--spacing) * 4);
+    }
+  }
   .sm\:w-\[70\%\] {
     @media (width >= 40rem) {
       width: 70%;
@@ -2671,7 +2626,11 @@
   .sm\:w-\[480px\] {
     @media (width >= 40rem) {
       width: 480px;
->>>>>>> origin/DevBranch:Front/static/css/main.css
+    }
+  }
+  .sm\:min-w-\[70px\] {
+    @media (width >= 40rem) {
+      min-width: 70px;
     }
   }
   .sm\:grid-cols-2 {
@@ -2684,7 +2643,6 @@
       flex-direction: row;
     }
   }
-<<<<<<< HEAD:App/static/css/main.css
   .sm\:gap-0 {
     @media (width >= 40rem) {
       gap: calc(var(--spacing) * 0);
@@ -2719,19 +2677,19 @@
       padding-inline: calc(var(--spacing) * 4);
     }
   }
-  .sm\:px-6 {
-    @media (width >= 40rem) {
-      padding-inline: calc(var(--spacing) * 6);
-=======
   .sm\:px-5 {
     @media (width >= 40rem) {
       padding-inline: calc(var(--spacing) * 5);
     }
   }
+  .sm\:px-6 {
+    @media (width >= 40rem) {
+      padding-inline: calc(var(--spacing) * 6);
+    }
+  }
   .sm\:px-\[80px\] {
     @media (width >= 40rem) {
       padding-inline: 80px;
->>>>>>> origin/DevBranch:Front/static/css/main.css
     }
   }
   .sm\:py-3 {
@@ -2739,7 +2697,6 @@
       padding-block: calc(var(--spacing) * 3);
     }
   }
-<<<<<<< HEAD:App/static/css/main.css
   .sm\:text-2xl {
     @media (width >= 40rem) {
       font-size: var(--text-2xl);
@@ -2758,8 +2715,6 @@
       line-height: var(--tw-leading, var(--text-sm--line-height));
     }
   }
-=======
->>>>>>> origin/DevBranch:Front/static/css/main.css
   .md\:w-1\/2 {
     @media (width >= 48rem) {
       width: calc(1/2 * 100%);
@@ -2785,11 +2740,6 @@
       align-items: flex-start;
     }
   }
-<<<<<<< HEAD:App/static/css/main.css
-  .lg\:w-1\/4 {
-    @media (width >= 64rem) {
-      width: calc(1/4 * 100%);
-=======
   .lg\:flex {
     @media (width >= 64rem) {
       display: flex;
@@ -2808,7 +2758,11 @@
   .lg\:w-1\/2 {
     @media (width >= 64rem) {
       width: calc(1/2 * 100%);
->>>>>>> origin/DevBranch:Front/static/css/main.css
+    }
+  }
+  .lg\:w-1\/4 {
+    @media (width >= 64rem) {
+      width: calc(1/4 * 100%);
     }
   }
   .lg\:w-3\/5 {
@@ -2826,17 +2780,16 @@
       flex-direction: row;
     }
   }
-<<<<<<< HEAD:App/static/css/main.css
-  .lg\:px-8 {
-    @media (width >= 64rem) {
-      padding-inline: calc(var(--spacing) * 8);
-=======
   .lg\:justify-center {
     @media (width >= 64rem) {
       justify-content: center;
     }
   }
-<<<<<<< HEAD
+  .lg\:px-8 {
+    @media (width >= 64rem) {
+      padding-inline: calc(var(--spacing) * 8);
+    }
+  }
   .xl\:max-h-\[514px\] {
     @media (width >= 80rem) {
       max-height: 514px;
@@ -2850,12 +2803,11 @@
   .xl\:min-w-\[474px\] {
     @media (width >= 80rem) {
       min-width: 474px;
->>>>>>> origin/DevBranch:Front/static/css/main.css
-=======
+    }
+  }
   .\[\&\>option\]\:text-black {
     &>option {
       color: var(--color-black);
->>>>>>> origin/DevBranch
     }
   }
 }

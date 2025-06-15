@@ -326,3 +326,124 @@ document.addEventListener("DOMContentLoaded", () => {
     titulo.innerHTML = letras.join("");
   }
 });
+
+// -------------------- RESERVAS ----------------------
+// Funcionalidad de los checkboxes de días
+const dayCheckboxes = document.querySelectorAll('.day-checkbox');
+
+dayCheckboxes.forEach(checkbox => {
+  checkbox.addEventListener('change', function () {
+    const label = this.nextElementSibling;
+    if (this.checked) {
+      label.classList.add('bg-yellow-400', 'text-gray-800', 'font-semibold');
+      label.classList.remove('bg-white', 'text-gray-700');
+    } else {
+      label.classList.remove('bg-yellow-400', 'text-gray-800', 'font-semibold');
+      label.classList.add('bg-white', 'text-gray-700');
+    }
+  });
+});
+
+// Funcionalidad del botón reservar
+const reserveButton = document.getElementById("button-reserva");
+if (reserveButton) {
+  reserveButton.addEventListener('click', async function (e) {
+    e.preventDefault();
+
+    // Obtener días seleccionados
+    const selectedDays = [];
+    dayCheckboxes.forEach(checkbox => {
+      if (checkbox.checked) {
+        selectedDays.push(checkbox.value);
+      }
+    });
+
+    // Validar que se haya seleccionado al menos un día
+    if (selectedDays.length === 0) {
+      alert('Por favor selecciona al menos un día para tu reserva.');
+      return;
+    }
+
+    // Obtener otros valores del formulario
+    const trainingType = document.querySelector('#type-exercise').value;
+    const startTime = document.querySelectorAll('input[type="time"]')[0].value;
+    const endTime = document.querySelectorAll('input[type="time"]')[1].value;
+    const comments = document.querySelector('#comment-area').value;
+
+    // Preparar datos para enviar
+    const datos_reserva = {
+      dias: selectedDays, // Array de días seleccionados
+      tipo_entrenamiento: trainingType,
+      hora_inicio: startTime,
+      hora_fin: endTime,
+      comentarios: comments
+    };
+
+    console.log('Datos de reserva:', datos_reserva);
+
+    try {
+      // Enviar datos al servidor Flask
+      const response = await fetch('/procesar_reserva', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(datos_reserva)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        alert("¡Reserva exitosa!");
+        // Opcional: limpiar el formulario después de una reserva exitosa
+        limpiarFormulario();
+      } else {
+        alert(`Error: ${result.error || 'Error desconocido'}`);
+      }
+    } catch (error) {
+      console.error("Error al procesar la reserva:", error);
+      alert("Error de conexión. Por favor, intenta nuevamente.");
+    }
+  });
+}
+
+// Función auxiliar para limpiar el formulario después de una reserva exitosa
+function limpiarFormulario() {
+  // Desmarcar todos los checkboxes de días
+  dayCheckboxes.forEach(checkbox => {
+    checkbox.checked = false;
+    const label = checkbox.nextElementSibling;
+    label.classList.remove('bg-yellow-400', 'text-gray-800', 'font-semibold');
+    label.classList.add('bg-white', 'text-gray-700');
+  });
+
+  // Resetear select de tipo de entrenamiento
+  const typeExercise = document.querySelector('#type-exercise');
+  if (typeExercise) typeExercise.selectedIndex = 0;
+
+  // Resetear horarios a valores por defecto
+  const timeInputs = document.querySelectorAll('input[type="time"]');
+  if (timeInputs[0]) timeInputs[0].value = '09:00';
+  if (timeInputs[1]) timeInputs[1].value = '10:00';
+
+  // Limpiar comentarios
+  const commentArea = document.querySelector('#comment-area');
+  if (commentArea) commentArea.value = '';
+}
+
+// Mejorar la experiencia táctil en móviles
+const touchElements = document.querySelectorAll('.day-button, button, select, input, textarea');
+touchElements.forEach(element => {
+  element.addEventListener('touchstart', function () {
+    this.style.transform = 'scale(0.98)';
+  });
+
+  element.addEventListener('touchend', function () {
+    this.style.transform = 'scale(1)';
+  });
+});

@@ -103,11 +103,24 @@ def planes():
     ]
     return render_template("planes.html", planes=planes, user=current_user)
 
-
 @app.route("/reservas")
-# @login_required
+#@login_required
 def reservas():
     return render_template("reservas.html", user=current_user)
+
+@app.route('/procesar_reserva', methods=['POST'])
+def procesar_reserva():
+    data = request.get_json()
+    
+    dias = data['dias']  # Lista de días: ['lunes', 'martes', ...]
+    tipo_entrenamiento = data['tipo_entrenamiento']  # 'Bodybuilding', 'Spinning', etc.
+    hora_inicio = data['hora_inicio']  # '09:00'
+    hora_fin = data['hora_fin']  # '10:00'
+    comentarios = data['comentarios']  # Texto del textarea
+    
+    # Tu lógica de procesamiento aquí
+    
+    return jsonify({'success': True})
 
 
 @app.route("/tienda", methods=["GET"])
