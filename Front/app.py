@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import uuid 
 from flask import (
     Flask,
     render_template,
@@ -33,6 +34,8 @@ API_HOST = os.getenv("API_HOST")
 # ------------------Upload Foto------------------
 UPLOAD_FOLDER_PROFILE = "static/images/uploads/perfil"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER_PROFILE
+UPLOAD_FOLDER_PRODUCTOS = "static/images/uploads/productos"
+app.config["UPLOAD_FOLDER_PRODUCTOS"] = UPLOAD_FOLDER_PRODUCTOS
 
 login_manager = LoginManager()
 login_manager.init_app(app)  # Conectás Flask-Login con tu app
