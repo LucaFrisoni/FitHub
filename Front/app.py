@@ -391,83 +391,52 @@ def admin_required(f):
 
 
 @app.route("/subir-imagen-producto", methods=["POST"])
+@login_required  # Si querés que esté protegido
 def subir_imagen_producto():
     try:
         # Verificar que se envió un archivo
         if "foto" not in request.files:
-            return (
-                jsonify({"success": False, "error": "No se seleccionó ningún archivo"}),
-                400,
-            )
+            return jsonify({"success": False, "error": "No se seleccionó ningún archivo"}), 400
 
         foto = request.files["foto"]
 
-        if foto.filename == "":
-            return (
-                jsonify(
-                    {"success": False, "error": "El nombre del archivo está vacío"}
-                ),
-                400,
-            )
+        if not foto or foto.filename == "":
+            return jsonify({"success": False, "error": "No se seleccionó ninguna imagen"}), 400
 
-        # Verificar extensión del archivo
-        if "." not in foto.filename:
-            return (
-                jsonify({"success": False, "error": "Archivo sin extensión válida"}),
-                400,
-            )
+        # Preparar los archivos para enviar a la API
+        files = {"foto": (foto.filename, foto, foto.content_type)}
 
-        extension = foto.filename.rsplit(".", 1)[1].lower()
-
-        # Definir extensiones permitidas si no están definidas
-        EXTENSIONES_PERMITIDAS = {"jpg", "jpeg", "png"}
-
-        if extension not in EXTENSIONES_PERMITIDAS:
-            return (
-                jsonify(
-                    {
-                        "success": False,
-                        "error": f"Formato no permitido. Formatos aceptados: {', '.join(EXTENSIONES_PERMITIDAS)}",
-                    }
-                ),
-                400,
-            )
-
-        # Generar nombre único para el archivo
-        filename = f"producto_{uuid.uuid4().hex}.{extension}"
-
-        # Asegurarse de que el directorio existe
-        upload_dir = os.path.join(app.static_folder, "images/uploads/productos")
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
-
-        filepath = os.path.join(upload_dir, filename)
-
-        # Guardar la imagen
-        foto.save(filepath)
-
-        # Retornar respuesta exitosa
-        return jsonify(
-            {
-                "success": True,
-                "filename": filename,
-                "url": url_for(
-                    "static", filename=f"images/uploads/productos/{filename}"
-                ),
-            }
+        # Hacer la petición a tu API
+        response = requests.post(
+            f"{API_HOST}/api/productos/subir-imagen", 
+            files=files
         )
 
+        # Procesar la respuesta de la API
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Si la API retornó éxito, también generar la URL completa para el frontend
+            if data.get("success"):
+                filename = data.get("filename")
+                data["url"] = url_for("static", filename=f"images/uploads/productos/{filename}")
+                
+            return jsonify(data), 200
+        else:
+            # Si hubo error en la API, retornar el error
+            error_data = response.json() if response.content else {"success": False, "error": "Error desconocido"}
+            return jsonify(error_data), response.status_code
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            "success": False,
+            "error": "Error de conexión con la API"
+        }), 500
     except Exception as e:
-        app.logger.error(f"Error al subir imagen de producto: {str(e)}")
-        return (
-            jsonify(
-                {
-                    "success": False,
-                    "error": "Error interno del servidor al guardar la imagen",
-                }
-            ),
-            500,
-        )
+        return jsonify({
+            "success": False,
+            "error": "Error interno del servidor"
+        }), 500
 
 
 @app.route("/admin")
@@ -651,82 +620,46 @@ def eliminar_producto(id):
 
 
 @app.route("/subir-imagen-plan", methods=["POST"])
+@login_required 
 def subir_imagen_plan():
     try:
-        # Verificar que se envió un archivo
         if "foto" not in request.files:
-            return (
-                jsonify({"success": False, "error": "No se seleccionó ningún archivo"}),
-                400,
-            )
+            return jsonify({"success": False, "error": "No se seleccionó ningún archivo"}), 400
 
         foto = request.files["foto"]
 
-        if foto.filename == "":
-            return (
-                jsonify(
-                    {"success": False, "error": "El nombre del archivo está vacío"}
-                ),
-                400,
-            )
+        if not foto or foto.filename == "":
+            return jsonify({"success": False, "error": "No se seleccionó ninguna imagen"}), 400
 
-        # Verificar extensión del archivo
-        if "." not in foto.filename:
-            return (
-                jsonify({"success": False, "error": "Archivo sin extensión válida"}),
-                400,
-            )
+        files = {"foto": (foto.filename, foto, foto.content_type)}
 
-        extension = foto.filename.rsplit(".", 1)[1].lower()
-
-        # Definir extensiones permitidas si no están definidas
-        EXTENSIONES_PERMITIDAS = {"jpg", "jpeg", "png"}
-
-        if extension not in EXTENSIONES_PERMITIDAS:
-            return (
-                jsonify(
-                    {
-                        "success": False,
-                        "error": f"Formato no permitido. Formatos aceptados: {', '.join(EXTENSIONES_PERMITIDAS)}",
-                    }
-                ),
-                400,
-            )
-
-        # Generar nombre único para el archivo
-        filename = f"plan_{uuid.uuid4().hex}.{extension}"
-
-        # Asegurarse de que el directorio existe
-        upload_dir = os.path.join(app.static_folder, "images/uploads/planes")
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
-
-        filepath = os.path.join(upload_dir, filename)
-
-        # Guardar la imagen
-        foto.save(filepath)
-
-        # Retornar respuesta exitosa
-        return jsonify(
-            {
-                "success": True,
-                "filename": filename,
-                "url": url_for("static", filename=f"images/uploads/planes/{filename}"),
-            }
+        response = requests.post(
+            f"{API_HOST}/api/planes/subir-imagen", 
+            files=files
         )
 
+        if response.status_code == 200:
+            data = response.json()
+            
+            if data.get("success"):
+                filename = data.get("filename")
+                data["url"] = url_for("static", filename=f"images/uploads/planes/{filename}")
+                
+            return jsonify(data), 200
+        else:
+            error_data = response.json() if response.content else {"success": False, "error": "Error desconocido"}
+            return jsonify(error_data), response.status_code
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            "success": False,
+            "error": "Error de conexión con la API"
+        }), 500
     except Exception as e:
-        app.logger.error(f"Error al subir imagen de plan: {str(e)}")
-        return (
-            jsonify(
-                {
-                    "success": False,
-                    "error": "Error interno del servidor al guardar la imagen",
-                }
-            ),
-            500,
-        )
-
+        return jsonify({
+            "success": False,
+            "error": "Error interno del servidor"
+        }), 500
 
 @app.route("/admin/planes")
 @login_required
