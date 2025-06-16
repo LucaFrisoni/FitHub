@@ -983,6 +983,9 @@
   .animate-spin {
     animation: var(--animate-spin);
   }
+  .cursor-default {
+    cursor: default;
+  }
   .cursor-pointer {
     cursor: pointer;
   }
@@ -1997,6 +2000,10 @@
     --tw-ease: var(--ease-out);
     transition-timing-function: var(--ease-out);
   }
+  .select-none {
+    -webkit-user-select: none;
+    user-select: none;
+  }
   .\[text-shadow\:_2px_2px_4px_rgba\(0\,0\,0\,0\.5\)\] {
     text-shadow:  2px 2px 4px rgba(0,0,0,0.5);
   }
@@ -2208,6 +2215,13 @@
     &:hover {
       @media (hover: hover) {
         height: 100%;
+      }
+    }
+  }
+  .hover\:w-\[30\%\] {
+    &:hover {
+      @media (hover: hover) {
+        width: 30%;
       }
     }
   }

@@ -290,7 +290,66 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  //------------------------------------------------------------------------------------Home
+
+  //----------------- Script para el efecto 3D sutil que sigue al cursor
+    // Seleccionar tu tarjeta (ajusta el selector según tu HTML)
+    const cards = document.querySelectorAll('.efecto-3d');
+    cards.forEach(card => {
+      // Variables para el seguimiento suave
+      let currentRotationX = 0;
+      let currentRotationY = 0;
+      let targetRotationX = 0;
+      let targetRotationY = 0;
+
+      // Función para manejar el movimiento del mouse (seguimiento LEVE)
+      function handleMouseMove(event) {
+          const rect = card.getBoundingClientRect();
+          
+          // Calcular el centro de la tarjeta
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          
+          // Posición del mouse
+          const mouseX = event.clientX;
+          const mouseY = event.clientY;
+          
+          // Calcular distancia desde el centro
+          const deltaX = mouseX - centerX;
+          const deltaY = mouseY - centerY;
+          
+          // Convertir a ángulos MUY SUTILES (máximo 6 grados)
+          targetRotationY = (deltaX / rect.width) * 8;  // Sutil horizontalmente
+          targetRotationX = -(deltaY / rect.height) * 8; // Sutil verticalmente
+      }
+
+      // Función de animación suave
+      function animate() {
+          // Interpolación MUY suave (0.08 = lento y sutil)
+          currentRotationX += (targetRotationX - currentRotationX) * 0.5;
+          currentRotationY += (targetRotationY - currentRotationY) * 0.5;
+          
+          // Aplicar transformación sutil
+          card.style.transform = `perspective(1000px) rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
+          
+          requestAnimationFrame(animate);
+      }
+
+      // Reset cuando el mouse sale de la tarjeta
+      function handleMouseLeave() {
+          targetRotationX = 0;
+          targetRotationY = 0;
+      }
+
+      // Event listeners
+      card.addEventListener('mousemove', handleMouseMove);
+      card.addEventListener('mouseleave', handleMouseLeave);
+
+      // Iniciar animación
+      animate();
+  });
+  
+});
+
   // Slide para las ventas y productos
 
   let currentIndex = 0;
@@ -325,4 +384,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     titulo.innerHTML = letras.join("");
   }
-});
+
+
