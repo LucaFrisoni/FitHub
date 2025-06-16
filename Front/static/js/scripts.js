@@ -398,7 +398,7 @@ if (reserveButton) {
 
     // Obtener otros valores del formulario
     const trainingType = document.querySelector('#type-exercise').value;
-    const trainingType_number = parseInt(trainingType.value); // Convertir a número
+    const trainingType_number = parseInt(trainingType.value); // Convertir a número el tipo de entrenamiento
     const startTime = document.querySelectorAll('input[type="time"]')[0].value;
     const endTime = document.querySelectorAll('input[type="time"]')[1].value;
     const comments = document.querySelector('#comment-area').value;
@@ -411,7 +411,7 @@ if (reserveButton) {
 
     // Preparar datos para enviar
     const datos_reserva = {
-      dias: selectedDays, // Array de días seleccionados
+      dias: selectedDays, // conjunto de días seleccionados
       tipo_entrenamiento: trainingType,
       hora_inicio: startTime,
       hora_fin: endTime,
@@ -439,7 +439,7 @@ if (reserveButton) {
       
       if (result.success) {
         alert("¡Reserva exitosa!");
-        // Opcional: limpiar el formulario después de una reserva exitosa
+        // limpiar el formulario después de una reserva exitosa
         limpiarFormulario();
       } else {
         alert(`Error: ${result.error || 'Error desconocido'}`);
