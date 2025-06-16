@@ -36,6 +36,8 @@ UPLOAD_FOLDER_PROFILE = "static/images/uploads/perfil"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER_PROFILE
 UPLOAD_FOLDER_PRODUCTOS = "static/images/uploads/productos"
 app.config["UPLOAD_FOLDER_PRODUCTOS"] = UPLOAD_FOLDER_PRODUCTOS
+UPLOAD_FOLDER_PLANES = "static/images/uploads/planes"
+app.config["UPLOAD_FOLDER_PLANES"] = UPLOAD_FOLDER_PLANES
 # ------------------Init auth------------------
 login_manager = LoginManager()
 login_manager.init_app(app)  # Conectás Flask-Login con tu app
@@ -80,18 +82,19 @@ def pagina_error(error):
     return render_template("404.html", user=current_user), 404
 
 
-@app.route('/planes', methods=['GET'])
+@app.route("/planes", methods=["GET"])
 def planes():
-   try:
-      respuesta = requests.get(f"{API_HOST}/api/planes/")  
-      if respuesta.status_code == 200:  
-         planes = respuesta.json()
-      else:
-         planes = []
-   except Exception as e:
-      print(f"error al conectar con el back: {e}")
-      planes = []
-   return render_template('planes.html', planes=planes, user=current_user)
+    try:
+        respuesta = requests.get(f"{API_HOST}/api/planes/")
+        if respuesta.status_code == 200:
+            planes = respuesta.json()
+        else:
+            planes = []
+    except Exception as e:
+        print(f"error al conectar con el back: {e}")
+        planes = []
+    return render_template("planes.html", planes=planes, user=current_user)
+
 
 
 @app.route("/reservas")
@@ -392,14 +395,23 @@ def producto(id):
 @login_required
 def user():
     if request.method == "GET":
-        # si existe la session login, la devuelve y luego la borra, sino usa False
         toast_exitoso = session.pop("toast_exitoso", False)
-
-        return render_template(
-            "user.html",
-            user=current_user,
-            toast_exitoso=toast_exitoso,
-        )
+        try:
+            # Cargamos las compras del user
+            response = requests.get(f"{API_HOST}/api/compras/usuario/{current_user.id}")
+            if response.status_code == 200:
+                compras = response.json()
+        except Exception as ex:
+            return render_template(
+                "user.html", error="Error en el servidor. Intentalo más tarde."
+            )
+        finally:
+            return render_template(
+                "user.html",
+                user=current_user,
+                toast_exitoso=toast_exitoso,
+                compras=compras,
+            )
 
     payload = {
         "Email": current_user.email,  # fijo, para identificar al usuario
@@ -1398,53 +1410,69 @@ def eliminar_producto_carrito(producto_id):
 @login_required
 def pasarela():
     carrito = session.get("carrito", [])
-    
+
     # Si el carrito está vacío, redirigir a la tienda
     if not carrito:
         flash("Tu carrito está vacío")
         return redirect(url_for("tienda"))
-    
+
     # Calcular total
     total = sum(item["precio"] * item["cantidad"] for item in carrito)
-    
+
     return render_template(
-        "pasarela.html", 
-        carrito=carrito, 
-        total=total, 
+        "pasarela.html",
+        carrito=carrito,
+        total=total,
         user=current_user,
-        API_HOST=API_HOST  
+        API_HOST=API_HOST,
     )
+
 
 @app.route("/limpiar-carrito-frontend", methods=["POST"])
 def limpiar_carrito_frontend():
     """Limpiar carrito en la sesión del frontend"""
     try:
-        if 'carrito' in session:
-            productos_eliminados = len(session['carrito'])
-            session['carrito'] = []
+        if "carrito" in session:
+            productos_eliminados = len(session["carrito"])
+            session["carrito"] = []
             session.modified = True
-            print(f"Carrito limpiado en frontend: {productos_eliminados} productos eliminados")
-            return jsonify({
-                "mensaje": "Carrito limpiado en frontend",
-                "productos_eliminados": productos_eliminados
-            }), 200
+            print(
+                f"Carrito limpiado en frontend: {productos_eliminados} productos eliminados"
+            )
+            return (
+                jsonify(
+                    {
+                        "mensaje": "Carrito limpiado en frontend",
+                        "productos_eliminados": productos_eliminados,
+                    }
+                ),
+                200,
+            )
         else:
             return jsonify({"mensaje": "No hay carrito para limpiar"}), 200
     except Exception as e:
         print(f"Error al limpiar carrito en frontend: {e}")
         return jsonify({"error": "Error al limpiar carrito"}), 500
+
+
 @app.route("/estado-carrito", methods=["GET"])
 def estado_carrito():
     try:
-        carrito = session.get('carrito', [])
+        carrito = session.get("carrito", [])
         total_productos = len(carrito)
-        return jsonify({
-            "carrito": carrito,
-            "total_productos": total_productos,
-            "tiene_productos": total_productos > 0
-        }), 200
+        return (
+            jsonify(
+                {
+                    "carrito": carrito,
+                    "total_productos": total_productos,
+                    "tiene_productos": total_productos > 0,
+                }
+            ),
+            200,
+        )
     except Exception as e:
         return jsonify({"error": "Error al obtener estado del carrito"}), 500
+
 
 if __name__ == "__main__":
     app.run("localhost", port=3000, debug=True, threaded=True)

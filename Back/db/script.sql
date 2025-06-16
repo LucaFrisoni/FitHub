@@ -76,20 +76,14 @@ CREATE TABLE productos (
 -- Tabla de compras
 CREATE TABLE compras (
     ID_Compra INT PRIMARY KEY AUTO_INCREMENT,
-    ID_Usuario INT,
+    ID_Usuario INT NOT NULL,
+    ID_Producto INT NOT NULL,
     FechaCompra DATE,
     Total INT,
-    FOREIGN KEY (ID_Usuario) REFERENCES usuarios(ID_usuario)
+    Cantidad INT DEFAULT 1,
+    FOREIGN KEY (ID_Usuario) REFERENCES usuarios(ID_usuario),
+    FOREIGN KEY (ID_Producto) REFERENCES productos(ID_Producto),
 );
 
--- Tabla de detalle de compras
-CREATE TABLE detallecompras (
-    ID_Detalle INT PRIMARY KEY AUTO_INCREMENT,
-    ID_Producto INT,
-    ID_Compra INT,
-    Cantidad INT,
-    SubTotal INT,
-    FOREIGN KEY (ID_Producto) REFERENCES productos(ID_Producto),
-    FOREIGN KEY (ID_Compra) REFERENCES compras(ID_Compra)
-);
+
 
