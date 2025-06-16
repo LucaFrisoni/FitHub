@@ -669,8 +669,20 @@ def admin_planes():
         # Obtener planes desde la API
         response = requests.get(f"{API_HOST}/api/planes/")
         if response.status_code == 200:
-            planes = response.json()
-            for plan in planes:
+            planes_api = response.json()
+            planes = []
+            
+            # Transformar los datos del API al formato esperado por el template
+            for plan_api in planes_api:
+                plan = {
+                    "ID_Plan": plan_api.get("id"),
+                    "Nombre": plan_api.get("nombre"),
+                    "Precio_3_dias": plan_api.get("precio_dias", {}).get(3, 0),
+                    "Precio_5_dias": plan_api.get("precio_dias", {}).get(5, 0),
+                    "Deportes_disponibles": ", ".join(plan_api.get("deportes", [])),
+                    "Imagen": plan_api.get("imagen")
+                }
+                
                 if plan.get("Imagen"):
                     plan["imagen_url"] = url_for(
                         "static", filename=f'images/uploads/planes/{plan["Imagen"]}'
@@ -679,6 +691,8 @@ def admin_planes():
                     plan["imagen_url"] = url_for(
                         "static", filename="images/default_plan.png"
                     )
+                    
+                planes.append(plan)
         else:
             planes = []
     except Exception as e:
@@ -707,13 +721,14 @@ def nuevo_plan():
         return render_template("admin/nuevo_plan.html", user=current_user)
 
     # Obtener datos del formulario
-    descripcion = request.form.get("descripcion")
-    duracion = request.form.get("duracion")
-    precio = request.form.get("precio")
+    nombre = request.form.get("nombre")
+    precio_3_dias = request.form.get("precio_3_dias")
+    precio_5_dias = request.form.get("precio_5_dias")
+    deportes_disponibles = request.form.get("deportes_disponibles")
     imagen = request.form.get("imagen")
 
     # Validaciones básicas
-    if not all([descripcion, duracion, precio]):
+    if not all([nombre, precio_3_dias, precio_5_dias, deportes_disponibles]):
         return render_template(
             "admin/nuevo_plan.html",
             error="Todos los campos son obligatorios.",
@@ -722,10 +737,11 @@ def nuevo_plan():
 
     try:
         payload = {
-            "Descripcion": descripcion,
-            "DuracionPlan": duracion,
-            "Precio": int(precio),
-            "Imagen": imagen,
+            "nombre": nombre,
+            "precio_3_dias": int(precio_3_dias),
+            "precio_5_dias": int(precio_5_dias),
+            "deportes_disponibles": deportes_disponibles,
+            "imagen": imagen,
         }
 
         response = requests.post(f"{API_HOST}/api/planes/", json=payload)
@@ -764,12 +780,13 @@ def editar_plan(id):
             return "Error del servidor", 500
 
     # POST - Actualizar plan
-    descripcion = request.form.get("descripcion")
-    duracion = request.form.get("duracion")
-    precio = request.form.get("precio")
+    nombre = request.form.get("nombre")
+    precio_3_dias = request.form.get("precio_3_dias")
+    precio_5_dias = request.form.get("precio_5_dias")
+    deportes_disponibles = request.form.get("deportes_disponibles")
     imagen = request.form.get("imagen")
 
-    if not all([descripcion, duracion, precio]):
+    if not all([nombre, precio_3_dias, precio_5_dias, deportes_disponibles]):
         try:
             response = requests.get(f"{API_HOST}/api/planes/{id}")
             plan = response.json() if response.status_code == 200 else {}
@@ -784,9 +801,10 @@ def editar_plan(id):
 
     try:
         payload = {
-            "Descripcion": descripcion,
-            "DuracionPlan": duracion,
-            "Precio": int(precio),
+            "Nombre": nombre,
+            "Precio_3_dias": int(precio_3_dias),
+            "Precio_5_dias": int(precio_5_dias),
+            "Deportes_disponibles": deportes_disponibles,
             "Imagen": imagen,
         }
 

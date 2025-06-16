@@ -90,63 +90,79 @@
           type="hidden"
           id="nombre_imagen_plan"
           name="imagen"
-          value="{{ plan.Imagen if plan.Imagen else 'default_plan.png' }}"
+          value="{{ plan.Imagen if plan.Imagen else 'default_plan.jpg' }}"
         />
 
-        <!-- Descripción -->
+        <!-- Nombre del Plan -->
         <div>
-          <label for="descripcion" class="block text-sm font-medium mb-2">
-            Descripción <span class="text-red-400">*</span>
+          <label for="nombre" class="block text-sm font-medium mb-2">
+            Nombre del Plan <span class="text-red-400">*</span>
           </label>
-          <textarea
-            id="descripcion"
-            name="descripcion"
-            rows="3"
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            value="{{ plan.Nombre if plan.Nombre else '' }}"
             required
-            minlength="10"
-            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none"
-          >
-{{ plan.Descripcion if plan.Descripcion else '' }}</textarea
-          >
-          <small class="text-gray-400">Mínimo 10 caracteres</small>
+            minlength="3"
+            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+          />
+          <small class="text-gray-400">Mínimo 3 caracteres</small>
         </div>
 
-        <!-- Duración y Precio en fila -->
+        <!-- Precios en fila -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Duración -->
+          <!-- Precio 3 días -->
           <div>
-            <label for="duracion" class="block text-sm font-medium mb-2">
-              Duración (meses) <span class="text-red-400">*</span>
+            <label for="precio_3_dias" class="block text-sm font-medium mb-2">
+              Precio 3 días ($) <span class="text-red-400">*</span>
             </label>
             <input
               type="number"
-              id="duracion"
-              name="duracion"
-              value="{{ plan.DuracionPlan if plan.DuracionPlan else '' }}"
-              required
-              min="1"
-              class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-            />
-            <small class="text-gray-400">Ej: 3</small>
-          </div>
-
-          <!-- Precio -->
-          <div>
-            <label for="precio" class="block text-sm font-medium mb-2">
-              Precio($) / mes<span class="text-red-400">*</span>
-            </label>
-            <input
-              type="number"
-              id="precio"
-              name="precio"
-              value="{{ plan.Precio if plan.Precio is not none else '' }}"
+              id="precio_3_dias"
+              name="precio_3_dias"
+              value="{{ plan.Precio_3_dias if plan.Precio_3_dias is not none else '' }}"
               min="0"
               step="0.01"
               required
               class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
             />
-            <small class="text-gray-400">Precio del plan</small>
+            <small class="text-gray-400">Precio para modalidad de 3 días</small>
           </div>
+
+          <!-- Precio 5 días -->
+          <div>
+            <label for="precio_5_dias" class="block text-sm font-medium mb-2">
+              Precio 5 días ($) <span class="text-red-400">*</span>
+            </label>
+            <input
+              type="number"
+              id="precio_5_dias"
+              name="precio_5_dias"
+              value="{{ plan.Precio_5_dias if plan.Precio_5_dias is not none else '' }}"
+              min="0"
+              step="0.01"
+              required
+              class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+            />
+            <small class="text-gray-400">Precio para modalidad de 5 días</small>
+          </div>
+        </div>
+
+        <!-- Deportes Disponibles -->
+        <div>
+          <label for="deportes_disponibles" class="block text-sm font-medium mb-2">
+            Deportes Disponibles <span class="text-red-400">*</span>
+          </label>
+          <textarea
+            id="deportes_disponibles"
+            name="deportes_disponibles"
+            rows="3"
+            required
+            minlength="5"
+            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none"
+          >{{ plan.Deportes_disponibles if plan.Deportes_disponibles else '' }}</textarea>
+          <small class="text-gray-400">Lista los deportes incluidos en este plan (mínimo 5 caracteres)</small>
         </div>
 
         <!-- Información adicional -->
@@ -167,16 +183,18 @@
             </svg>
             Información del Plan
           </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div class="bg-white/5 p-3 rounded">
               <span class="block text-gray-300 text-xs">ID</span>
               <span class="font-mono text-lg">{{ plan.ID_Plan }}</span>
             </div>
             <div class="bg-white/5 p-3 rounded">
-              <span class="block text-gray-300 text-xs"
-                >Duración Actual(meses)</span
-              >
-              <span class="font-mono text-lg">{{ plan.DuracionPlan }}</span>
+              <span class="block text-gray-300 text-xs">Precio 3 días actual</span>
+              <span class="font-mono text-lg">${{ plan.Precio_3_dias }}</span>
+            </div>
+            <div class="bg-white/5 p-3 rounded">
+              <span class="block text-gray-300 text-xs">Precio 5 días actual</span>
+              <span class="font-mono text-lg">${{ plan.Precio_5_dias }}</span>
             </div>
           </div>
         </div>
@@ -240,7 +258,7 @@
       <!-- Preview -->
       <img
         id="preview-imagen-plan"
-        src="{% if plan.Imagen and plan.Imagen != 'default_plan.png' %}{{ url_for('static', filename='images/uploads/planes/' + plan.Imagen) }}{% else %}{{ url_for('static', filename='images/default_plan.png') }}{% endif %}"
+        src="{% if plan.Imagen and plan.Imagen != 'default_plan.jpg' %}{{ url_for('static', filename='images/uploads/planes/' + plan.Imagen) }}{% else %}{{ url_for('static', filename='images/default_plan.jpg') }}{% endif %}"
         alt="Vista previa"
         class="h-32 w-32 rounded-lg object-cover shadow"
       />
@@ -301,7 +319,7 @@
 <script>
   // Imagen actual del plan para restaurar al cerrar el modal
   const previewOriginalPlan =
-    "{% if plan.Imagen and plan.Imagen != 'default_plan.png' %}{{ url_for('static', filename='images/uploads/planes/' + plan.Imagen) }}{% else %}{{ url_for('static', filename='images/default_plan.png') }}{% endif %}";
+    "{% if plan.Imagen and plan.Imagen != 'default_plan.jpg' %}{{ url_for('static', filename='images/uploads/planes/' + plan.Imagen) }}{% else %}{{ url_for('static', filename='images/default_plan.jpg') }}{% endif %}";
 
   document
     .getElementById("form-subir-imagen-plan")
@@ -424,24 +442,31 @@
       let isValid = true;
       let errors = [];
 
-      // Validar descripción
-      const descripcion = document.getElementById("descripcion").value.trim();
-      if (!descripcion || descripcion.length < 10) {
-        errors.push("La descripción debe tener al menos 10 caracteres");
+      // Validar nombre
+      const nombre = document.getElementById("nombre").value.trim();
+      if (!nombre || nombre.length < 3) {
+        errors.push("El nombre debe tener al menos 3 caracteres");
         isValid = false;
       }
 
-      // Validar duración
-      const duracion = parseInt(document.getElementById("duracion").value);
-      if (isNaN(duracion) || duracion < 1) {
-        errors.push("La duración debe ser un número válido mayor a 0");
+      // Validar precio 3 días
+      const precio3 = parseFloat(document.getElementById("precio_3_dias").value);
+      if (isNaN(precio3) || precio3 < 0) {
+        errors.push("El precio de 3 días debe ser un número válido mayor o igual a 0");
         isValid = false;
       }
 
-      // Validar precio
-      const precio = parseFloat(document.getElementById("precio").value);
-      if (isNaN(precio) || precio < 0) {
-        errors.push("El precio debe ser un número válido mayor o igual a 0");
+      // Validar precio 5 días
+      const precio5 = parseFloat(document.getElementById("precio_5_dias").value);
+      if (isNaN(precio5) || precio5 < 0) {
+        errors.push("El precio de 5 días debe ser un número válido mayor o igual a 0");
+        isValid = false;
+      }
+
+      // Validar deportes disponibles
+      const deportes = document.getElementById("deportes_disponibles").value.trim();
+      if (!deportes || deportes.length < 5) {
+        errors.push("Los deportes disponibles deben tener al menos 5 caracteres");
         isValid = false;
       }
 
