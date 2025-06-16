@@ -30,6 +30,7 @@ app.register_blueprint(roles_bp, url_prefix="/api/roles")
 app.register_blueprint(compras_bp, url_prefix="/api/compras")
 app.register_blueprint(detallecompras_bp, url_prefix="/api/detallecompras")
 app.register_blueprint(pago_bp, url_prefix="/api")
+app.register_blueprint(horarios_bp, url_prefix="/api/horariosentrenamiento")
 
 
 # ------------------Check-conexion-bd------------------
