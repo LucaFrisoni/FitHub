@@ -34,7 +34,6 @@ def get_alquiler_plan(id):
         cursor = conn.cursor(dictionary=True)
         cursor.execute("""
             SELECT ap.ID_AlquilerPlan, ap.ID_Plan, ap.ID_Usuario, ap.Nota,
-                   p.Descripcion AS Plan_Descripcion, p.Precio, p.DuracionPlan,
                    u.Nombre AS Usuario_Nombre, u.Apellido AS Usuario_Apellido
             FROM alquileresplan ap
             JOIN planes p ON ap.ID_Plan = p.ID_Plan
@@ -64,7 +63,6 @@ def get_alquileres_por_usuario(id_usuario):
         
         cursor.execute("""
             SELECT ap.ID_AlquilerPlan, ap.ID_Plan, ap.ID_Usuario, ap.Nota,
-                   p.Descripcion AS Plan_Descripcion, p.Precio, p.DuracionPlan,
                    u.Nombre AS Usuario_Nombre, u.Apellido AS Usuario_Apellido
             FROM alquileresplan ap
             JOIN planes p ON ap.ID_Plan = p.ID_Plan
