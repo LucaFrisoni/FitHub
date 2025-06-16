@@ -13,11 +13,18 @@ function updateprice(plan, dias) {
   const nuevoprecio = document.getElementById("precio-" + plan);
   nuevoprecio.textContent = "$" + precio;
   plandiv.dataset.diaselegidos = dias;
+  const inputhidden = document.getElementById("dias-" + plan);
+  if (inputhidden) {
+    inputhidden.value = dias;
+  }
+  const inputprecio = document.getElementById("precio-hidden-" + plan);
+  if (inputprecio) {
+    inputprecio.value = precio.toFixed(2);
+  }
 }
-
 document.addEventListener("DOMContentLoaded", () => {
   // Código del primer bloque...
-  //------------------------------------------------------------------------------------updateprice y botones .button-dias
+  // ------------------------------------------updateprice y botones .button-dias
   const botonesdias = document.querySelectorAll(".button-dias");
   botonesdias.forEach((boton) => {
     boton.addEventListener("click", () => {
@@ -41,21 +48,46 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  //------------------------------------------------------------------------------------Cambio de imagen según el deporte
-  const selectdeporte = document.querySelector("select[id^='deporte-']");
+  //------------------------------------------ Cambio de imagen según el deporte
+  const selectdeportes = document.querySelectorAll("select[id^='deporte-']");
   const imagen = document.getElementById("imagen-deporte");
-  if (selectdeporte && imagen) {
+
+  if (imagen) {
     const imagenes = {
       "futbol sala": "static/images/sport.png",
       boxeo: "static/images/boxeo.png",
       rugby: "static/images/rugby.png",
     };
-    selectdeporte.addEventListener("change", (e) => {
-      const deporte = e.target.value;
-      imagen.src = imagenes[deporte];
+
+    selectdeportes.forEach((select) => {
+      if (select) {
+        select.addEventListener("change", (e) => {
+          const deporte = e.target.value;
+          if (imagen && imagenes[deporte]) {
+            imagen.src = imagenes[deporte];
+          }
+        });
+      }
     });
   }
+  const formularios = document.querySelectorAll("form[id^='form-']");
+  formularios.forEach((form) => {
+    form.addEventListener("submit", (e) => {
+      console.log("Formulario enviado!");
+      const planid = form.id.replace("form-", "");
+      const selectvisible = document.getElementById("deporte-" + planid);
+      const selectoculto = document.getElementById(
+        "select-dentro-form-" + planid
+      );
 
+      if (selectvisible && selectoculto) {
+        selectoculto.value = selectvisible.value;
+      }
+      const boton = form.querySelector(".boton-comprar");
+      boton.textContent = "Agregando...";
+      boton.disabled = true;
+    });
+  });
   //------------------------------------------------------------------------------------Mobile Navbar
   const burger = document.getElementById("burger-button");
   const mobileMenu = document.getElementById("mobile-menu");

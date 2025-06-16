@@ -10,7 +10,7 @@
       <!-- Preview -->
       <img
         id="preview-imagen-plan"
-        src="{{ url_for('static', filename='images/default_plan.png') }}"
+        src="{{ url_for('static', filename='images/default_plan.jpg') }}"
         alt="Vista previa"
         class="h-32 w-32 rounded-lg object-cover shadow"
       />
@@ -65,57 +65,60 @@
 
 <script>
   // Imagen por defecto para restaurar al cerrar el modal
-  const previewOriginalPlan = "{{ url_for('static', filename='images/default_plan.png') }}";
+  const previewOriginalPlan =
+    "{{ url_for('static', filename='images/default_plan.jpg') }}";
 
   document
     .getElementById("form-subir-imagen-plan")
     .addEventListener("submit", function (e) {
       e.preventDefault();
-      
+
       // Mostrar loader
       mostrarLoaderPlan();
-      
+
       const formData = new FormData(this);
-      
+
       fetch(this.action, {
-        method: 'POST',
-        body: formData
+        method: "POST",
+        body: formData,
       })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        if (data.success) {
-          // Actualizar vista previa principal
-          const previewPrincipal = document.getElementById("preview-imagen-principal");
-          if (previewPrincipal) {
-            previewPrincipal.src = data.url;
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
-          
-          // Actualizar campo oculto con el nombre de la imagen
-          const hiddenInput = document.getElementById("nombre_imagen_plan");
-          if (hiddenInput) {
-            hiddenInput.value = data.filename;
+          return response.json();
+        })
+        .then((data) => {
+          if (data.success) {
+            // Actualizar vista previa principal
+            const previewPrincipal = document.getElementById(
+              "preview-imagen-principal"
+            );
+            if (previewPrincipal) {
+              previewPrincipal.src = data.url;
+            }
+
+            // Actualizar campo oculto con el nombre de la imagen
+            const hiddenInput = document.getElementById("nombre_imagen_plan");
+            if (hiddenInput) {
+              hiddenInput.value = data.filename;
+            }
+
+            // Cerrar modal
+            cerrarModalPlan();
+
+            // Opcional: mostrar mensaje de éxito
+            console.log("Imagen subida correctamente");
+          } else {
+            alert("Error: " + (data.error || "Error desconocido"));
+            ocultarLoaderPlan();
           }
-          
-          // Cerrar modal
-          cerrarModalPlan();
-          
-          // Opcional: mostrar mensaje de éxito
-          console.log("Imagen subida correctamente");
-        } else {
-          alert('Error: ' + (data.error || 'Error desconocido'));
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Error al subir la imagen: " + error.message);
           ocultarLoaderPlan();
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Error al subir la imagen: ' + error.message);
-        ocultarLoaderPlan();
-      });
+        });
     });
 
   function mostrarLoaderPlan() {
@@ -143,8 +146,28 @@
   }
 
   function abrirModalPlan() {
-    document.getElementById("modal-imagen-plan").classList.add("flex");
-    document.getElementById("modal-imagen-plan").classList.remove("hidden");
+    const modal = document.getElementById("modal-imagen-plan");
+    modal.classList.add("flex");
+    modal.classList.remove("hidden");
+
+    const previewModal = document.getElementById("preview-imagen-plan");
+    const previewPrincipal = document.getElementById(
+      "preview-imagen-principal"
+    );
+
+    // Ruta absoluta de la imagen por defecto
+    const defaultPath =
+      "{{ url_for('static', filename='images/default_plan.jpg') }}";
+
+    // Comparar solo el final del src, por si hay dominio o path diferente
+    const tieneImagen = !previewPrincipal.src.endsWith(
+      "images/default_plan.jpg"
+    );
+
+    previewModal.src = tieneImagen ? previewPrincipal.src : defaultPath;
+
+    // Guardar en dataset la imagen original para restaurar al cerrar
+    previewModal.dataset.original = previewModal.src;
   }
 
   function previewFotoPlan(input) {
@@ -161,14 +184,16 @@
   }
 
   function cerrarModalPlan() {
-    document.getElementById("modal-imagen-plan").classList.add("hidden");
-    document.getElementById("modal-imagen-plan").classList.remove("flex");
+    const modal = document.getElementById("modal-imagen-plan");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
 
-    // Restaurar vista previa a la imagen por defecto
-    document.getElementById("preview-imagen-plan").src = previewOriginalPlan;
+    const preview = document.getElementById("preview-imagen-plan");
+    preview.src =
+      preview.dataset.original ||
+      "{{ url_for('static', filename='images/default_plan.jpg') }}";
+
     document.getElementById("form-subir-imagen-plan").reset();
-    
-    // Asegurar que el loader está oculto
     ocultarLoaderPlan();
   }
 </script>

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import uuid
 from flask import (
     Flask,
     render_template,
@@ -33,12 +34,15 @@ API_HOST = os.getenv("API_HOST")
 # ------------------Upload Foto------------------
 UPLOAD_FOLDER_PROFILE = "static/images/uploads/perfil"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER_PROFILE
-
+UPLOAD_FOLDER_PRODUCTOS = "static/images/uploads/productos"
+app.config["UPLOAD_FOLDER_PRODUCTOS"] = UPLOAD_FOLDER_PRODUCTOS
+# ------------------Init auth------------------
 login_manager = LoginManager()
 login_manager.init_app(app)  # Conectás Flask-Login con tu app
 login_manager.login_view = (
     "login"  # la ruta donde te lleva si no esta logeado en una ruta proteguida
 )
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -63,6 +67,7 @@ def load_user(user_id):
     return None
 
 
+# -------------------------------------Rutas-----------------------------------
 @app.route("/")
 def home():
     # si existe la session toast_exitoso, la devuelve y luego la borra, sino usa False
@@ -75,33 +80,18 @@ def pagina_error(error):
     return render_template("404.html", user=current_user), 404
 
 
-@app.route("/planes")
+@app.route('/planes', methods=['GET'])
 def planes():
-    planes = [
-        {
-            "id": "bodybuilding",
-            "nombre": "Body-Building",
-            "dias_elegidos": 3,
-            "imagen": url_for("static", filename="images/bodybuilding.png"),
-            "precio_dias": {3: 46900, 5: 63000},
-        },
-        {
-            "id": "spinning",
-            "nombre": "Spinning",
-            "dias_elegidos": 3,
-            "imagen": url_for("static", filename="images/spinning.png"),
-            "precio_dias": {3: 29500, 5: 42000},
-        },
-        {
-            "id": "sport",
-            "nombre": "Sport-Focused Training",
-            "dias_elegidos": 3,
-            "imagen": url_for("static", filename="images/sport.png"),
-            "precio_dias": {3: 49500, 5: 65000},
-            "deportes": ["futbol sala", "boxeo", "rugby"],
-        },
-    ]
-    return render_template("planes.html", planes=planes, user=current_user)
+   try:
+      respuesta = requests.get(f"{API_HOST}/api/planes/")  
+      if respuesta.status_code == 200:  
+         planes = respuesta.json()
+      else:
+         planes = []
+   except Exception as e:
+      print(f"error al conectar con el back: {e}")
+      planes = []
+   return render_template('planes.html', planes=planes, user=current_user)
 
 @app.route("/reservas")
 #@login_required
@@ -268,9 +258,7 @@ def user():
     }
 
     try:
-        response = requests.put(
-            f"{API_HOST}/api/usuarios/editar-usuario", json=payload
-        )
+        response = requests.put(f"{API_HOST}/api/usuarios/editar-usuario", json=payload)
         if response.status_code == 200:
             data = response.json()
             usuario = data["usuario"]
@@ -364,9 +352,7 @@ def login():
     try:
         # Llamada a la API
         payload = {"Email": email, "Contraseña": contraseña}
-        response = requests.post(
-            f"{API_HOST}/api/usuarios/login", json=payload
-        )
+        response = requests.post(f"{API_HOST}/api/usuarios/login", json=payload)
 
         if response.status_code == 200:
             data = response.json()
@@ -423,9 +409,7 @@ def registro():
             "Telefono": telefono,
         }
 
-        response = requests.post(
-            f"{API_HOST}/api/usuarios/registro", json=payload
-        )
+        response = requests.post(f"{API_HOST}/api/usuarios/registro", json=payload)
 
         if response.status_code == 201:
             # Guardar en session si querés mostrar algo en el login
@@ -505,63 +489,80 @@ def subir_imagen_producto():
     try:
         # Verificar que se envió un archivo
         if "foto" not in request.files:
-            return jsonify({
-                "success": False,
-                "error": "No se seleccionó ningún archivo"
-            }), 400
+            return (
+                jsonify({"success": False, "error": "No se seleccionó ningún archivo"}),
+                400,
+            )
 
         foto = request.files["foto"]
 
         if foto.filename == "":
-            return jsonify({
-                "success": False,
-                "error": "El nombre del archivo está vacío"
-            }), 400
+            return (
+                jsonify(
+                    {"success": False, "error": "El nombre del archivo está vacío"}
+                ),
+                400,
+            )
 
         # Verificar extensión del archivo
-        if '.' not in foto.filename:
-            return jsonify({
-                "success": False,
-                "error": "Archivo sin extensión válida"
-            }), 400
-            
+        if "." not in foto.filename:
+            return (
+                jsonify({"success": False, "error": "Archivo sin extensión válida"}),
+                400,
+            )
+
         extension = foto.filename.rsplit(".", 1)[1].lower()
-        
+
         # Definir extensiones permitidas si no están definidas
-        EXTENSIONES_PERMITIDAS = {'jpg', 'jpeg', 'png'}
-        
+        EXTENSIONES_PERMITIDAS = {"jpg", "jpeg", "png"}
+
         if extension not in EXTENSIONES_PERMITIDAS:
-            return jsonify({
-                "success": False,
-                "error": f"Formato no permitido. Formatos aceptados: {', '.join(EXTENSIONES_PERMITIDAS)}"
-            }), 400
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "error": f"Formato no permitido. Formatos aceptados: {', '.join(EXTENSIONES_PERMITIDAS)}",
+                    }
+                ),
+                400,
+            )
 
         # Generar nombre único para el archivo
         filename = f"producto_{uuid.uuid4().hex}.{extension}"
-        
+
         # Asegurarse de que el directorio existe
-        upload_dir = os.path.join(app.static_folder, 'images/uploads/productos')
+        upload_dir = os.path.join(app.static_folder, "images/uploads/productos")
         if not os.path.exists(upload_dir):
             os.makedirs(upload_dir)
-        
+
         filepath = os.path.join(upload_dir, filename)
-        
+
         # Guardar la imagen
         foto.save(filepath)
-        
+
         # Retornar respuesta exitosa
-        return jsonify({
-            "success": True,
-            "filename": filename,
-            "url": url_for('static', filename=f'images/uploads/productos/{filename}')
-        })
+        return jsonify(
+            {
+                "success": True,
+                "filename": filename,
+                "url": url_for(
+                    "static", filename=f"images/uploads/productos/{filename}"
+                ),
+            }
+        )
 
     except Exception as e:
         app.logger.error(f"Error al subir imagen de producto: {str(e)}")
-        return jsonify({
-            "success": False,
-            "error": "Error interno del servidor al guardar la imagen"
-        }), 500
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "error": "Error interno del servidor al guardar la imagen",
+                }
+            ),
+            500,
+        )
+
 
 @app.route("/admin")
 @login_required
@@ -609,7 +610,9 @@ def nuevo_producto():
     imagen = request.form.get("imagen")
 
     # Validaciones básicas
-    if not all([nombre, descripcion, codigo, cantidad, precio, categoria, imagen]):  # ← INCLUIR categoria
+    if not all(
+        [nombre, descripcion, codigo, cantidad, precio, categoria, imagen]
+    ):  # ← INCLUIR categoria
         return render_template(
             "admin/nuevo_producto.html",
             error="Todos los campos son obligatorios.",
@@ -623,8 +626,8 @@ def nuevo_producto():
             "Codigo": codigo,
             "Cantidad": int(cantidad),
             "Precio": int(precio),
-            "Categoria": categoria, 
-            "Imagen": imagen, 
+            "Categoria": categoria,
+            "Imagen": imagen,
         }
 
         response = requests.post(f"{API_HOST}/api/productos/", json=payload)
@@ -694,9 +697,7 @@ def editar_producto(id):
             "Imagen": imagen,
         }
 
-        response = requests.put(
-            f"{API_HOST}/api/productos/{id}", json=payload
-        )
+        response = requests.put(f"{API_HOST}/api/productos/{id}", json=payload)
 
         if response.status_code == 200:
             session["producto_editado"] = True
@@ -740,63 +741,78 @@ def subir_imagen_plan():
     try:
         # Verificar que se envió un archivo
         if "foto" not in request.files:
-            return jsonify({
-                "success": False,
-                "error": "No se seleccionó ningún archivo"
-            }), 400
+            return (
+                jsonify({"success": False, "error": "No se seleccionó ningún archivo"}),
+                400,
+            )
 
         foto = request.files["foto"]
 
         if foto.filename == "":
-            return jsonify({
-                "success": False,
-                "error": "El nombre del archivo está vacío"
-            }), 400
+            return (
+                jsonify(
+                    {"success": False, "error": "El nombre del archivo está vacío"}
+                ),
+                400,
+            )
 
         # Verificar extensión del archivo
-        if '.' not in foto.filename:
-            return jsonify({
-                "success": False,
-                "error": "Archivo sin extensión válida"
-            }), 400
-            
+        if "." not in foto.filename:
+            return (
+                jsonify({"success": False, "error": "Archivo sin extensión válida"}),
+                400,
+            )
+
         extension = foto.filename.rsplit(".", 1)[1].lower()
-        
+
         # Definir extensiones permitidas si no están definidas
-        EXTENSIONES_PERMITIDAS = {'jpg', 'jpeg', 'png'}
-        
+        EXTENSIONES_PERMITIDAS = {"jpg", "jpeg", "png"}
+
         if extension not in EXTENSIONES_PERMITIDAS:
-            return jsonify({
-                "success": False,
-                "error": f"Formato no permitido. Formatos aceptados: {', '.join(EXTENSIONES_PERMITIDAS)}"
-            }), 400
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "error": f"Formato no permitido. Formatos aceptados: {', '.join(EXTENSIONES_PERMITIDAS)}",
+                    }
+                ),
+                400,
+            )
 
         # Generar nombre único para el archivo
         filename = f"plan_{uuid.uuid4().hex}.{extension}"
-        
+
         # Asegurarse de que el directorio existe
-        upload_dir = os.path.join(app.static_folder, 'images/uploads/planes')
+        upload_dir = os.path.join(app.static_folder, "images/uploads/planes")
         if not os.path.exists(upload_dir):
             os.makedirs(upload_dir)
-        
+
         filepath = os.path.join(upload_dir, filename)
-        
+
         # Guardar la imagen
         foto.save(filepath)
-        
+
         # Retornar respuesta exitosa
-        return jsonify({
-            "success": True,
-            "filename": filename,
-            "url": url_for('static', filename=f'images/uploads/planes/{filename}')
-        })
+        return jsonify(
+            {
+                "success": True,
+                "filename": filename,
+                "url": url_for("static", filename=f"images/uploads/planes/{filename}"),
+            }
+        )
 
     except Exception as e:
         app.logger.error(f"Error al subir imagen de plan: {str(e)}")
-        return jsonify({
-            "success": False,
-            "error": "Error interno del servidor al guardar la imagen"
-        }), 500
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "error": "Error interno del servidor al guardar la imagen",
+                }
+            ),
+            500,
+        )
+
 
 @app.route("/admin/planes")
 @login_required
@@ -810,11 +826,12 @@ def admin_planes():
             for plan in planes:
                 if plan.get("Imagen"):
                     plan["imagen_url"] = url_for(
-                        'static', 
-                        filename=f'images/uploads/planes/{plan["Imagen"]}'
+                        "static", filename=f'images/uploads/planes/{plan["Imagen"]}'
                     )
                 else:
-                    plan["imagen_url"] = url_for('static', filename='images/default_plan.png')
+                    plan["imagen_url"] = url_for(
+                        "static", filename="images/default_plan.png"
+                    )
         else:
             planes = []
     except Exception as e:
@@ -861,7 +878,7 @@ def nuevo_plan():
             "Descripcion": descripcion,
             "DuracionPlan": duracion,
             "Precio": int(precio),
-            "Imagen": imagen
+            "Imagen": imagen,
         }
 
         response = requests.post(f"{API_HOST}/api/planes/", json=payload)
@@ -923,7 +940,7 @@ def editar_plan(id):
             "Descripcion": descripcion,
             "DuracionPlan": duracion,
             "Precio": int(precio),
-            "Imagen": imagen
+            "Imagen": imagen,
         }
 
         response = requests.put(f"{API_HOST}/api/planes/{id}", json=payload)
@@ -1118,9 +1135,7 @@ def editar_reserva(id):
 
         payload = {"ID_Usuario": int(usuario_id), "ID_Plan": int(plan_id), "Nota": nota}
 
-        response = requests.put(
-            f"{API_HOST}/api/alquileres/{id}", json=payload
-        )
+        response = requests.put(f"{API_HOST}/api/alquileres/{id}", json=payload)
 
         if response.status_code == 200:
             session["reserva_editada"] = True
@@ -1166,9 +1181,9 @@ def eliminar_reserva(id):
 @app.route("/agregar_carrito/<int:producto_id>", methods=["POST"])
 def agregar_carrito(producto_id):
     try:
-        response = requests.get(f"{API_HOST}/api/productos/", params={
-            'id': producto_id
-        })
+        response = requests.get(
+            f"{API_HOST}/api/productos/", params={"id": producto_id}
+        )
         if response.status_code == 404:
             flash("Producto no encontrado")
             return redirect(url_for("tienda"))
@@ -1183,7 +1198,7 @@ def agregar_carrito(producto_id):
                 item["cantidad"] += 1
                 break
         else:
-            
+
             # Agregar nuevo producto al carrito
             carrito.append(
                 {
@@ -1191,9 +1206,8 @@ def agregar_carrito(producto_id):
                     "nombre": producto["Nombre"] if "Nombre" in producto else "",
                     "precio": float(producto["Precio"] if "Precio" in producto else 0),
                     "cantidad": 1,
-                    "imagen": producto["Imagen"] if "Imagen" in producto else "", 
+                    "imagen": producto["Imagen"] if "Imagen" in producto else "",
                 }
-
             )
 
         # Guardar carrito en sesión
@@ -1205,8 +1219,9 @@ def agregar_carrito(producto_id):
 
     except Exception as ex:
         print(f"error al agregar producot al carrito: {ex}")
-        flash("Error al agregar producto al carrito",category='error')
+        flash("Error al agregar producto al carrito", category="error")
         return redirect(request.referrer or url_for("tienda"))
+
 
 @app.route("/ver_carrito")
 def ver_carrito():
@@ -1226,11 +1241,57 @@ def eliminar_producto_carrito(producto_id):
     return redirect(url_for("ver_carrito"))
 
 
-@app.route("/finalizar_compra", methods=["POST"])
-def finalizar_compra():
-    session.pop("carrito", None)  # Vacía el carrito
-    return redirect(url_for("ver_carrito"))
+@app.route("/pasarela")
+@login_required
+def pasarela():
+    carrito = session.get("carrito", [])
+    
+    # Si el carrito está vacío, redirigir a la tienda
+    if not carrito:
+        flash("Tu carrito está vacío")
+        return redirect(url_for("tienda"))
+    
+    # Calcular total
+    total = sum(item["precio"] * item["cantidad"] for item in carrito)
+    
+    return render_template(
+        "pasarela.html", 
+        carrito=carrito, 
+        total=total, 
+        user=current_user,
+        API_HOST=API_HOST  
+    )
 
+@app.route("/limpiar-carrito-frontend", methods=["POST"])
+def limpiar_carrito_frontend():
+    """Limpiar carrito en la sesión del frontend"""
+    try:
+        if 'carrito' in session:
+            productos_eliminados = len(session['carrito'])
+            session['carrito'] = []
+            session.modified = True
+            print(f"Carrito limpiado en frontend: {productos_eliminados} productos eliminados")
+            return jsonify({
+                "mensaje": "Carrito limpiado en frontend",
+                "productos_eliminados": productos_eliminados
+            }), 200
+        else:
+            return jsonify({"mensaje": "No hay carrito para limpiar"}), 200
+    except Exception as e:
+        print(f"Error al limpiar carrito en frontend: {e}")
+        return jsonify({"error": "Error al limpiar carrito"}), 500
+@app.route("/estado-carrito", methods=["GET"])
+def estado_carrito():
+    try:
+        carrito = session.get('carrito', [])
+        total_productos = len(carrito)
+        return jsonify({
+            "carrito": carrito,
+            "total_productos": total_productos,
+            "tiene_productos": total_productos > 0
+        }), 200
+    except Exception as e:
+        return jsonify({"error": "Error al obtener estado del carrito"}), 500
 
 if __name__ == "__main__":
     app.run("localhost", port=3000, debug=True, threaded=True)
