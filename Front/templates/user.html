@@ -267,32 +267,79 @@
   <hr class="pb-[24px]" />
 
   <!--Mis compras -->
-  <div
-    class="w-full h-[350px] border-2 border-b-black mb-[24px] rounded-2xl bg-white relative"
-  >
-    <div class="h-[40px] w-full">
-      <p class="font-bold pl-3 pt-3">Mis compras</p>
-    </div>
-    <!-- Card -->
-
+  <div class="w-full h-[400px] mb-[24px] relative">
     <div
-      class="flex flex-col items-center gap-y-2 ml-8 mt-3 w-[180px] bg-stone-100 rounded-2xl shadow-md hover:-translate-y-2 transition-transform duration-300 ease-in-out"
+      id="compras-container"
+      class="w-full h-full border-2 border-b-black mb-[24px] rounded-2xl bg-white relative overflow-x-auto scroll-smooth"
     >
-      <img
-        src="{{ url_for('static',filename='images/producto_prueba.png')}}"
-        class="pt-4"
-        alt="producto"
-      />
-      <p class="font-bold px-1">Nombre del producto</p>
-      <p class="text-primary font-bold text-2xl">$30000</p>
-      <div class="flex w-full justify-between px-2">
-        <p class="text-xs font-extralight">Comprado el</p>
-        <p class="text-xs font-extralight">31/05/2025</p>
+      <div class="h-[40px] w-full">
+        <p class="font-bold pl-3 pt-3">Mis compras</p>
+      </div>
+      <div class="flex w-max h-[80%]">
+        <!-- Card -->
+        {% if compras %} {% for compra in compras %}
+        <a
+          href="{{ url_for('producto', id=compra.ID_Producto) }}"
+          class="flex flex-col justify-between items-center mx-4 mt-3 w-[180px] h-[280px] bg-stone-100 rounded-2xl shadow-md hover:-translate-y-2 transition-transform duration-300 ease-in-out cursor-pointer"
+        >
+          <!-- Contenido principal -->
+          <div class="flex flex-col items-center">
+            <!-- Imagen envuelta -->
+            <div class="w-[180px] h-[136px] overflow-hidden rounded-t-2xl">
+              <img
+                src="{{ url_for('static', filename='images/uploads/productos/' ~ compra.ImagenProducto) }}"
+                class="w-full h-full object-cover"
+                alt="{{ compra.NombreProducto }}"
+              />
+            </div>
+            <p
+              class="font-bold p-1 text-center text-sm truncate w-[90%]"
+              title="{{ compra.NombreProducto }}"
+            >
+              {{ compra.NombreProducto }}
+            </p>
+            <p class="text-primary font-bold text-2xl">${{ compra.Total }}</p>
+          </div>
+
+          <!-- Textos pegados al fondo -->
+          <div class="flex flex-col w-full gap-y-1 py-2">
+            <div class="flex w-full justify-between px-2">
+              <p class="text-xs font-bold">Comprado el</p>
+              <p class="text-xs font-extralight text-slate-500">
+                {{ compra.FechaCompra }}
+              </p>
+            </div>
+            <div class="flex w-full justify-between px-2">
+              <p class="text-xs font-bold">Cantidad</p>
+              <p class="text-xs font-extralight text-slate-500">
+                {{ compra.Cantidad }}
+              </p>
+            </div>
+          </div>
+        </a>
+        {% endfor %} {% else %}
+        <div class="flex flex-col w-full h-full items-center justify-center">
+          <!-- Cajita -->
+
+          <p class="py-8 text-2xl font-bold">Aun no hay compras realizadas</p>
+          <!-- Boton -->
+          <div class="flex items-center justify-center">
+            <a
+              href="{{ url_for('tienda') }}"
+              type="button"
+              class="opacity-100 scale-100 cursor-pointer py-2 px-3 sm:py-3 sm:px-5 bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition duration-300 ease-in-out"
+            >
+              Comprar
+            </a>
+          </div>
+        </div>
+        {% endif %}
       </div>
     </div>
     <!-- botones -->
     <div class="h-[24px] w-[80px] absolute right-4 bottom-6">
       <button
+        id="scroll-left"
         class="rounded-md bg-stone-100 p-2.5 border border-transparent text-center text-sm transition-all shadow-sm hover:shadow-lg cursor-pointer hover:bg-black active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
         type="button"
       >
@@ -301,6 +348,7 @@
         />
       </button>
       <button
+        id="scroll-right"
         class="rounded-md bg-stone-100 p-2.5 border border-transparent text-center text-sm transition-all shadow-sm hover:shadow-lg cursor-pointer hover:bg-black active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
         type="button"
       >
@@ -310,7 +358,6 @@
       </button>
     </div>
   </div>
-
   <hr class="pb-[24px]" />
 
   <!--Historial Reservas -->
@@ -402,5 +449,15 @@
   <!-- Modal subir foto -->
   {% include "components/modales/modal_user_profile.html" %}
 </div>
+
+<script>
+  const container = document.getElementById("compras-container");
+  document.getElementById("scroll-left").onclick = () => {
+    container.scrollBy({ left: -180, behavior: "smooth" });
+  };
+  document.getElementById("scroll-right").onclick = () => {
+    container.scrollBy({ left: 180, behavior: "smooth" });
+  };
+</script>
 
 {% endblock %}
