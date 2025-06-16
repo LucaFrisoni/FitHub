@@ -33,7 +33,7 @@ CREATE TABLE planes (
     Imagen VARCHAR(255),
     Precio_3_dias INT,
     Precio_5_dias INT,
-    Deportes_disponibles VARCHAR(255);
+    Deportes_disponibles VARCHAR(255)
 );
 INSERT INTO planes (Nombre, Imagen, Precio_3_dias, Precio_5_dias, Deportes_disponibles) VALUES
 ('Body-Building', 'Front/images/bodybuilding.png', 46900, 63000, NULL),

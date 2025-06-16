@@ -70,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+  // Manejo de formularios de planes
   const formularios = document.querySelectorAll("form[id^='form-']");
   formularios.forEach((form) => {
     form.addEventListener("submit", (e) => {
@@ -83,9 +84,18 @@ document.addEventListener("DOMContentLoaded", () => {
       if (selectvisible && selectoculto) {
         selectoculto.value = selectvisible.value;
       }
+
       const boton = form.querySelector(".boton-comprar");
-      boton.textContent = "Agregando...";
-      boton.disabled = true;
+      if (boton) {
+        boton.textContent = "Agregando...";
+        boton.disabled = true;
+
+        // Restaurar el botón después de un tiempo (por si hay error)
+        setTimeout(() => {
+          boton.textContent = "comprar";
+          boton.disabled = false;
+        }, 3000);
+      }
     });
   });
   //------------------------------------------------------------------------------------Mobile Navbar

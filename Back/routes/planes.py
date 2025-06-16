@@ -2,6 +2,9 @@ from flask import Blueprint, jsonify, request
 from db.db import get_connection
 from util.log import devolver_error
 from util.util import *
+import os
+import uuid
+
 
 planes_bp = Blueprint("planes", __name__)
 
@@ -221,14 +224,36 @@ def delete_plan(id):
         conn = get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT 1 FROM planes WHERE ID_Plan = %s", (id,))
-        if not cursor.fetchone():
+        cursor.execute("SELECT Imagen FROM planes WHERE ID_Plan = %s", (id,))
+        plan = cursor.fetchone()
+        
+        if not plan:
             return jsonify({"error": "Plan no encontrado"}), 404
+
+        # Obtener el nombre de la imagen (si existe)
+        imagen_filename = plan[0] if plan[0] else None
 
         cursor.execute("DELETE FROM planes WHERE ID_Plan = %s", (id,))
         conn.commit()
 
-        return jsonify({"success": True, "message": "Plan eliminado correctamente"})
+        if cursor.rowcount == 0:
+            return jsonify({"error": "No se pudo eliminar el plan"}), 500
+
+        if imagen_filename:
+            try:
+                upload_dir = "../Front/static/images/uploads/planes"
+                imagen_path = os.path.join(upload_dir, imagen_filename)
+                
+                if os.path.exists(imagen_path):
+                    os.remove(imagen_path)
+                    print(f"Imagen de plan eliminada: {imagen_path}")
+                else:
+                    print(f"La imagen del plan no existe en el path: {imagen_path}")
+                    
+            except Exception as img_ex:
+                print(f"Error al eliminar imagen del plan: {str(img_ex)}")
+
+        return jsonify({"success": True, "message": "Plan eliminado correctamente"}), 200
 
     except Exception as ex:
         return devolver_error(ruta=f"planes/{id}", metodo="DELETE", ex=ex)
@@ -237,3 +262,58 @@ def delete_plan(id):
             cursor.close()
         if conn:
             conn.close()
+
+EXTENSIONES_PERMITIDAS = {"png", "jpg", "jpeg"}
+
+@planes_bp.route("/subir-imagen", methods=["POST"])
+def subir_imagen_plan():
+    """
+    Endpoint para subir imágenes de planes
+    """
+    try:
+        # Verificar que se envió un archivo
+        if "foto" not in request.files:
+            return jsonify({"success": False, "error": "No se seleccionó ningún archivo"}), 400
+
+        foto = request.files["foto"]
+
+        if foto.filename == "":
+            return jsonify({"success": False, "error": "El nombre del archivo está vacío"}), 400
+
+        # Verificar extensión del archivo
+        if "." not in foto.filename:
+            return jsonify({"success": False, "error": "Archivo sin extensión válida"}), 400
+
+        extension = foto.filename.rsplit(".", 1)[1].lower()
+
+        if extension not in EXTENSIONES_PERMITIDAS:
+            return jsonify({
+                "success": False, 
+                "error": f"Formato no permitido. Formatos aceptados: {', '.join(EXTENSIONES_PERMITIDAS)}"
+            }), 400
+
+        # Generar nombre único para el archivo
+        filename = f"plan_{uuid.uuid4().hex}.{extension}"
+        
+        # Crear directorio si no existe - RUTA DEL FRONTEND
+        upload_dir = "../Front/static/images/uploads/planes"  # Ruta relativa al backend
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir)
+
+        filepath = os.path.join(upload_dir, filename)
+
+        # Guardar la imagen
+        foto.save(filepath)
+
+        # Retornar respuesta exitosa con el nombre del archivo
+        return jsonify({
+            "success": True,
+            "filename": filename,
+            "message": "Imagen de plan subida exitosamente"
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Error del servidor al subir imagen: {str(e)}"
+        }), 500
