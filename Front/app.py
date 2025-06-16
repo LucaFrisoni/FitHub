@@ -80,34 +80,18 @@ def pagina_error(error):
     return render_template("404.html", user=current_user), 404
 
 
-@app.route("/planes")
+@app.route('/planes', methods=['GET'])
 def planes():
-    planes = [
-        {
-            "id": "bodybuilding",
-            "nombre": "Body-Building",
-            "dias_elegidos": 3,
-            "imagen": url_for("static", filename="images/bodybuilding.png"),
-            "precio_dias": {3: 46900, 5: 63000},
-        },
-        {
-            "id": "spinning",
-            "nombre": "Spinning",
-            "dias_elegidos": 3,
-            "imagen": url_for("static", filename="images/spinning.png"),
-            "precio_dias": {3: 29500, 5: 42000},
-        },
-        {
-            "id": "sport",
-            "nombre": "Sport-Focused Training",
-            "dias_elegidos": 3,
-            "imagen": url_for("static", filename="images/sport.png"),
-            "precio_dias": {3: 49500, 5: 65000},
-            "deportes": ["futbol sala", "boxeo", "rugby"],
-        },
-    ]
-    return render_template("planes.html", planes=planes, user=current_user)
-
+   try:
+      respuesta = requests.get(f"{API_HOST}/api/planes/")  
+      if respuesta.status_code == 200:  
+         planes = respuesta.json()
+      else:
+         planes = []
+   except Exception as e:
+      print(f"error al conectar con el back: {e}")
+      planes = []
+   return render_template('planes.html', planes=planes, user=current_user)
 
 @app.route("/reservas")
 # @login_required
@@ -1163,11 +1147,57 @@ def eliminar_producto_carrito(producto_id):
     return redirect(url_for("ver_carrito"))
 
 
-@app.route("/finalizar_compra", methods=["POST"])
-def finalizar_compra():
-    session.pop("carrito", None)  # Vacía el carrito
-    return redirect(url_for("ver_carrito"))
+@app.route("/pasarela")
+@login_required
+def pasarela():
+    carrito = session.get("carrito", [])
+    
+    # Si el carrito está vacío, redirigir a la tienda
+    if not carrito:
+        flash("Tu carrito está vacío")
+        return redirect(url_for("tienda"))
+    
+    # Calcular total
+    total = sum(item["precio"] * item["cantidad"] for item in carrito)
+    
+    return render_template(
+        "pasarela.html", 
+        carrito=carrito, 
+        total=total, 
+        user=current_user,
+        API_HOST=API_HOST  
+    )
 
+@app.route("/limpiar-carrito-frontend", methods=["POST"])
+def limpiar_carrito_frontend():
+    """Limpiar carrito en la sesión del frontend"""
+    try:
+        if 'carrito' in session:
+            productos_eliminados = len(session['carrito'])
+            session['carrito'] = []
+            session.modified = True
+            print(f"Carrito limpiado en frontend: {productos_eliminados} productos eliminados")
+            return jsonify({
+                "mensaje": "Carrito limpiado en frontend",
+                "productos_eliminados": productos_eliminados
+            }), 200
+        else:
+            return jsonify({"mensaje": "No hay carrito para limpiar"}), 200
+    except Exception as e:
+        print(f"Error al limpiar carrito en frontend: {e}")
+        return jsonify({"error": "Error al limpiar carrito"}), 500
+@app.route("/estado-carrito", methods=["GET"])
+def estado_carrito():
+    try:
+        carrito = session.get('carrito', [])
+        total_productos = len(carrito)
+        return jsonify({
+            "carrito": carrito,
+            "total_productos": total_productos,
+            "tiene_productos": total_productos > 0
+        }), 200
+    except Exception as e:
+        return jsonify({"error": "Error al obtener estado del carrito"}), 500
 
 if __name__ == "__main__":
     app.run("localhost", port=3000, debug=True, threaded=True)
