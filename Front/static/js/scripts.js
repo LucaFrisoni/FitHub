@@ -398,9 +398,16 @@ if (reserveButton) {
 
     // Obtener otros valores del formulario
     const trainingType = document.querySelector('#type-exercise').value;
+    const trainingType_number = parseInt(trainingType.value); // Convertir a número
     const startTime = document.querySelectorAll('input[type="time"]')[0].value;
     const endTime = document.querySelectorAll('input[type="time"]')[1].value;
     const comments = document.querySelector('#comment-area').value;
+
+    // Validar que se seleccionó un tipo de entrenamiento válido
+    if (isNaN(trainingType) || trainingType <= 0) {
+      alert('Por favor selecciona un tipo de entrenamiento válido.');
+      return;
+    }
 
     // Preparar datos para enviar
     const datos_reserva = {

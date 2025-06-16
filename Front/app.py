@@ -93,57 +93,179 @@ def planes():
       planes = []
    return render_template('planes.html', planes=planes, user=current_user)
 
+
 @app.route("/reservas")
-#@login_required
+@login_required
 def reservas():
     return render_template("reservas.html", user=current_user)
 
-
 @app.route('/procesar_reserva', methods=['POST'])
-#@login_required
+@login_required
 def procesar_reserva():
     data = request.get_json()
     
     # Obtener datos del request
-    dias = data.get('dias', [])  # Lista de días: ['lunes', 'martes', ...]
-    tipo_entrenamiento = data.get('tipo_entrenamiento')  # 'Bodybuilding', 'Spinning', etc.
-    hora_inicio = data.get('hora_inicio')  # '09:00'
-    hora_fin = data.get('hora_fin')  # '10:00'
-    comentarios = data.get('comentarios', '')  # Texto del textarea
+    dias = data.get('dias', [])
+    tipo_entrenamiento = data.get('tipo_entrenamiento')
+    hora_inicio = data.get('hora_inicio')
+    hora_fin = data.get('hora_fin')
+    comentarios = data.get('comentarios', '')
+    
+    print(f"DEBUG: ========== INICIO PROCESAR RESERVA ==========")
+    print(f"DEBUG: Datos recibidos - Días: {dias}")
+    print(f"DEBUG: Tipo entrenamiento recibido: {tipo_entrenamiento} (tipo: {type(tipo_entrenamiento)})")
+    print(f"DEBUG: Horario: {hora_inicio}-{hora_fin}")
+    print(f"DEBUG: Comentarios: {comentarios}")
     
     # Validar datos requeridos
-    if not all([dias, tipo_entrenamiento, hora_inicio, hora_fin]):
+    if not dias:
+        print("DEBUG: ERROR - No se proporcionaron días")
+        return jsonify({'success': False, 'error': 'No se seleccionaron días'}), 400
+        
+    if tipo_entrenamiento is None:
+        print("DEBUG: ERROR - tipo_entrenamiento es None")
+        return jsonify({'success': False, 'error': 'No se seleccionó tipo de entrenamiento'}), 400
+        
+    if not hora_inicio:
+        print("DEBUG: ERROR - No se proporcionó hora_inicio")
+        return jsonify({'success': False, 'error': 'No se proporcionó hora de inicio'}), 400
+        
+    if not hora_fin:
+        print("DEBUG: ERROR - No se proporcionó hora_fin")
+        return jsonify({'success': False, 'error': 'No se proporcionó hora de fin'}), 400
+    
+    # Validar que tipo_entrenamiento sea un número
+    try:
+        tipo_entrenamiento = int(tipo_entrenamiento)
+        print(f"DEBUG: tipo_entrenamiento convertido a int: {tipo_entrenamiento}")
+    except (ValueError, TypeError) as e:
+        print(f"DEBUG: ERROR - No se pudo convertir tipo_entrenamiento a int: {e}")
         return jsonify({
             'success': False, 
-            'error': 'Faltan datos requeridos'
+            'error': 'Tipo de entrenamiento debe ser un número válido'
         }), 400
     
+    if tipo_entrenamiento <= 0:
+        print("DEBUG: ERROR - tipo_entrenamiento debe ser mayor a 0")
+        return jsonify({
+            'success': False, 
+            'error': 'Tipo de entrenamiento debe ser un ID válido mayor a 0'
+        }), 400
+        
     # Obtener ID del usuario actual
     id_usuario = current_user.id
+    print(f"DEBUG: ID Usuario actual: {id_usuario} (tipo: {type(id_usuario)})")
     
     try:
-        # Verificar si el usuario tiene algún plan comprado (alquiler activo)
-        response_alquileres = requests.get(f"{API_HOST}/api/alquileres/")
-        if response_alquileres.status_code != 200:
+        # Usar el endpoint específico para obtener alquileres del usuario
+        url_alquileres = f"{API_HOST}/api/alquileres/usuario/{id_usuario}"
+        print(f"DEBUG: Consultando URL: {url_alquileres}")
+        
+        response_alquileres = requests.get(url_alquileres)
+        print(f"DEBUG: Status code respuesta: {response_alquileres.status_code}")
+        print(f"DEBUG: Headers respuesta: {response_alquileres.headers}")
+        print(f"DEBUG: Contenido raw respuesta: {response_alquileres.text}")
+        
+        if response_alquileres.status_code == 404:
+            print(f"DEBUG: Usuario {id_usuario} no encontrado o sin alquileres")
             return jsonify({
                 'success': False,
-                'error': 'Error al verificar planes del usuario'
+                'error': 'No tienes ningún plan activo. Debes comprar un plan primero.'
+            })
+        elif response_alquileres.status_code != 200:
+            print(f"DEBUG: ERROR - Status code inesperado: {response_alquileres.status_code}")
+            return jsonify({
+                'success': False,
+                'error': f'Error al verificar planes del usuario (Status: {response_alquileres.status_code})'
             }), 500
-            
-        alquileres = response_alquileres.json()
         
-        # Buscar si el usuario tiene algún alquiler activo
-        plan_usuario = None
-        for alquiler in alquileres:
-            if alquiler.get('ID_Usuario') == id_usuario:
-                plan_usuario = alquiler.get('ID_Plan')
-                break
-        
-        if not plan_usuario:
+        try:
+            alquileres = response_alquileres.json()
+            print(f"DEBUG: JSON parseado exitosamente")
+            print(f"DEBUG: Tipo de alquileres: {type(alquileres)}")
+            print(f"DEBUG: Contenido alquileres: {alquileres}")
+        except Exception as json_error:
+            print(f"DEBUG: ERROR al parsear JSON: {json_error}")
             return jsonify({
                 'success': False,
-                'error': 'El usuario no tiene ningún plan activo. Debe comprar un plan primero.'
-            }), 400
+                'error': 'Error al procesar respuesta del servidor'
+            }), 500
+        
+        # Verificar si es una respuesta con mensaje (sin alquileres)
+        if isinstance(alquileres, dict) and 'message' in alquileres:
+            print(f"DEBUG: Respuesta contiene mensaje: {alquileres['message']}")
+            return jsonify({
+                'success': False,
+                'error': 'No tienes ningún plan activo. Debes comprar un plan primero.'
+            })
+        
+        # Verificar que alquileres sea una lista
+        if not isinstance(alquileres, list):
+            print(f"DEBUG: ERROR - alquileres no es una lista: {type(alquileres)}")
+            return jsonify({
+                'success': False,
+                'error': 'Formato de respuesta inesperado del servidor'
+            }), 500
+        
+        if len(alquileres) == 0:
+            print(f"DEBUG: Lista de alquileres está vacía")
+            return jsonify({
+                'success': False,
+                'error': 'No tienes ningún plan activo. Debes comprar un plan primero.'
+            })
+        
+        # Buscar si el usuario tiene el plan específico solicitado
+        plan_encontrado = False
+        planes_usuario = []
+        
+        print(f"DEBUG: ========== VERIFICANDO PLANES ==========")
+        for i, alquiler in enumerate(alquileres):
+            print(f"DEBUG: Alquiler {i}: {alquiler}")
+            print(f"DEBUG: Tipo de alquiler: {type(alquiler)}")
+            
+            if not isinstance(alquiler, dict):
+                print(f"DEBUG: WARNING - Alquiler {i} no es un diccionario")
+                continue
+                
+            plan_id = alquiler.get('ID_Plan')
+            id_usuario_alquiler = alquiler.get('ID_Usuario')
+            
+            print(f"DEBUG: plan_id: {plan_id} (tipo: {type(plan_id)})")
+            print(f"DEBUG: id_usuario_alquiler: {id_usuario_alquiler} (tipo: {type(id_usuario_alquiler)})")
+            print(f"DEBUG: id_usuario actual: {id_usuario} (tipo: {type(id_usuario)})")
+            
+            # Verificar que este alquiler pertenece al usuario actual
+            if id_usuario_alquiler != id_usuario:
+                print(f"DEBUG: Alquiler no pertenece al usuario actual, saltando...")
+                continue
+                
+            if plan_id is not None:
+                planes_usuario.append(plan_id)
+                print(f"DEBUG: Agregado plan {plan_id} a la lista de planes del usuario")
+                
+                # Comparar los IDs
+                print(f"DEBUG: Comparando plan_id ({plan_id}) == tipo_entrenamiento ({tipo_entrenamiento})")
+                if int(plan_id) == int(tipo_entrenamiento):
+                    plan_encontrado = True
+                    print(f"DEBUG: ¡MATCH! Plan {plan_id} coincide con tipo solicitado {tipo_entrenamiento}")
+                    break
+                else:
+                    print(f"DEBUG: No match: {plan_id} != {tipo_entrenamiento}")
+        
+        print(f"DEBUG: ========== RESULTADO VERIFICACIÓN ==========")
+        print(f"DEBUG: Planes del usuario: {planes_usuario}")
+        print(f"DEBUG: Plan encontrado: {plan_encontrado}")
+        print(f"DEBUG: Tipo entrenamiento solicitado: {tipo_entrenamiento}")
+        
+        if not plan_encontrado:
+            error_msg = f'Tu plan actual no incluye este tipo de entrenamiento. Tus planes activos son: {planes_usuario}, pero solicitaste el plan: {tipo_entrenamiento}'
+            print(f"DEBUG: ERROR - {error_msg}")
+            return jsonify({
+                'success': False,
+                'error': error_msg
+            })
+        
+        print(f"DEBUG: ========== CREANDO HORARIO ==========")
         
         # Construir horario completo
         horario_completo = f"{hora_inicio} - {hora_fin}"
@@ -153,44 +275,75 @@ def procesar_reserva():
         # Convertir lista de días a string
         dias_str = ", ".join(dias)
         
+        print(f"DEBUG: Horario completo construido: {horario_completo}")
+        print(f"DEBUG: Días como string: {dias_str}")
+        
         # Preparar datos para el endpoint de horarios
         payload_horario = {
             "Dias": dias_str,
             "Horario": horario_completo,
-            "ID_Plan": plan_usuario,
+            "ID_Plan": tipo_entrenamiento,
             "ID_Usuario": id_usuario
         }
         
+        print(f"DEBUG: Payload para horarios: {payload_horario}")
+        
         # Realizar request al backend para guardar en la base de datos
-        response_horario = requests.post(
-            f"{API_HOST}/api/horariosentrenamiento/", 
-            json=payload_horario
-        )
+        url_horarios = f"{API_HOST}/api/horariosentrenamiento/"
+        print(f"DEBUG: Enviando POST a {url_horarios}")
+        
+        response_horario = requests.post(url_horarios, json=payload_horario)
+        
+        print(f"DEBUG: Respuesta horarios - Status: {response_horario.status_code}")
+        print(f"DEBUG: Respuesta horarios - Contenido: {response_horario.text}")
         
         if response_horario.status_code == 201:
-            return jsonify({
-                'success': True,
-                'message': 'Reserva creada exitosamente',
-                'id_horario': response_horario.json().get('id'),
-                'id_plan': plan_usuario
-            })
+            try:
+                response_data = response_horario.json()
+                print(f"DEBUG: Horario creado exitosamente - Response: {response_data}")
+                return jsonify({
+                    'success': True,
+                    'message': 'Reserva creada exitosamente',
+                    'id_horario': response_data.get('id'),
+                    'id_plan': tipo_entrenamiento
+                })
+            except Exception as json_error:
+                print(f"DEBUG: Error al parsear respuesta de horarios: {json_error}")
+                return jsonify({
+                    'success': True,
+                    'message': 'Reserva creada exitosamente (sin ID)'
+                })
         else:
-            error_msg = response_horario.json().get('error', 'Error al crear la reserva')
+            try:
+                error_response = response_horario.json()
+                error_msg = error_response.get('error', 'Error al crear la reserva')
+            except:
+                error_msg = f'Error al crear la reserva (Status: {response_horario.status_code})'
+            
+            print(f"DEBUG: ERROR al crear horario: {error_msg}")
             return jsonify({
                 'success': False,
                 'error': error_msg
             }), 500
             
     except requests.exceptions.RequestException as e:
+        print(f"DEBUG: ERROR de conexión: {str(e)}")
+        print(f"DEBUG: Tipo de error: {type(e)}")
         return jsonify({
             'success': False,
-            'error': 'Error de conexión con el servidor'
+            'error': f'Error de conexión con el servidor: {str(e)}'
         }), 500
     except Exception as e:
+        print(f"DEBUG: ERROR interno: {str(e)}")
+        print(f"DEBUG: Tipo de error: {type(e)}")
+        import traceback
+        print(f"DEBUG: Traceback completo: {traceback.format_exc()}")
         return jsonify({
             'success': False,
-            'error': 'Error interno del servidor'
+            'error': f'Error interno del servidor: {str(e)}'
         }), 500
+    
+    print(f"DEBUG: ========== FIN PROCESAR RESERVA ==========")
 
 
 @app.route("/tienda", methods=["GET"])
