@@ -1163,11 +1163,57 @@ def eliminar_producto_carrito(producto_id):
     return redirect(url_for("ver_carrito"))
 
 
-@app.route("/finalizar_compra", methods=["POST"])
-def finalizar_compra():
-    session.pop("carrito", None)  # Vacía el carrito
-    return redirect(url_for("ver_carrito"))
+@app.route("/pasarela")
+@login_required
+def pasarela():
+    carrito = session.get("carrito", [])
+    
+    # Si el carrito está vacío, redirigir a la tienda
+    if not carrito:
+        flash("Tu carrito está vacío")
+        return redirect(url_for("tienda"))
+    
+    # Calcular total
+    total = sum(item["precio"] * item["cantidad"] for item in carrito)
+    
+    return render_template(
+        "pasarela.html", 
+        carrito=carrito, 
+        total=total, 
+        user=current_user,
+        API_HOST=API_HOST  
+    )
 
+@app.route("/limpiar-carrito-frontend", methods=["POST"])
+def limpiar_carrito_frontend():
+    """Limpiar carrito en la sesión del frontend"""
+    try:
+        if 'carrito' in session:
+            productos_eliminados = len(session['carrito'])
+            session['carrito'] = []
+            session.modified = True
+            print(f"Carrito limpiado en frontend: {productos_eliminados} productos eliminados")
+            return jsonify({
+                "mensaje": "Carrito limpiado en frontend",
+                "productos_eliminados": productos_eliminados
+            }), 200
+        else:
+            return jsonify({"mensaje": "No hay carrito para limpiar"}), 200
+    except Exception as e:
+        print(f"Error al limpiar carrito en frontend: {e}")
+        return jsonify({"error": "Error al limpiar carrito"}), 500
+@app.route("/estado-carrito", methods=["GET"])
+def estado_carrito():
+    try:
+        carrito = session.get('carrito', [])
+        total_productos = len(carrito)
+        return jsonify({
+            "carrito": carrito,
+            "total_productos": total_productos,
+            "tiene_productos": total_productos > 0
+        }), 200
+    except Exception as e:
+        return jsonify({"error": "Error al obtener estado del carrito"}), 500
 
 if __name__ == "__main__":
     app.run("localhost", port=3000, debug=True, threaded=True)

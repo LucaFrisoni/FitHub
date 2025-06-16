@@ -32,9 +32,11 @@
                     <a href="{{ url_for('home') }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">
                         Volver al Home
                     </a>
-                    <a href="{{ url_for('finalizar_compra') }}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                        Finalizar Compra
-                    </a>
+                    <form action="{{ url_for('pasarela') }}" method="get">
+                        <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded">
+                            Finalizar compra
+                        </button>
+                    </form>
                 </div>
             </div>
 
