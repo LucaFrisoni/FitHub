@@ -1,30 +1,33 @@
-{% extends "base.html" %} {% block content %}
-<div
-  class="planes min-h-screen bg-gradient-to-r from-black pt-30 via-[#a67c00] to-black py-12"
->
+{% extends "base.html" %} 
+{% block content %}
+<div class="planes min-h-screen bg-gradient-to-r from-black pt-30 via-[#a67c00] to-black py-12">
   <div class="bg-gradient-to-l from-black via-[#a67c00] to-black">
-    <div
-      class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-24 items-stretch"
-    >
+    <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-24 items-stretch">
       {% for plan in planes %}
       <div
         class="plan flex flex-col bg-black justify-between h-full rounded-lg shadow-lg text-white overflow-hidden"
-        id="{{ plan.id }}"
-        data-precio3="{{ plan.precio_dias[3] }}"
-        data-precio5="{{ plan.precio_dias[5] }}"
+        id="{{ plan.nombre }}"
+        data-precio3="{{ plan.precio_dias['3'] }}"
+        data-precio5="{{ plan.precio_dias['5'] }}"
       >
-        <!-- este if es para que si el nombre del plan es justo el de los deportes, le asigne una id a esa imagen para poder modificarla con una funcion en js  -->
-        <img {% if plan.nombre == "Sport-Focused Training" %}id="imagen-deporte"
-        class="w-full h-96 object-cover mb-4 transition-opacity duration-300
-        opacity-100" {% endif %} src="{{ plan.imagen }}" alt="imagen de {{
-        plan.nombre }}" class="w-full h-96 object-cover mb-4" />
+      <img 
+      {% if plan.nombre == "Sport-Focused Training" %}
+        id="imagen-deporte"
+        class="w-full h-96 object-cover mb-4 transition-opacity duration-300 opacity-100"
+      {% else %}
+        class="w-full h-96 object-cover mb-4"
+      {% endif %}
+      src="{{ url_for('static', filename=plan.imagen) }}"
+      alt="imagen de {{ plan.nombre }}"
+    />
+    
         <h2 class="text-2xl font-bold mt-4 mb-2 text-center">
           {{ plan.nombre }}
         </h2>
+
         <!-- elegir los dias -->
         <div class="flex justify-end text-center space-x-2 pt-6 mb-4">
           <p class="text-xl font-semi-bold pr-10">Dias por semana</p>
-          <!-- opciones de 3 y 5 días -->
           <div class="dias-buttons pr-2 pt-1">
             <button
               type="button"
@@ -42,15 +45,13 @@
             </button>
           </div>
         </div>
-        <!-- aca elige el deporte en sport-focused training -->
+
         {% if plan.deportes %}
         <div class="flex justify-end gap-4 mb-4 pr-2">
-          <label
-            for="deporte-{{ plan.id }}"
-            class="flex flex-col texto-left font-semi-bold pr-12 text-[19px]"
-            >Elegi tu deporte</label
-          >
-          <select id="deporte-{{ plan.id }}" class="bg-primary rounded text-sm">
+          <label for="deporte-{{ plan.nombre }}" class="flex flex-col texto-left font-semi-bold pr-12 text-[19px]">
+            Elegi tu deporte
+          </label>
+          <select id="deporte-{{ plan.nombre }}" class="bg-primary rounded text-sm">
             {% for deporte in plan.deportes %}
             <option value="{{ deporte }}" class="text-sm ml-auto">
               {{ deporte }}
@@ -59,22 +60,26 @@
           </select>
         </div>
         {% endif %}
-        <!-- precio segun la cantidad de dias que elegio por default siempre en 3 -->
-        <div
-          class="mt-auto flex justify-end items-center px-4 py-2 rounded-b-lg"
-        >
-          <p
-            class="precio font-bold text-2xl text-center pr-8 pt-5"
-            id="precio-{{ plan.id}}"
-          >
-            ${{ plan.precio_dias[plan.dias_elegidos] }}
+
+        <!-- precio segun la cantidad de dias (por defecto 3) -->
+        <div class="mt-auto flex justify-end items-center px-4 py-2 rounded-b-lg">
+          <p class="precio font-bold text-2xl text-center pr-8 pt-5" id="precio-{{ plan.nombre }}">
+            ${{ plan.precio_dias['3'] }}
           </p>
-          <div class="text-right mt-4 pl-6">
-            <button
-              class="bg-primary hover:bg-primary/95 hover:shadow-lg text-white font-bold px-6 py-2 rounded-lg transition cursor-pointer"
-            >
-              comprar
-            </button>
+          <div class="text-right mt-4 pl-2">
+            <form action="/agregar_plan_carrito/{{ plan.nombre }}" method="POST" id="form-{{ plan.nombre }}">
+              <input type="hidden" name="dias" id="dias-{{ plan.nombre }}" value="3"> 
+              <input type="hidden" name="precio" id="precio-hidden-{{ plan.nombre }}" value="{{ plan.precio_dias['3'] }}">
+              {% if plan.deportes %}
+              <input type="hidden" id="select-dentro-form-{{ plan.nombre }}" name="deporte">
+              {% endif %}
+              <button
+                type="submit"
+                class="boton-comprar bg-primary hover:bg-primary/95 hover:shadow-lg text-white font-bold px-6 py-2 rounded-lg transition cursor-pointer"
+              >
+                comprar
+              </button>
+            </form>
           </div>
         </div>
       </div>
