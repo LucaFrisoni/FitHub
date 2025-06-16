@@ -475,28 +475,36 @@ def subir_imagen_producto():
 @admin_required
 def admin_panel():
     try:
-        # Obtener productos desde la API
         response = requests.get(f"{API_HOST}/api/productos/")
         if response.status_code == 200:
             productos = response.json()
+            total_stock = sum(p.get('Cantidad', 0) for p in productos)
+            total_valor = sum(float(p.get('Precio', 0)) * p.get('Cantidad', 0) for p in productos)
         else:
             productos = []
+            total_stock = 0
+            total_valor = 0
     except Exception as e:
         print(f"Error al obtener productos: {e}")
         productos = []
+        total_stock = 0
+        total_valor = 0
 
     producto_editado = session.pop("producto_editado", False)
-    producto_creado = session.pop("producto_creado", False)
+    producto_creado  = session.pop("producto_creado", False)
     producto_eliminado = session.pop("producto_eliminado", False)
 
     return render_template(
         "admin/admin_panel.html",
         productos=productos,
+        total_stock=total_stock,
+        total_valor=total_valor,
         user=current_user,
         producto_editado=producto_editado,
         producto_creado=producto_creado,
         producto_eliminado=producto_eliminado,
     )
+
 
 
 @app.route("/admin/producto/nuevo", methods=["GET", "POST"])
