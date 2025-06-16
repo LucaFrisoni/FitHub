@@ -1,12 +1,9 @@
 from flask import Blueprint, jsonify, request
-from db.db import get_connection
-from util.log import devolver_error
-from util.util import *
+from Back.db.db import get_connection
+from Back.util.log import devolver_error
+from Back.util.util import *
 
 planes_bp = Blueprint("planes", __name__)
-
-# aca las rutas
-
 
 @planes_bp.route("/")
 def get_planes():
@@ -17,8 +14,32 @@ def get_planes():
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM planes")
-        planes = cursor.fetchall()
+        planes_db = cursor.fetchall()
+        
+        planes = []
+        for plan_db in planes_db:
+            plan = {
+                "id": plan_db['ID_Plan'],
+                "nombre": plan_db['Nombre'],
+                "dias_elegidos": 3,  
+                "imagen": plan_db['Imagen'],
+                "precio_dias": {
+                    3: plan_db['Precio_3_dias'], 
+                    5: plan_db['Precio_5_dias']
+                }
+            }
+            
+            if plan_db['Deportes_disponibles']:
+                deportes_list = plan_db['Deportes_disponibles'].split(',')
+                deportes_list = [deporte.strip() for deporte in deportes_list]  
+                plan["deportes"] = deportes_list
+            else:
+                plan["deportes"] = []
+            
+            planes.append(plan)
+        
         return jsonify(planes)
+        
     except Exception as ex:
         return devolver_error(ruta="planes", ex=ex)
     finally:
@@ -34,11 +55,31 @@ def get_plan(id):
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM planes WHERE ID_Plan = %s", (id,))
-        plan = cursor.fetchone()
-        if plan:
+        plan_db = cursor.fetchone()
+        
+        if plan_db:
+            plan = {
+                "id": plan_db['ID_Plan'],
+                "nombre": plan_db['Nombre'],
+                "dias_elegidos": 3,  
+                "imagen": plan_db['Imagen'],
+                "precio_dias": {
+                    3: plan_db['Precio_3_dias'], 
+                    5: plan_db['Precio_5_dias']
+                }
+            }
+            
+            if plan_db['Deportes_disponibles']:
+                deportes_list = plan_db['Deportes_disponibles'].split(',')
+                deportes_list = [deporte.strip() for deporte in deportes_list]  
+                plan["deportes"] = deportes_list
+            else:
+                plan["deportes"] = []
+                
             return jsonify(plan)
         else:
             return jsonify({"error": "Plan no encontrado"}), 404
+            
     except Exception as ex:
         return devolver_error(ruta=f"planes/{id}", ex=ex)
     finally:
@@ -50,7 +91,13 @@ def get_plan(id):
 def post_plan():
     body = request.get_json()
 
-    required = {"Precio": int, "Descripcion": str, "DuracionPlan": str, "Imagen": str}
+    required = {
+        "nombre": str, 
+        "imagen": str, 
+        "precio_3_dias": int, 
+        "precio_5_dias": int, 
+        "deportes_disponibles": str
+    }
 
     missing = [r for r in required if r not in body]
     if missing:
@@ -60,25 +107,25 @@ def post_plan():
     if badtype:
         return jsonify({"error": "Tipos incorrectos", "campos": badtype}), 400
 
-    if body["Precio"] < 0:
-        return jsonify({"error": "Precio debe ser positivo"}), 400
+    if body["precio_3_dias"] < 0 or body["precio_5_dias"] < 0:
+        return jsonify({"error": "Los precios deben ser positivos"}), 400
 
     try:
         conn = get_connection()
         cursor = conn.cursor()
-
         cursor.execute(
-            "SELECT ID_Plan FROM planes WHERE Descripcion = %s", (body["Descripcion"],)
+            "SELECT ID_Plan FROM planes WHERE Nombre = %s", (body["nombre"],)  # columna SQL Nombre
         )
         if cursor.fetchone():
-            return jsonify({"error": "La descripcion ya existe"}), 409
+            return jsonify({"error": "El nombre del plan ya existe"}), 409
 
         cursor.execute(
             """
-            INSERT INTO planes (Precio, Descripcion, DuracionPlan, Imagen)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO planes (Nombre, Imagen, Precio_3_dias, Precio_5_dias, Deportes_disponibles)
+            VALUES (%s, %s, %s, %s, %s)
             """,
-            (body["Precio"], body["Descripcion"], body["DuracionPlan"], body["Imagen"]),
+            (body["nombre"], body["imagen"], 
+             body["precio_3_dias"], body["precio_5_dias"], body["deportes_disponibles"]),
         )
 
         new_id = cursor.lastrowid
@@ -101,8 +148,14 @@ def put_plan(id):
 
     if not body:
         return jsonify({"error": "No se proporcionaron datos para actualizar"}), 400
-
-    required = {"Precio": int, "Descripcion": str, "DuracionPlan": str, "Imagen": str}
+    
+    required = {
+        "nombre": str, 
+        "imagen": str, 
+        "precio_3_dias": int, 
+        "precio_5_dias": int, 
+        "deportes_disponibles": str
+    }
 
     missing = [r for r in required if r not in body]
     if missing:
@@ -112,8 +165,8 @@ def put_plan(id):
     if badtype:
         return jsonify({"error": "Tipos incorrectos", "campos": badtype}), 400
 
-    if body["Precio"] < 0:
-        return jsonify({"error": "Precio debe ser positivo"}), 400
+    if body["precio_3_dias"] < 0 or body["precio_5_dias"] < 0:
+        return jsonify({"error": "Los precios deben ser positivos"}), 400
 
     try:
         conn = get_connection()
@@ -122,40 +175,39 @@ def put_plan(id):
         cursor.execute("SELECT 1 FROM planes WHERE ID_Plan = %s", (id,))
         if not cursor.fetchone():
             return jsonify({"error": "Plan no encontrado"}), 404
-
+            
         cursor.execute(
-            "SELECT 1 FROM planes WHERE Descripcion = %s AND ID_Plan != %s",
-            (body["Descripcion"], id),
+            "SELECT 1 FROM planes WHERE Nombre = %s AND ID_Plan != %s",
+            (body["nombre"], id),
         )
         if cursor.fetchone():
-            return jsonify({"error": "La descripcion ya existe en otro plan"}), 409
+            return jsonify({"error": "El nombre del plan ya existe en otro plan"}), 409
 
+        # Mapear los campos del JSON a los nombres de columna SQL
         set_clauses = []
         params = []
-        for field in required:
-            set_clauses.append(f"{field} = %s")
-            params.append(body[field])
+        # Diccionario para mapear claves JSON -> columnas SQL
+        mapping = {
+            "nombre": "Nombre",
+            "imagen": "Imagen",
+            "precio_3_dias": "Precio_3_dias",
+            "precio_5_dias": "Precio_5_dias",
+            "deportes_disponibles": "Deportes_disponibles"
+        }
+
+        for field_json, field_sql in mapping.items():
+            set_clauses.append(f"{field_sql} = %s")
+            params.append(body[field_json])
         params.append(id)
-
-        query = f"""
-            UPDATE planes
-            SET {', '.join(set_clauses)}
-            WHERE ID_Plan = %s
-        """
-
+        
+        query = f"UPDATE planes SET {', '.join(set_clauses)} WHERE ID_Plan = %s"
         cursor.execute(query, params)
         conn.commit()
 
-        if cursor.rowcount == 0:
-            return (
-                jsonify({"success": True, "message": "No se realizaron cambios"}),
-                200,
-            )
-
-        return jsonify({"success": True}), 200
+        return jsonify({"success": True, "message": "Plan actualizado correctamente"})
 
     except Exception as ex:
-        return devolver_error(ruta="planes", metodo="PUT", ex=ex)
+        return devolver_error(ruta=f"planes/{id}", metodo="PUT", ex=ex)
     finally:
         if cursor:
             cursor.close()
@@ -176,13 +228,10 @@ def delete_plan(id):
         cursor.execute("DELETE FROM planes WHERE ID_Plan = %s", (id,))
         conn.commit()
 
-        if cursor.rowcount == 0:
-            return jsonify({"error": "No se pudo eliminar el plan"}), 500
-
-        return jsonify({"success": True}), 200
+        return jsonify({"success": True, "message": "Plan eliminado correctamente"})
 
     except Exception as ex:
-        return devolver_error(ruta="planes", metodo="DELETE", ex=ex)
+        return devolver_error(ruta=f"planes/{id}", metodo="DELETE", ex=ex)
     finally:
         if cursor:
             cursor.close()

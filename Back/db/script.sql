@@ -29,11 +29,16 @@ CREATE TABLE usuarios (
 -- Tabla de planes
 CREATE TABLE planes (
     ID_Plan INT PRIMARY KEY AUTO_INCREMENT,
-    Precio INT,
-    Descripcion VARCHAR(255),
-    DuracionPlan VARCHAR(50),
-    Imagen VARCHAR(255) DEFAULT NULL
+    Nombre VARCHAR(100),  
+    Imagen VARCHAR(255),
+    Precio_3_dias INT,
+    Precio_5_dias INT,
+    Deportes_disponibles VARCHAR(255);
 );
+INSERT INTO planes (Nombre, Imagen, Precio_3_dias, Precio_5_dias, Deportes_disponibles) VALUES
+('Body-Building', 'Front/images/bodybuilding.png', 46900, 63000, NULL),
+('Spinning', 'Front/images/spinning.png', 29500, 42000, NULL),
+('Sport-Focused Training', 'Front/images/sport.png', 49500, 65000, 'futbol sala,boxeo,rugby');
 
 -- Tabla de Alquileres de Plan
 CREATE TABLE alquileresplan (
@@ -87,6 +92,4 @@ CREATE TABLE detallecompras (
     FOREIGN KEY (ID_Producto) REFERENCES productos(ID_Producto),
     FOREIGN KEY (ID_Compra) REFERENCES compras(ID_Compra)
 );
-
-
 
