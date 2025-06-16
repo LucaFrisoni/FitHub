@@ -1,13 +1,27 @@
-{% extends "base.html" %} 
-{% block content %}
+{% extends "base.html" %} {% block content %}
 
-<div class="min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-white pt-24 px-6">
+<div
+  class="min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-white pt-24 px-6"
+>
   <div class="max-w-2xl mx-auto pb-20">
     <!-- Header -->
     <div class="flex items-center mb-8 mt-20">
-      <a href="{{ url_for('admin_panel') }}" class="mr-4 bg-white/10 hover:bg-white/20 p-2 rounded-lg transition">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      <a
+        href="{{ url_for('admin_panel') }}"
+        class="mr-4 bg-white/10 hover:bg-white/20 p-2 rounded-lg transition"
+      >
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 19l-7-7 7-7"
+          ></path>
         </svg>
       </a>
       <div>
@@ -19,7 +33,9 @@
     <!-- Formulario -->
     <div class="bg-white/10 backdrop-blur-sm rounded-lg p-8">
       {% if error %}
-      <div class="bg-red-500/20 border border-red-500 text-red-100 px-4 py-3 rounded mb-6">
+      <div
+        class="bg-red-500/20 border border-red-500 text-red-100 px-4 py-3 rounded mb-6"
+      >
         <strong>Error:</strong> {{ error }}
       </div>
       {% endif %}
@@ -31,11 +47,13 @@
             <div class="relative group h-[120px] w-[120px]">
               <img
                 id="preview-imagen-principal"
-                src="{{ url_for('static', filename='images/default_producto.png') }}"
+                src="{{ url_for('static', filename='images/default_producto.jpg') }}"
                 alt="Imagen del producto"
                 class="h-full w-full rounded-lg object-cover object-center shadow-2xl transition duration-300 group-hover:brightness-75"
               />
-              <div class="absolute bottom-[-12px] left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition duration-300">
+              <div
+                class="absolute bottom-[-12px] left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition duration-300"
+              >
                 <button
                   type="button"
                   onclick="abrirModalProducto()"
@@ -50,17 +68,26 @@
             </div>
             <div class="flex flex-col gap-y-1.5">
               <p class="font-bold text-2xl">Imagen del Producto</p>
-              <p class="text-primary font-bold text-sm">Recomendado: 500x500px</p>
+              <p class="text-primary font-bold text-sm">
+                Recomendado: 500x500px
+              </p>
             </div>
           </div>
         </div>
 
         <!-- Campo oculto para el nombre de la imagen -->
-        <input type="hidden" id="nombre_imagen_producto" name="imagen" value="default_producto.png">
+        <input
+          type="hidden"
+          id="nombre_imagen_producto"
+          name="imagen"
+          value="default_producto.png"
+        />
 
         <!-- Nombre del producto -->
         <div>
-          <label for="nombre" class="block text-sm font-medium mb-2">Nombre del Producto</label>
+          <label for="nombre" class="block text-sm font-medium mb-2"
+            >Nombre del Producto</label
+          >
           <input
             type="text"
             id="nombre"
@@ -73,7 +100,9 @@
 
         <!-- Descripción -->
         <div>
-          <label for="descripcion" class="block text-sm font-medium mb-2">Descripción del Producto</label>
+          <label for="descripcion" class="block text-sm font-medium mb-2"
+            >Descripción del Producto</label
+          >
           <textarea
             id="descripcion"
             name="descripcion"
@@ -86,7 +115,9 @@
 
         <!-- Código del producto -->
         <div>
-          <label for="codigo" class="block text-sm font-medium mb-2">Código del Producto</label>
+          <label for="codigo" class="block text-sm font-medium mb-2"
+            >Código del Producto</label
+          >
           <input
             type="text"
             id="codigo"
@@ -101,7 +132,9 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Precio -->
           <div>
-            <label for="precio" class="block text-sm font-medium mb-2">Precio ($)</label>
+            <label for="precio" class="block text-sm font-medium mb-2"
+              >Precio ($) / producto</label
+            >
             <input
               type="number"
               id="precio"
@@ -110,27 +143,31 @@
               required
               class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
               placeholder="0"
-            >
+            />
           </div>
 
           <!-- Cantidad -->
           <div>
-            <label for="cantidad" class="block text-sm font-medium mb-2">Cantidad Disponible</label>
-            <input 
-              type="number" 
-              id="cantidad" 
-              name="cantidad" 
+            <label for="cantidad" class="block text-sm font-medium mb-2"
+              >Cantidad Disponible</label
+            >
+            <input
+              type="number"
+              id="cantidad"
+              name="cantidad"
               min="0"
               required
               class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
               placeholder="0"
-            >
+            />
           </div>
         </div>
 
         <!-- Categoría -->
         <div>
-          <label for="categoria" class="block text-sm font-medium mb-2">Categoría</label>
+          <label for="categoria" class="block text-sm font-medium mb-2"
+            >Categoría</label
+          >
           <select
             id="categoria"
             name="categoria"
@@ -156,7 +193,7 @@
           </a>
           <button
             type="submit"
-            class="px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-semibold transition"
+            class="px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-semibold transition cursor-pointer"
           >
             Crear Producto
           </button>
@@ -167,6 +204,4 @@
 </div>
 
 <!-- Incluimos el modal para la imagen del producto -->
-{% include "components/modales/modal_producto_image.html" %}
-
-{% endblock %}
+{% include "components/modales/modal_producto_image.html" %} {% endblock %}
