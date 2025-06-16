@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
-from Back.db.db import get_connection
-from Back.util.log import devolver_error
-from Back.util.util import *
+from db.db import get_connection
+from util.log import devolver_error
+from util.util import *
 
 planes_bp = Blueprint("planes", __name__)
 
