@@ -61,18 +61,25 @@
         <p class="text-3xl font-bold text-primary">{{ planes|length }}</p>
       </div>
       <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-        <h3 class="text-lg font-semibold mb-2">Valor Promedio</h3>
+        <h3 class="text-lg font-semibold mb-2">Precio Promedio 3 días</h3>
         <p class="text-3xl font-bold text-primary">
-          {% if planes|length > 0 %} ${% set total_valor = planes |
-          sum(attribute='Precio') %}{{ total_valor / planes|length | round(2) }}
-          {% else %} $0 {% endif %}
+          {% if planes|length > 0 %} 
+          {% set total_precio_3 = planes | sum(attribute='Precio_3_dias') %}
+          ${{ (total_precio_3 / planes|length) | round(2) }}
+          {% else %} 
+          $0 
+          {% endif %}
         </p>
       </div>
       <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-        <h3 class="text-lg font-semibold mb-2">Valor Total</h3>
+        <h3 class="text-lg font-semibold mb-2">Precio Promedio 5 días</h3>
         <p class="text-3xl font-bold text-primary">
-          {% set total_valor = planes | sum(attribute='Precio') %}${{
-          total_valor }}
+          {% if planes|length > 0 %} 
+          {% set total_precio_5 = planes | sum(attribute='Precio_5_dias') %}
+          ${{ (total_precio_5 / planes|length) | round(2) }}
+          {% else %} 
+          $0 
+          {% endif %}
         </p>
       </div>
     </div>
@@ -91,17 +98,22 @@
               <th
                 class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
               >
-                Descripción
+                Nombre
               </th>
               <th
                 class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
               >
-                Duración
+                Precio 3 días
               </th>
               <th
                 class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
               >
-                Precio
+                Precio 5 días
+              </th>
+              <th
+                class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
+              >
+                Deportes
               </th>
               <th
                 class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
@@ -115,11 +127,18 @@
             <tr class="hover:bg-white/5 transition-colors">
               <td class="px-6 py-4 text-sm">{{ plan.ID_Plan }}</td>
               <td class="px-6 py-4">
-                <div class="font-medium">{{ plan.Descripcion }}</div>
+                <div class="font-medium">{{ plan.Nombre }}</div>
               </td>
-              <td class="px-6 py-4 text-sm">{{ plan.DuracionPlan }}</td>
               <td class="px-6 py-4 text-sm font-semibold text-primary">
-                ${{ plan.Precio }}
+                ${{ plan.Precio_3_dias }}
+              </td>
+              <td class="px-6 py-4 text-sm font-semibold text-primary">
+                ${{ plan.Precio_5_dias }}
+              </td>
+              <td class="px-6 py-4 text-sm">
+                <div class="max-w-xs truncate" title="{{ plan.Deportes_disponibles }}">
+                  {{ plan.Deportes_disponibles }}
+                </div>
               </td>
               <td class="px-6 py-4 text-sm space-x-2">
                 <a
@@ -129,7 +148,7 @@
                   Editar
                 </a>
                 <button
-                  onclick="confirmarEliminacion('{{plan.ID_Plan }}', '{{ plan.Descripcion }}')"
+                  onclick="confirmarEliminacion('{{plan.ID_Plan }}', '{{ plan.Nombre }}')"
                   class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-medium transition cursor-pointer"
                 >
                   Eliminar
@@ -138,7 +157,7 @@
             </tr>
             {% else %}
             <tr>
-              <td colspan="5" class="px-6 py-8 text-center text-gray-400">
+              <td colspan="6" class="px-6 py-8 text-center text-gray-400">
                 <div class="text-lg mb-2">No hay planes registrados</div>
                 <p class="text-sm">Comienza agregando tu primer plan</p>
               </td>

@@ -4,46 +4,82 @@
 <div class="bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-white min-h-screen pt-24">
     <div class="max-w-4xl mx-auto p-6 pt-24">
         <h1 class="text-2xl font-bold mb-4">Tu Carrito</h1>
-
+        
         {% if carrito %}
             {% for item in carrito %}
             <div class="bg-white shadow-md p-4 mb-4 rounded-lg">
                 <div class="flex items-center justify-between">
-                    <!-- Información del producto en una línea -->
+                    <!-- Información del producto/plan en una línea -->
                     <div class="flex items-center space-x-6 flex-1">
+                        {% if item.imagen %}
+                        <img src="{{ url_for('static', filename=item.imagen) }}" alt="{{ item.nombre }}" class="w-16 h-16 object-cover rounded">
+                        {% endif %}
                         <h2 class="text-lg font-semibold text-black">{{ item.nombre }}</h2>
                         <span class="text-black">Cantidad: {{ item.cantidad }}</span>
-                        <span class="text-black">Precio total: ${{ item.precio * item.cantidad }}</span>
+                        <span class="text-black">Precio unitario: ${{ item.precio }}</span>
+                        <span class="text-black font-semibold">Total: ${{ item.precio * item.cantidad }}</span>
                     </div>
                     
                     <!-- Botón eliminar -->
-                    <form method="POST" action="{{ url_for('eliminar_producto_carrito', producto_id=item.id) }}">
-                        <button class="text-red-500 text-sm hover:underline hover:text-red-700 px-4 py-2">
+                    <form method="POST" action="{{ url_for('eliminar_producto_carrito', item_id=
+                        ('plan_' + item.plan_key) if item.tipo == 'plan' else item.id
+                    ) }}">
+                        <button type="submit" class="text-red-500 text-sm hover:underline hover:text-red-700 px-4 py-2 bg-red-50 rounded hover:bg-red-100 transition-colors">
                             Eliminar
                         </button>
                     </form>
                 </div>
+                
+                <!-- Información adicional para planes -->
+                {% if item.tipo == 'plan' %}
+                <div class="mt-2 text-sm text-gray-600">
+                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Plan</span>
+                    {% if item.deporte %}
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded mr-2">{{ item.deporte }}</span>
+                    {% endif %}
+                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded">{{ item.dias }} días/semana</span>
+                </div>
+                {% else %}
+                <div class="mt-2 text-sm text-gray-600">
+                    <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded">Producto</span>
+                </div>
+                {% endif %}
             </div>
             {% endfor %}
-
+            
             <div class="text-right mt-6">
-                <p class="text-xl font-semibold">Total: ${{ total }}</p>
+                <p class="text-xl font-semibold">Total: ${{ "%.2f"|format(total) }}</p>
                 <div class="mt-4 flex justify-end space-x-4">
-                    <a href="{{ url_for('home') }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">
+                    <a href="{{ url_for('home') }}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
                         Volver al Home
                     </a>
-                    <form action="{{ url_for('pasarela') }}" method="get">
-                        <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded">
-                            Finalizar compra
+                    <a href="{{ url_for('tienda') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
+                        Seguir Comprando
+                    </a>
+                    <form action="{{ url_for('pasarela') }}" method="get" class="inline">
+                        <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded transition-colors">
+                            Finalizar Compra
                         </button>
                     </form>
                 </div>
             </div>
-
         {% else %}
-            <p class="text-center text-gray-300">Tu carrito está vacío.</p>
-            <div class="text-center mt-4">
-                <a href="{{ url_for('tienda') }}" class="text-yellow-400 hover:underline">Ir a la tienda</a>
+            <div class="text-center py-12">
+                <div class="mb-4">
+                    <svg class="mx-auto h-24 w-24 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13v6a2 2 0 002 2h6a2 2 0 002-2v-6m-9 0h10" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-medium text-gray-300 mb-2">Tu carrito está vacío</h3>
+                <p class="text-gray-400 mb-6">¿Por qué no agregas algunos productos increíbles?</p>
+                <div class="space-x-4">
+                    <a href="{{ url_for('tienda') }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg transition-colors inline-block">
+                        Ir a la Tienda
+                    </a>
+                    <a href="{{ url_for('planes') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors inline-block">
+                        Ver Planes
+                    </a>
+                </div>
             </div>
         {% endif %}
     </div>

@@ -29,11 +29,16 @@ CREATE TABLE usuarios (
 -- Tabla de planes
 CREATE TABLE planes (
     ID_Plan INT PRIMARY KEY AUTO_INCREMENT,
-    Precio INT,
-    Descripcion VARCHAR(255),
-    DuracionPlan VARCHAR(50),
-    Imagen VARCHAR(255) DEFAULT NULL
+    Nombre VARCHAR(100),  
+    Imagen VARCHAR(255),
+    Precio_3_dias INT,
+    Precio_5_dias INT,
+    Deportes_disponibles VARCHAR(255)
 );
+INSERT INTO planes (Nombre, Imagen, Precio_3_dias, Precio_5_dias, Deportes_disponibles) VALUES
+('Body-Building', 'Front/images/bodybuilding.png', 46900, 63000, NULL),
+('Spinning', 'Front/images/spinning.png', 29500, 42000, NULL),
+('Sport-Focused Training', 'Front/images/sport.png', 49500, 65000, 'futbol sala,boxeo,rugby');
 
 -- Tabla de Alquileres de Plan
 CREATE TABLE alquileresplan (
@@ -71,21 +76,13 @@ CREATE TABLE productos (
 -- Tabla de compras
 CREATE TABLE compras (
     ID_Compra INT PRIMARY KEY AUTO_INCREMENT,
-    ID_Usuario INT,
+    ID_Usuario INT NOT NULL,
+    ID_Producto INT NOT NULL,
     FechaCompra DATE,
     Total INT,
-    FOREIGN KEY (ID_Usuario) REFERENCES usuarios(ID_usuario)
-);
-
--- Tabla de detalle de compras
-CREATE TABLE detallecompras (
-    ID_Detalle INT PRIMARY KEY AUTO_INCREMENT,
-    ID_Producto INT,
-    ID_Compra INT,
-    Cantidad INT,
-    SubTotal INT,
+    Cantidad INT DEFAULT 1,
+    FOREIGN KEY (ID_Usuario) REFERENCES usuarios(ID_usuario),
     FOREIGN KEY (ID_Producto) REFERENCES productos(ID_Producto),
-    FOREIGN KEY (ID_Compra) REFERENCES compras(ID_Compra)
 );
 
 

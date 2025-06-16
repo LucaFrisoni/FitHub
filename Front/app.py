@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-import uuid 
+import uuid
 from flask import (
     Flask,
     render_template,
@@ -36,12 +36,15 @@ UPLOAD_FOLDER_PROFILE = "static/images/uploads/perfil"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER_PROFILE
 UPLOAD_FOLDER_PRODUCTOS = "static/images/uploads/productos"
 app.config["UPLOAD_FOLDER_PRODUCTOS"] = UPLOAD_FOLDER_PRODUCTOS
-
+UPLOAD_FOLDER_PLANES = "static/images/uploads/planes"
+app.config["UPLOAD_FOLDER_PLANES"] = UPLOAD_FOLDER_PLANES
+# ------------------Init auth------------------
 login_manager = LoginManager()
 login_manager.init_app(app)  # Conectás Flask-Login con tu app
 login_manager.login_view = (
     "login"  # la ruta donde te lleva si no esta logeado en una ruta proteguida
 )
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -66,6 +69,7 @@ def load_user(user_id):
     return None
 
 
+# -------------------------------------Rutas-----------------------------------
 @app.route("/")
 def home():
     # si existe la session toast_exitoso, la devuelve y luego la borra, sino usa False
@@ -78,39 +82,200 @@ def pagina_error(error):
     return render_template("404.html", user=current_user), 404
 
 
-@app.route("/planes")
+@app.route("/planes", methods=["GET"])
 def planes():
-    planes = [
-        {
-            "id": "bodybuilding",
-            "nombre": "Body-Building",
-            "dias_elegidos": 3,
-            "imagen": url_for("static", filename="images/bodybuilding.png"),
-            "precio_dias": {3: 46900, 5: 63000},
-        },
-        {
-            "id": "spinning",
-            "nombre": "Spinning",
-            "dias_elegidos": 3,
-            "imagen": url_for("static", filename="images/spinning.png"),
-            "precio_dias": {3: 29500, 5: 42000},
-        },
-        {
-            "id": "sport",
-            "nombre": "Sport-Focused Training",
-            "dias_elegidos": 3,
-            "imagen": url_for("static", filename="images/sport.png"),
-            "precio_dias": {3: 49500, 5: 65000},
-            "deportes": ["futbol sala", "boxeo", "rugby"],
-        },
-    ]
+    try:
+        respuesta = requests.get(f"{API_HOST}/api/planes/")
+        if respuesta.status_code == 200:
+            planes = respuesta.json()
+        else:
+            planes = []
+    except Exception as e:
+        print(f"error al conectar con el back: {e}")
+        planes = []
     return render_template("planes.html", planes=planes, user=current_user)
 
 
+
 @app.route("/reservas")
-# @login_required
+@login_required
 def reservas():
     return render_template("reservas.html", user=current_user)
+
+@app.route('/procesar_reserva', methods=['POST'])
+@login_required
+def procesar_reserva():
+    data = request.get_json()
+    
+    # Obtener datos del request
+    dias = data.get('dias', [])
+    tipo_entrenamiento = data.get('tipo_entrenamiento')
+    hora_inicio = data.get('hora_inicio')
+    hora_fin = data.get('hora_fin')
+    comentarios = data.get('comentarios', '')
+    
+    # Validar datos requeridos
+    if not dias:
+        return jsonify({'success': False, 'error': 'No se seleccionaron días'}), 400
+        
+    if tipo_entrenamiento is None:
+        return jsonify({'success': False, 'error': 'No se seleccionó tipo de entrenamiento'}), 400
+        
+    if not hora_inicio:
+        return jsonify({'success': False, 'error': 'No se proporcionó hora de inicio'}), 400
+        
+    if not hora_fin:
+        return jsonify({'success': False, 'error': 'No se proporcionó hora de fin'}), 400
+    
+
+    try:
+        tipo_entrenamiento = int(tipo_entrenamiento)
+    except (ValueError, TypeError) as e:
+        return jsonify({
+            'success': False, 
+            'error': 'Tipo de entrenamiento debe ser un número válido'
+        }), 400
+    
+    if tipo_entrenamiento <= 0:
+        return jsonify({
+            'success': False, 
+            'error': 'Tipo de entrenamiento debe ser un ID válido mayor a 0'
+        }), 400
+        
+
+    id_usuario = current_user.id
+    
+    try:
+        url_alquileres = f"{API_HOST}/api/alquileres/usuario/{id_usuario}"
+        
+        response_alquileres = requests.get(url_alquileres)
+        
+        if response_alquileres.status_code == 404:
+            return jsonify({
+                'success': False,
+                'error': 'No tienes ningún plan activo. Debes comprar un plan primero.'
+            })
+        elif response_alquileres.status_code != 200:
+            return jsonify({
+                'success': False,
+                'error': f'Error al verificar planes del usuario (Status: {response_alquileres.status_code})'
+            }), 500
+        
+        try:
+            alquileres = response_alquileres.json()
+        except Exception as json_error:
+            return jsonify({
+                'success': False,
+                'error': 'Error al procesar respuesta del servidor'
+            }), 500
+        
+        # Verificar si es una respuesta con mensaje (sin alquileres)
+        if isinstance(alquileres, dict) and 'message' in alquileres:
+            return jsonify({
+                'success': False,
+                'error': 'No tienes ningún plan activo. Debes comprar un plan primero.'
+            })
+        
+        # Verificar que alquileres sea una lista
+        if not isinstance(alquileres, list):
+            return jsonify({
+                'success': False,
+                'error': 'Formato de respuesta inesperado del servidor'
+            }), 500
+        
+        if len(alquileres) == 0:
+            return jsonify({
+                'success': False,
+                'error': 'No tienes ningún plan activo. Debes comprar un plan primero.'
+            })
+        
+        plan_encontrado = False
+        planes_usuario = []
+        
+        for i, alquiler in enumerate(alquileres):
+
+            if not isinstance(alquiler, dict):
+                print(f"WARNING - Alquiler {i} no es un diccionario")
+                continue
+                
+            plan_id = alquiler.get('ID_Plan')
+            id_usuario_alquiler = alquiler.get('ID_Usuario')
+            
+            if id_usuario_alquiler != id_usuario:
+                print(f"Alquiler no pertenece al usuario actual")
+                continue
+                
+            if plan_id is not None:
+                planes_usuario.append(plan_id)
+
+                if int(plan_id) == int(tipo_entrenamiento):
+                    plan_encontrado = True
+                    break
+        
+        
+        if not plan_encontrado:
+            error_msg = f'Tu plan actual no incluye este tipo de entrenamiento. Tus planes activos son: {planes_usuario}, pero solicitaste el plan: {tipo_entrenamiento}'
+            return jsonify({
+                'success': False,
+                'error': error_msg
+            })
+        
+        horario_completo = f"{hora_inicio} - {hora_fin}"
+        if comentarios:
+            horario_completo += f" | Comentarios: {comentarios}"
+
+        dias_str = ", ".join(dias)
+        
+
+        payload_horario = {
+            "Dias": dias_str,
+            "Horario": horario_completo,
+            "ID_Plan": tipo_entrenamiento,
+            "ID_Usuario": id_usuario
+        }
+
+        url_horarios = f"{API_HOST}/api/horariosentrenamiento/"
+        
+        response_horario = requests.post(url_horarios, json=payload_horario)
+        
+        if response_horario.status_code == 201:
+            try:
+                response_data = response_horario.json()
+                return jsonify({
+                    'success': True,
+                    'message': 'Reserva creada exitosamente',
+                    'id_horario': response_data.get('id'),
+                    'id_plan': tipo_entrenamiento
+                })
+            except Exception as json_error:
+                return jsonify({
+                    'success': True,
+                    'message': 'Reserva creada exitosamente (sin ID)'
+                })
+        else:
+            try:
+                error_response = response_horario.json()
+                error_msg = error_response.get('error', 'Error al crear la reserva')
+            except:
+                error_msg = f'Error al crear la reserva (Status: {response_horario.status_code})'
+            
+            return jsonify({
+                'success': False,
+                'error': error_msg
+            }), 500
+            
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            'success': False,
+            'error': f'Error de conexión con el servidor: {str(e)}'
+        }), 500
+    except Exception as e:
+        import traceback
+        return jsonify({
+            'success': False,
+            'error': f'Error interno del servidor: {str(e)}'
+        }), 500
+
 
 
 @app.route("/tienda", methods=["GET"])
@@ -159,14 +324,23 @@ def producto(id):
 @login_required
 def user():
     if request.method == "GET":
-        # si existe la session login, la devuelve y luego la borra, sino usa False
         toast_exitoso = session.pop("toast_exitoso", False)
-
-        return render_template(
-            "user.html",
-            user=current_user,
-            toast_exitoso=toast_exitoso,
-        )
+        try:
+            # Cargamos las compras del user
+            response = requests.get(f"{API_HOST}/api/compras/usuario/{current_user.id}")
+            if response.status_code == 200:
+                compras = response.json()
+        except Exception as ex:
+            return render_template(
+                "user.html", error="Error en el servidor. Intentalo más tarde."
+            )
+        finally:
+            return render_template(
+                "user.html",
+                user=current_user,
+                toast_exitoso=toast_exitoso,
+                compras=compras,
+            )
 
     payload = {
         "Email": current_user.email,  # fijo, para identificar al usuario
@@ -178,9 +352,7 @@ def user():
     }
 
     try:
-        response = requests.put(
-            f"{API_HOST}/api/usuarios/editar-usuario", json=payload
-        )
+        response = requests.put(f"{API_HOST}/api/usuarios/editar-usuario", json=payload)
         if response.status_code == 200:
             data = response.json()
             usuario = data["usuario"]
@@ -274,9 +446,7 @@ def login():
     try:
         # Llamada a la API
         payload = {"Email": email, "Contraseña": contraseña}
-        response = requests.post(
-            f"{API_HOST}/api/usuarios/login", json=payload
-        )
+        response = requests.post(f"{API_HOST}/api/usuarios/login", json=payload)
 
         if response.status_code == 200:
             data = response.json()
@@ -333,9 +503,7 @@ def registro():
             "Telefono": telefono,
         }
 
-        response = requests.post(
-            f"{API_HOST}/api/usuarios/registro", json=payload
-        )
+        response = requests.post(f"{API_HOST}/api/usuarios/registro", json=payload)
 
         if response.status_code == 201:
             # Guardar en session si querés mostrar algo en el login
@@ -411,95 +579,89 @@ def admin_required(f):
 
 
 @app.route("/subir-imagen-producto", methods=["POST"])
+@login_required  # Si querés que esté protegido
 def subir_imagen_producto():
     try:
         # Verificar que se envió un archivo
         if "foto" not in request.files:
-            return jsonify({
-                "success": False,
-                "error": "No se seleccionó ningún archivo"
-            }), 400
+            return jsonify({"success": False, "error": "No se seleccionó ningún archivo"}), 400
 
         foto = request.files["foto"]
 
-        if foto.filename == "":
-            return jsonify({
-                "success": False,
-                "error": "El nombre del archivo está vacío"
-            }), 400
+        if not foto or foto.filename == "":
+            return jsonify({"success": False, "error": "No se seleccionó ninguna imagen"}), 400
 
-        # Verificar extensión del archivo
-        if '.' not in foto.filename:
-            return jsonify({
-                "success": False,
-                "error": "Archivo sin extensión válida"
-            }), 400
+        # Preparar los archivos para enviar a la API
+        files = {"foto": (foto.filename, foto, foto.content_type)}
+
+        # Hacer la petición a tu API
+        response = requests.post(
+            f"{API_HOST}/api/productos/subir-imagen", 
+            files=files
+        )
+
+        # Procesar la respuesta de la API
+        if response.status_code == 200:
+            data = response.json()
             
-        extension = foto.filename.rsplit(".", 1)[1].lower()
-        
-        # Definir extensiones permitidas si no están definidas
-        EXTENSIONES_PERMITIDAS = {'jpg', 'jpeg', 'png'}
-        
-        if extension not in EXTENSIONES_PERMITIDAS:
-            return jsonify({
-                "success": False,
-                "error": f"Formato no permitido. Formatos aceptados: {', '.join(EXTENSIONES_PERMITIDAS)}"
-            }), 400
+            # Si la API retornó éxito, también generar la URL completa para el frontend
+            if data.get("success"):
+                filename = data.get("filename")
+                data["url"] = url_for("static", filename=f"images/uploads/productos/{filename}")
+                
+            return jsonify(data), 200
+        else:
+            # Si hubo error en la API, retornar el error
+            error_data = response.json() if response.content else {"success": False, "error": "Error desconocido"}
+            return jsonify(error_data), response.status_code
 
-        # Generar nombre único para el archivo
-        filename = f"producto_{uuid.uuid4().hex}.{extension}"
-        
-        # Asegurarse de que el directorio existe
-        upload_dir = os.path.join(app.static_folder, 'images/uploads/productos')
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
-        
-        filepath = os.path.join(upload_dir, filename)
-        
-        # Guardar la imagen
-        foto.save(filepath)
-        
-        # Retornar respuesta exitosa
-        return jsonify({
-            "success": True,
-            "filename": filename,
-            "url": url_for('static', filename=f'images/uploads/productos/{filename}')
-        })
-
-    except Exception as e:
-        app.logger.error(f"Error al subir imagen de producto: {str(e)}")
+    except requests.exceptions.RequestException as e:
         return jsonify({
             "success": False,
-            "error": "Error interno del servidor al guardar la imagen"
+            "error": "Error de conexión con la API"
         }), 500
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": "Error interno del servidor"
+        }), 500
+
 
 @app.route("/admin")
 @login_required
 @admin_required
 def admin_panel():
     try:
-        # Obtener productos desde la API
         response = requests.get(f"{API_HOST}/api/productos/")
         if response.status_code == 200:
             productos = response.json()
+            total_stock = sum(p.get('Cantidad', 0) for p in productos)
+            total_valor = sum(float(p.get('Precio', 0)) * p.get('Cantidad', 0) for p in productos)
         else:
             productos = []
+            total_stock = 0
+            total_valor = 0
     except Exception as e:
         print(f"Error al obtener productos: {e}")
         productos = []
+        total_stock = 0
+        total_valor = 0
 
     producto_editado = session.pop("producto_editado", False)
-    producto_creado = session.pop("producto_creado", False)
+    producto_creado  = session.pop("producto_creado", False)
     producto_eliminado = session.pop("producto_eliminado", False)
 
     return render_template(
         "admin/admin_panel.html",
         productos=productos,
+        total_stock=total_stock,
+        total_valor=total_valor,
         user=current_user,
         producto_editado=producto_editado,
         producto_creado=producto_creado,
         producto_eliminado=producto_eliminado,
     )
+
 
 
 @app.route("/admin/producto/nuevo", methods=["GET", "POST"])
@@ -519,7 +681,9 @@ def nuevo_producto():
     imagen = request.form.get("imagen")
 
     # Validaciones básicas
-    if not all([nombre, descripcion, codigo, cantidad, precio, categoria, imagen]):  # ← INCLUIR categoria
+    if not all(
+        [nombre, descripcion, codigo, cantidad, precio, categoria, imagen]
+    ):  # ← INCLUIR categoria
         return render_template(
             "admin/nuevo_producto.html",
             error="Todos los campos son obligatorios.",
@@ -533,8 +697,8 @@ def nuevo_producto():
             "Codigo": codigo,
             "Cantidad": int(cantidad),
             "Precio": int(precio),
-            "Categoria": categoria, 
-            "Imagen": imagen, 
+            "Categoria": categoria,
+            "Imagen": imagen,
         }
 
         response = requests.post(f"{API_HOST}/api/productos/", json=payload)
@@ -604,9 +768,7 @@ def editar_producto(id):
             "Imagen": imagen,
         }
 
-        response = requests.put(
-            f"{API_HOST}/api/productos/{id}", json=payload
-        )
+        response = requests.put(f"{API_HOST}/api/productos/{id}", json=payload)
 
         if response.status_code == 200:
             session["producto_editado"] = True
@@ -646,66 +808,45 @@ def eliminar_producto(id):
 
 
 @app.route("/subir-imagen-plan", methods=["POST"])
+@login_required 
 def subir_imagen_plan():
     try:
-        # Verificar que se envió un archivo
         if "foto" not in request.files:
-            return jsonify({
-                "success": False,
-                "error": "No se seleccionó ningún archivo"
-            }), 400
+            return jsonify({"success": False, "error": "No se seleccionó ningún archivo"}), 400
 
         foto = request.files["foto"]
 
-        if foto.filename == "":
-            return jsonify({
-                "success": False,
-                "error": "El nombre del archivo está vacío"
-            }), 400
+        if not foto or foto.filename == "":
+            return jsonify({"success": False, "error": "No se seleccionó ninguna imagen"}), 400
 
-        # Verificar extensión del archivo
-        if '.' not in foto.filename:
-            return jsonify({
-                "success": False,
-                "error": "Archivo sin extensión válida"
-            }), 400
+        files = {"foto": (foto.filename, foto, foto.content_type)}
+
+        response = requests.post(
+            f"{API_HOST}/api/planes/subir-imagen", 
+            files=files
+        )
+
+        if response.status_code == 200:
+            data = response.json()
             
-        extension = foto.filename.rsplit(".", 1)[1].lower()
-        
-        # Definir extensiones permitidas si no están definidas
-        EXTENSIONES_PERMITIDAS = {'jpg', 'jpeg', 'png'}
-        
-        if extension not in EXTENSIONES_PERMITIDAS:
-            return jsonify({
-                "success": False,
-                "error": f"Formato no permitido. Formatos aceptados: {', '.join(EXTENSIONES_PERMITIDAS)}"
-            }), 400
+            if data.get("success"):
+                filename = data.get("filename")
+                data["url"] = url_for("static", filename=f"images/uploads/planes/{filename}")
+                
+            return jsonify(data), 200
+        else:
+            error_data = response.json() if response.content else {"success": False, "error": "Error desconocido"}
+            return jsonify(error_data), response.status_code
 
-        # Generar nombre único para el archivo
-        filename = f"plan_{uuid.uuid4().hex}.{extension}"
-        
-        # Asegurarse de que el directorio existe
-        upload_dir = os.path.join(app.static_folder, 'images/uploads/planes')
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
-        
-        filepath = os.path.join(upload_dir, filename)
-        
-        # Guardar la imagen
-        foto.save(filepath)
-        
-        # Retornar respuesta exitosa
-        return jsonify({
-            "success": True,
-            "filename": filename,
-            "url": url_for('static', filename=f'images/uploads/planes/{filename}')
-        })
-
-    except Exception as e:
-        app.logger.error(f"Error al subir imagen de plan: {str(e)}")
+    except requests.exceptions.RequestException as e:
         return jsonify({
             "success": False,
-            "error": "Error interno del servidor al guardar la imagen"
+            "error": "Error de conexión con la API"
+        }), 500
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": "Error interno del servidor"
         }), 500
 
 @app.route("/admin/planes")
@@ -716,15 +857,30 @@ def admin_planes():
         # Obtener planes desde la API
         response = requests.get(f"{API_HOST}/api/planes/")
         if response.status_code == 200:
-            planes = response.json()
-            for plan in planes:
+            planes_api = response.json()
+            planes = []
+            
+            # Transformar los datos del API al formato esperado por el template
+            for plan_api in planes_api:
+                plan = {
+                    "ID_Plan": plan_api.get("id"),
+                    "Nombre": plan_api.get("nombre"),
+                    "Precio_3_dias": plan_api.get("precio_dias", {}).get(3, 0),
+                    "Precio_5_dias": plan_api.get("precio_dias", {}).get(5, 0),
+                    "Deportes_disponibles": ", ".join(plan_api.get("deportes", [])),
+                    "Imagen": plan_api.get("imagen")
+                }
+                
                 if plan.get("Imagen"):
                     plan["imagen_url"] = url_for(
-                        'static', 
-                        filename=f'images/uploads/planes/{plan["Imagen"]}'
+                        "static", filename=f'images/uploads/planes/{plan["Imagen"]}'
                     )
                 else:
-                    plan["imagen_url"] = url_for('static', filename='images/default_plan.png')
+                    plan["imagen_url"] = url_for(
+                        "static", filename="images/default_plan.png"
+                    )
+                    
+                planes.append(plan)
         else:
             planes = []
     except Exception as e:
@@ -753,13 +909,14 @@ def nuevo_plan():
         return render_template("admin/nuevo_plan.html", user=current_user)
 
     # Obtener datos del formulario
-    descripcion = request.form.get("descripcion")
-    duracion = request.form.get("duracion")
-    precio = request.form.get("precio")
+    nombre = request.form.get("nombre")
+    precio_3_dias = request.form.get("precio_3_dias")
+    precio_5_dias = request.form.get("precio_5_dias")
+    deportes_disponibles = request.form.get("deportes_disponibles")
     imagen = request.form.get("imagen")
 
     # Validaciones básicas
-    if not all([descripcion, duracion, precio]):
+    if not all([nombre, precio_3_dias, precio_5_dias, deportes_disponibles]):
         return render_template(
             "admin/nuevo_plan.html",
             error="Todos los campos son obligatorios.",
@@ -768,10 +925,11 @@ def nuevo_plan():
 
     try:
         payload = {
-            "Descripcion": descripcion,
-            "DuracionPlan": duracion,
-            "Precio": int(precio),
-            "Imagen": imagen
+            "nombre": nombre,
+            "precio_3_dias": int(precio_3_dias),
+            "precio_5_dias": int(precio_5_dias),
+            "deportes_disponibles": deportes_disponibles,
+            "imagen": imagen,
         }
 
         response = requests.post(f"{API_HOST}/api/planes/", json=payload)
@@ -810,12 +968,13 @@ def editar_plan(id):
             return "Error del servidor", 500
 
     # POST - Actualizar plan
-    descripcion = request.form.get("descripcion")
-    duracion = request.form.get("duracion")
-    precio = request.form.get("precio")
+    nombre = request.form.get("nombre")
+    precio_3_dias = request.form.get("precio_3_dias")
+    precio_5_dias = request.form.get("precio_5_dias")
+    deportes_disponibles = request.form.get("deportes_disponibles")
     imagen = request.form.get("imagen")
 
-    if not all([descripcion, duracion, precio]):
+    if not all([nombre, precio_3_dias, precio_5_dias, deportes_disponibles]):
         try:
             response = requests.get(f"{API_HOST}/api/planes/{id}")
             plan = response.json() if response.status_code == 200 else {}
@@ -830,10 +989,11 @@ def editar_plan(id):
 
     try:
         payload = {
-            "Descripcion": descripcion,
-            "DuracionPlan": duracion,
-            "Precio": int(precio),
-            "Imagen": imagen
+            "Nombre": nombre,
+            "Precio_3_dias": int(precio_3_dias),
+            "Precio_5_dias": int(precio_5_dias),
+            "Deportes_disponibles": deportes_disponibles,
+            "Imagen": imagen,
         }
 
         response = requests.put(f"{API_HOST}/api/planes/{id}", json=payload)
@@ -1028,9 +1188,7 @@ def editar_reserva(id):
 
         payload = {"ID_Usuario": int(usuario_id), "ID_Plan": int(plan_id), "Nota": nota}
 
-        response = requests.put(
-            f"{API_HOST}/api/alquileres/{id}", json=payload
-        )
+        response = requests.put(f"{API_HOST}/api/alquileres/{id}", json=payload)
 
         if response.status_code == 200:
             session["reserva_editada"] = True
@@ -1073,108 +1231,184 @@ def eliminar_reserva(id):
         return redirect("/admin/reservas")
 
 
+@app.route("/agregar_plan_carrito/<path:plan_nombre>", methods=["POST"])
+@login_required  
+def agregar_plan_carrito(plan_nombre):
+    try:
+        dias = request.form.get('dias', 3, type=int)
+        deporte = request.form.get('deporte', '')  
+
+        response = requests.get(f"{API_HOST}/api/planes/")
+        if response.status_code != 200:
+            flash("Error al obtener información de los planes")
+            return redirect(url_for("planes"))
+        
+        planes = response.json()
+        plan = next((p for p in planes if p['nombre'] == plan_nombre), None)
+        
+        if not plan:
+            flash("Plan no encontrado")
+            return redirect(url_for("planes"))
+
+        # Obtener el precio correcto del plan según los días
+        dias_str = str(dias)
+        if dias_str in plan.get('precio_dias', {}):
+            precio = plan['precio_dias'][dias_str]
+        else:
+            flash("Configuración de días no válida para este plan")
+            return redirect(url_for("planes"))
+
+        carrito = session.get("carrito", [])
+        plan_key = f"{plan['nombre']}_{dias}_{deporte}"
+        nombre_completo = f"{plan['nombre']} - {deporte}" if deporte else plan['nombre']
+        nombre_completo += f" ({dias} días/semana)"
+
+        # Verificar si el plan ya está en el carrito
+        for item in carrito:
+            if item.get("tipo") == "plan" and item.get("plan_key") == plan_key:
+                flash("Este plan ya está en el carrito")
+                return redirect(url_for("ver_carrito"))
+
+        reemplazado = False
+        for i, item in enumerate(carrito):
+            if (item.get("tipo") == "plan" and item.get("plan_original") == plan['nombre']):
+                carrito[i] = {
+                    "id": plan['id'],
+                    "plan_key": plan_key,
+                    "nombre": nombre_completo,
+                    "precio": float(precio),
+                    "cantidad": 1,
+                    "imagen": plan.get("imagen", ""),
+                    "tipo": "plan",
+                    "dias": dias,
+                    "deporte": deporte,
+                    "plan_original": plan['nombre']
+                }
+                reemplazado = True
+                flash(f"Se actualizó el plan '{plan['nombre']}' en el carrito")
+                break
+
+        if not reemplazado:
+            carrito.append({
+                "id": plan['id'],
+                "plan_key": plan_key,
+                "nombre": nombre_completo,
+                "precio": float(precio),
+                "cantidad": 1,
+                "imagen": plan.get("imagen", ""),
+                "tipo": "plan",
+                "dias": dias,
+                "deporte": deporte,
+                "plan_original": plan['nombre']
+            })
+            flash(f"Plan '{nombre_completo}' agregado al carrito")
+
+        session["carrito"] = carrito
+        session.modified = True
+        return redirect(url_for("ver_carrito"))
+
+    except Exception as ex:
+        flash("Error al agregar plan al carrito")
+        print(f"Error en agregar_plan_carrito: {ex}")
+        return redirect(url_for("planes"))
 @app.route("/agregar_carrito/<int:producto_id>", methods=["POST"])
+@login_required
 def agregar_carrito(producto_id):
     try:
-        response = requests.get(f"{API_HOST}/api/productos/", params={
-            'id': producto_id
-        })
-        if response.status_code == 404:
+        response = requests.get(f"{API_HOST}/api/productos/", params={"id": producto_id})
+        if response.status_code != 200:
             flash("Producto no encontrado")
             return redirect(url_for("tienda"))
 
         producto = response.json()[0]
-        # Obtener carrito de la sesión
         carrito = session.get("carrito", [])
 
-        # Verificar si el producto ya está en el carrito
         for item in carrito:
-            if item["id"] == producto_id:
+            if item.get("id") == producto_id and item.get("tipo") == "producto":
                 item["cantidad"] += 1
                 break
         else:
-            
-            # Agregar nuevo producto al carrito
-            carrito.append(
-                {
-                    "id": producto["ID_Producto"] if "ID_Producto" in producto else "",
-                    "nombre": producto["Nombre"] if "Nombre" in producto else "",
-                    "precio": float(producto["Precio"] if "Precio" in producto else 0),
-                    "cantidad": 1,
-                    "imagen": producto["Imagen"] if "Imagen" in producto else "", 
-                }
+            carrito.append({
+                "id": producto.get("ID_Producto", producto_id),
+                "nombre": producto.get("Nombre", ""),
+                "precio": float(producto.get("Precio", 0)),
+                "cantidad": 1,
+                "imagen": producto.get("Imagen", ""),
+                "tipo": "producto"
+            })
 
-            )
-
-        # Guardar carrito en sesión
         session["carrito"] = carrito
+        session.modified = True
         flash("Producto agregado al carrito")
-
-        # CAMBIO: Usar request.referrer para redirigir inteligentemente
         return redirect(request.referrer or url_for("tienda"))
 
     except Exception as ex:
-        print(f"error al agregar producot al carrito: {ex}")
-        flash("Error al agregar producto al carrito",category='error')
+        print(f"Error al agregar producto al carrito: {ex}")
+        flash("Error al agregar producto al carrito")
         return redirect(request.referrer or url_for("tienda"))
 
 @app.route("/ver_carrito")
+@login_required
 def ver_carrito():
     carrito = session.get("carrito", [])
     total = sum(item["precio"] * item["cantidad"] for item in carrito)
-    return render_template(
-        "carrito.html", carrito=carrito, total=total, user=current_user
-    )
+    return render_template("carrito.html", carrito=carrito, total=total, user=current_user)
 
-
-@app.route("/eliminar_producto_carrito/<int:producto_id>", methods=["POST"])
-def eliminar_producto_carrito(producto_id):
+@app.route("/eliminar_producto_carrito/<item_id>", methods=["POST"])
+@login_required
+def eliminar_producto_carrito(item_id):
     carrito = session.get("carrito", [])
-    carrito = [item for item in carrito if item["id"] != producto_id]
-    session["carrito"] = carrito
-    flash("Producto eliminado del carrito")
+    carrito_original_len = len(carrito)
+    try:
+        if item_id.startswith('plan_'):
+            plan_key = item_id.replace('plan_', '')
+            carrito = [item for item in carrito if not (item.get("tipo") == "plan" and item.get("plan_key") == plan_key)]
+        else:
+            producto_id = int(item_id)
+            carrito = [item for item in carrito if not (item.get("id") == producto_id and item.get("tipo") == "producto")]
+        session["carrito"] = carrito
+        session.modified = True
+        if len(carrito) < carrito_original_len:
+            flash("Item eliminado del carrito")
+        else:
+            flash("No se pudo eliminar el item")
+    except Exception as e:
+        print(f"Error al eliminar item: {e}")
+        flash("Error al eliminar el item del carrito")
     return redirect(url_for("ver_carrito"))
 
+@app.route("/finalizar_compra", methods=["POST"])
+@login_required
+def finalizar_compra():
+    session.pop("carrito", None)
+    session.modified = True
+    flash("Compra finalizada exitosamente")
+    return redirect(url_for("ver_carrito"))
 
 @app.route("/pasarela")
 @login_required
 def pasarela():
     carrito = session.get("carrito", [])
-    
-    # Si el carrito está vacío, redirigir a la tienda
     if not carrito:
         flash("Tu carrito está vacío")
         return redirect(url_for("tienda"))
-    
-    # Calcular total
     total = sum(item["precio"] * item["cantidad"] for item in carrito)
-    
-    return render_template(
-        "pasarela.html", 
-        carrito=carrito, 
-        total=total, 
-        user=current_user,
-        API_HOST=API_HOST  
-    )
+    return render_template("pasarela.html", carrito=carrito, total=total, user=current_user, API_HOST=API_HOST)
 
 @app.route("/limpiar-carrito-frontend", methods=["POST"])
 def limpiar_carrito_frontend():
-    """Limpiar carrito en la sesión del frontend"""
     try:
-        if 'carrito' in session:
-            productos_eliminados = len(session['carrito'])
-            session['carrito'] = []
-            session.modified = True
-            print(f"Carrito limpiado en frontend: {productos_eliminados} productos eliminados")
-            return jsonify({
-                "mensaje": "Carrito limpiado en frontend",
-                "productos_eliminados": productos_eliminados
-            }), 200
-        else:
-            return jsonify({"mensaje": "No hay carrito para limpiar"}), 200
+        productos_eliminados = len(session.get('carrito', []))
+        session['carrito'] = []
+        session.modified = True
+        return jsonify({
+            "mensaje": "Carrito limpiado en frontend",
+            "productos_eliminados": productos_eliminados
+        }), 200
     except Exception as e:
         print(f"Error al limpiar carrito en frontend: {e}")
         return jsonify({"error": "Error al limpiar carrito"}), 500
+
 @app.route("/estado-carrito", methods=["GET"])
 def estado_carrito():
     try:
@@ -1187,6 +1421,8 @@ def estado_carrito():
         }), 200
     except Exception as e:
         return jsonify({"error": "Error al obtener estado del carrito"}), 500
+
+
 
 if __name__ == "__main__":
     app.run("localhost", port=3000, debug=True, threaded=True)

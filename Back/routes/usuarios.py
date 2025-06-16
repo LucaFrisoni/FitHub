@@ -36,7 +36,12 @@ def get_usuario(id):
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM usuarios WHERE ID_Usuario = %s", (id,))
         usuario = cursor.fetchone()
+
         if usuario:
+            if "FechaNacimiento" in usuario:
+                usuario["FechaNacimiento"] = formatear_fecha_ddmmaaaa(
+                    usuario["FechaNacimiento"]
+                )
             return jsonify({"usuario": usuario})
         else:
             return jsonify({"error": "Usuario no encontrado"}), 404

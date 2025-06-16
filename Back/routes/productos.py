@@ -1,7 +1,10 @@
+import os
+import uuid
 from flask import Blueprint, jsonify, request
 from db.db import get_connection
 from util.log import devolver_error
 from util.util import *
+from werkzeug.utils import secure_filename
 
 productos_bp = Blueprint("productos", __name__)
 
@@ -244,17 +247,35 @@ def delete_producto(id):
         conn = get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT 1 FROM productos WHERE ID_producto = %s", (id,))
-        if not cursor.fetchone():
+        cursor.execute("SELECT Imagen FROM productos WHERE ID_Producto = %s", (id,))
+        producto = cursor.fetchone()
+        
+        if not producto:
             return jsonify({"error": "Producto no encontrado"}), 404
 
-        cursor.execute("DELETE FROM productos WHERE ID_producto = %s", (id,))
+        imagen_filename = producto[0] if producto[0] else None
+
+        cursor.execute("DELETE FROM productos WHERE ID_Producto = %s", (id,))
         conn.commit()
 
         if cursor.rowcount == 0:
             return jsonify({"error": "No se pudo eliminar el producto"}), 500
 
-        return jsonify({"success": True}), 200
+        if imagen_filename:
+            try:
+                upload_dir = "../Front/static/images/uploads/productos"
+                imagen_path = os.path.join(upload_dir, imagen_filename)
+                
+                if os.path.exists(imagen_path):
+                    os.remove(imagen_path)
+                    print(f"Imagen eliminada: {imagen_path}")
+                else:
+                    print(f"La imagen no existe en el path: {imagen_path}")
+                    
+            except Exception as img_ex:
+                print(f"Error al eliminar imagen: {str(img_ex)}")
+
+        return jsonify({"success": True, "message": "Producto eliminado exitosamente"}), 200
 
     except Exception as ex:
         return devolver_error(ruta="productos", metodo="DELETE", ex=ex)
@@ -263,3 +284,58 @@ def delete_producto(id):
             cursor.close()
         if conn:
             conn.close()
+
+EXTENSIONES_PERMITIDAS = {"png", "jpg", "jpeg"}
+
+@productos_bp.route("/subir-imagen", methods=["POST"])
+def subir_imagen_producto():
+    """
+    Endpoint para subir imágenes de productos
+    """
+    try:
+        # Verificar que se envió un archivo
+        if "foto" not in request.files:
+            return jsonify({"success": False, "error": "No se seleccionó ningún archivo"}), 400
+
+        foto = request.files["foto"]
+
+        if foto.filename == "":
+            return jsonify({"success": False, "error": "El nombre del archivo está vacío"}), 400
+
+        # Verificar extensión del archivo
+        if "." not in foto.filename:
+            return jsonify({"success": False, "error": "Archivo sin extensión válida"}), 400
+
+        extension = foto.filename.rsplit(".", 1)[1].lower()
+
+        if extension not in EXTENSIONES_PERMITIDAS:
+            return jsonify({
+                "success": False, 
+                "error": f"Formato no permitido. Formatos aceptados: {', '.join(EXTENSIONES_PERMITIDAS)}"
+            }), 400
+
+        # Generar nombre único para el archivo
+        filename = f"producto_{uuid.uuid4().hex}.{extension}"
+        
+        # Crear directorio si no existe - RUTA DEL FRONTEND
+        upload_dir = "../Front/static/images/uploads/productos"  # Ruta relativa al backend
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir)
+
+        filepath = os.path.join(upload_dir, filename)
+
+        # Guardar la imagen
+        foto.save(filepath)
+
+        # Retornar respuesta exitosa con el nombre del archivo
+        return jsonify({
+            "success": True,
+            "filename": filename,
+            "message": "Imagen subida exitosamente"
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Error del servidor al subir imagen: {str(e)}"
+        }), 500

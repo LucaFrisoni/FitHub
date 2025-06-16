@@ -158,7 +158,7 @@
           <!-- Precio -->
           <div>
             <label for="precio" class="block text-sm font-medium mb-2">
-              Precio ($) <span class="text-red-400">*</span>
+              Precio ($) / producto <span class="text-red-400">*</span>
             </label>
             <input
               type="number"
@@ -181,7 +181,7 @@
             id="categoria"
             name="categoria"
             required
-            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+            class="w-full px-4 py-3 bg-white/10 text-white border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition [&>option]:text-black"
           >
             <option value="">Selecciona una categoría</option>
             <option value="Suplementos" {% if producto.Categoria == 'Suplementos' %}selected{% endif %}>Suplementos</option>
@@ -268,7 +268,7 @@
           </a>
           <button
             type="submit"
-            class="px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-semibold transition flex items-center"
+            class="px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-semibold transition flex items-center cursor-pointer"
           >
             <svg
               class="w-4 h-4 mr-2"
