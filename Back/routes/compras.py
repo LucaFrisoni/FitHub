@@ -104,12 +104,23 @@ def get_by_usuario(id):
             return jsonify(compras)
         
         for compra in compras:
-            id = compra.get('ID_Compra', -1)
-            if id == -1:
+            id_compra = compra.get('ID_Compra', -1)
+            if id_compra == -1:
                 print(f"Compra sin ID {compra}")
                 continue
+
+            cursor.execute(
+                """
+                    SELECT p.Nombre,
+                           p.Imagen,
+                           p.Precio,
+                           dc.Cantidad 
+                    FROM detallecompras dc
+                    JOIN productos p ON dc.ID_Producto = p.ID_Producto
+                    WHERE dc.ID_Compra = %s
+                """
+            , (id_compra,))
             
-            cursor.execute("SELECT * FROM detallecompras WHERE ID_Compra = %s", (id,))
             detalles = cursor.fetchone()
             if not detalles:
                 continue
