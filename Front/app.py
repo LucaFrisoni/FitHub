@@ -51,7 +51,6 @@ def load_user(user_id):
         if response.status_code == 200:
             data = response.json()
             usuario = data.get("usuario")
-            print(f"La fecha es {usuario["FechaNacimiento"]}")
             return User(
                 usuario["ID_usuario"],
                 usuario["Nombre"],

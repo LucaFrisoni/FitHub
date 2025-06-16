@@ -40,31 +40,44 @@
       </div>
       {% endif %}
 
-            <form method="POST" class="space-y-6">
-                <!-- Usuario -->
-                <div>
-                    <label for="usuario" class="block text-sm font-medium mb-2">Usuario</label>
-                    <select id="usuario" name="usuario" required
-                            class="w-full px-4 py-3 bg-white/10 text-white border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition [&>option]:text-black">
-                        <option value="">Selecciona un usuario</option>
-                        {% for usuario in usuarios %}
-                        <option value="{{ usuario.ID_usuario }}">{{ usuario.Nombre }} {{ usuario.Apellido }} - {{ usuario.Email }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+      <form method="POST" class="space-y-6">
+        <!-- Usuario -->
+        <div>
+          <label for="usuario" class="block text-sm font-medium mb-2"
+            >Usuario</label
+          >
+          <select
+            id="usuario"
+            name="usuario"
+            required
+            class="w-full px-4 py-3 bg-white/10 text-white border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition [&>option]:text-black"
+          >
+            <option value="">Selecciona un usuario</option>
+            {% for usuario in usuarios %}
+            <option value="{{ usuario.ID_usuario }}">
+              {{ usuario.Nombre }} {{ usuario.Apellido }} - {{ usuario.Email }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
 
-                <!-- Plan -->
-                <div>
-                    <label for="plan" class="block text-sm font-medium mb-2">Plan</label>
-                    <select id="plan" name="plan" required
-                            class="w-full px-4 py-3 bg-white/10 text-white border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition [&>option]:text-black">
-                        <option value="">Selecciona un plan</option>
-                        {% for plan in planes %}
-                        <option value="{{ plan.ID_Plan }}">{{ plan.Descripcion }} - ${{ plan.Precio }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
+        <!-- Plan -->
+        <div>
+          <label for="plan" class="block text-sm font-medium mb-2">Plan</label>
+          <select
+            id="plan"
+            name="plan"
+            required
+            class="w-full px-4 py-3 bg-white/10 text-white border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition [&>option]:text-black"
+          >
+            <option value="">Selecciona un plan</option>
+            {% for plan in planes %}
+            <option value="{{ plan.ID_Plan }}">
+              {{ plan.Descripcion }} - ${{ plan.Precio }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
 
         <!-- Nota -->
         <div>
@@ -82,13 +95,13 @@
         <div class="flex justify-end space-x-4 pt-6">
           <a
             href="{{ url_for('admin_reservas') }}"
-            class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition"
+            class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition cursor-pointer"
           >
             Cancelar
           </a>
           <button
             type="submit"
-            class="px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-semibold transition"
+            class="px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-semibold transition cursor-pointer"
           >
             Crear Reserva
           </button>
