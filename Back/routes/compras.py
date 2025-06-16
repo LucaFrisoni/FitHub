@@ -91,6 +91,7 @@ def get_by_usuario(id):
     conn = None
     cursor = None
 
+    completo = request.args.get('completo', False)
 
     try:
         conn = get_connection()
@@ -99,7 +100,34 @@ def get_by_usuario(id):
         cursor.execute("SELECT * FROM compras WHERE ID_Usuario = %s", (id,))
         compras = cursor.fetchall()
 
-        return jsonify(compras)
+        if not completo:
+            return jsonify(compras)
+        
+        for compra in compras:
+            id_compra = compra.get('ID_Compra', -1)
+            if id_compra == -1:
+                print(f"Compra sin ID {compra}")
+                continue
+
+            cursor.execute(
+                """
+                    SELECT p.Nombre,
+                           p.Imagen,
+                           p.Precio,
+                           dc.Cantidad 
+                    FROM detallecompras dc
+                    JOIN productos p ON dc.ID_Producto = p.ID_Producto
+                    WHERE dc.ID_Compra = %s
+                """
+            , (id_compra,))
+            
+            detalles = cursor.fetchone()
+            if not detalles:
+                continue
+
+            compra['detalles'] = detalles
+        
+        return compras
     except Exception as e:
         return devolver_error(ruta=f"compras/usuario/{id}", ex=e)
     finally:
