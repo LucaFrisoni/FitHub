@@ -29,13 +29,13 @@ CREATE TABLE usuarios (
 -- Tabla de planes
 CREATE TABLE planes (
     ID_Plan INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(100),  
-    imagen VARCHAR(255),
-    precio_3_dias INT,
-    precio_5_dias INT,
-    deportes_disponibles VARCHAR(255);
+    Nombre VARCHAR(100),  
+    Imagen VARCHAR(255),
+    Precio_3_dias INT,
+    Precio_5_dias INT,
+    Deportes_disponibles VARCHAR(255);
 );
-INSERT INTO planes (nombre, imagen, precio_3_dias, precio_5_dias, deportes_disponibles) VALUES
+INSERT INTO planes (Nombre, Imagen, Precio_3_dias, Precio_5_dias, Deportes_disponibles) VALUES
 ('Body-Building', 'Front/images/bodybuilding.png', 46900, 63000, NULL),
 ('Spinning', 'Front/images/spinning.png', 29500, 42000, NULL),
 ('Sport-Focused Training', 'Front/images/sport.png', 49500, 65000, 'futbol sala,boxeo,rugby');
