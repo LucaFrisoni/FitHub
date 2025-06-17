@@ -2,26 +2,48 @@
 {% block content %}
 <div class="flex min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-gray-100 pt-24">
   <!-- Sidebar -->
-  <aside class="w-64 bg-white text-gray-800 p-6">
-    <h2 class="text-xl font-bold mb-4">Filtros</h2>
-    <ul class="space-y-2">
-      <li>
-        <input type="checkbox" id="proteinas" />
-        <label for="proteinas">Proteínas</label>
-      </li>
-      <li>
-        <input type="checkbox" id="suplementos" />
-        <label for="suplementos">Suplementos</label>
-      </li>
-      <li>
-        <input type="checkbox" id="accesorios" />
-        <label for="accesorios">Accesorios</label>
-      </li>
-    </ul>
-  </aside>
+    <aside class="w-full md:w-64 bg-white p-4 border rounded shadow mb-4 text-black">
+      <h2 class="text-xl font-bold mb-3">Filtrar por categoría</h2>
+      <form method="GET" action="{{ url_for('tienda') }}">
+        {% set categorias = ["Suplementos", "Equipamiento", "Ropa Deportiva", "Accesorios", "Nutrición"] %}
+        {% for cat in categorias %}
+          <div class="flex items-center mb-2">
+            <input
+              type="checkbox"
+              id="{{ cat }}"
+              name="categorias"
+              value="{{ cat }}"
+              {% if cat in request.args.getlist('categorias') %}checked{% endif %}
+              class="mr-2"
+            >
+            <label for="{{ cat }}">{{ cat }}</label>
+          </div>
+        {% endfor %}
+        <button type="submit" class="mt-2 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+          Aplicar filtros
+        </button>
+      </form>
+    </aside>
 
   <!-- Main content -->
-  <main class="flex-1 p-10 pt-24">
+  <main class="flex-1 p-10 pt-5">
+    <!-- Barra superior con botón atrás y carrito -->
+  <div class="flex justify-between items-center mb-8">
+    <!-- Flecha para atras -->
+    {% include "components/button/go_back.html" %}
+
+    <!-- Carrito (con imagen personalizada) -->
+    <a
+      href="{{ url_for('ver_carrito') }}"
+      class="inline-block p-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white shadow-lg"
+    >
+      <img
+        src="{{ url_for('static', filename='images/carrito.png') }}"
+        alt="Carrito"
+        class="h-6 w-6 object-contain"
+      />
+    </a>
+  </div>
     <!-- MENSAJES FLASH -->
     {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -57,7 +79,7 @@
         <!-- Imagen y contenido clickeable para ir al detalle -->
         <a href="{{ url_for('producto', id=producto.id) }}" class="flex flex-col flex-1">
           <img
-            src="{{ url_for('static', filename='images/' ~ producto.imagen) }}"
+            src="{{ url_for('static', filename='images/uploads/productos/' ~ producto.imagen) }}"
             alt="{{ producto.nombre }}"
             class="h-40 object-contain mb-4"
           />

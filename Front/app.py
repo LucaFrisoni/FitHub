@@ -280,21 +280,25 @@ def procesar_reserva():
 
 @app.route("/tienda", methods=["GET"])
 def tienda():
+    categorias_filtro = request.args.getlist("categorias")
+
     try:
         response = requests.get(f"{API_HOST}/api/productos/")
         if response.status_code == 200:
             productos_api = response.json()
             productos = []
             for p in productos_api:
-                productos.append(
-                    {
-                        "id": p.get("ID_Producto"),
-                        "imagen": p.get("Imagen", "default.png"),
-                        "nombre": p.get("Nombre"),
-                        "descripcion": p.get("Descripcion"),
-                        "precio": p.get("Precio"),
-                    }
-                )
+                categoria = p.get("Categoria", "")
+                if not categorias_filtro or categoria in categorias_filtro:
+                    productos.append(
+                        {
+                            "id": p.get("ID_Producto"),
+                            "imagen": p.get("Imagen", "default.png"),
+                            "nombre": p.get("Nombre"),
+                            "descripcion": p.get("Descripcion"),
+                            "precio": p.get("Precio"),
+                        }
+                    )
         else:
             productos = []
     except Exception as e:
