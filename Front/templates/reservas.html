@@ -1,151 +1,91 @@
-{% extends "base.html" %} {% block content %}
-<div
-  class="min-h-screen bg-center bg-cover bg-[url(/static/images/reserva_fondo.png)]"
->
-  <!-- Main Content -->
+{% extends "base.html" %}
+{% block content %}
+
+<div class="min-h-screen bg-[url(/static/images/reserva_fondo.png)]">
+  <div>
+    {% if error %} {% include "components/toasts/error.html" %} {% endif %}
+    {% if toast_exitoso %} {% include "components/toasts/exito.html" %} {%endif %}
+  </div>
   <div class="py-4 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7x1 mx-auto">
-      <div
-        class="flex flex-col lg:flex-row items-center justify-center gap-6 mt-22"
-      >
-        <!-- Left Panel - Reservation Form -->
-        <div class="w-full lg:w-3/5 mt-8 lg:mt-24">
+      <div class="flex flex-col lg:flex-row justify-center gap-6 mt-22">
+        <!-- Formulario -->
+        <div class="w-full lg:w-3/5">
           <div class="bg-white border rounded-lg shadow-lg p-4 sm:p-6">
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
               Reservación
             </h2>
 
             <!-- Disponibilidad -->
-            <form id="miFormulario" class="mb-3">
-              <label class="block text-sm font-semibold text-gray-700 mb-2"
-                >Disponibilidad</label
-              >
+            <form id="miFormulario" class="mb-6">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Disponibilidad</label>
               <div class="grid grid-cols-7 gap-1 sm:gap-0">
                 <div>
-                  <input
-                    type="checkbox"
-                    id="lun"
-                    name="dias[]"
-                    value="lunes"
-                    class="day-checkbox hidden"
-                  />
-                  <label
-                    for="lun"
-                    class="day-button block px-2 sm:px-4 py-2 sm:py-3 hover:bg-yellow-500 border transition border-gray-300 cursor-pointer font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px first:ml-0"
-                  >
+                  <input type="checkbox" id="lun" name="dias[]" value="lunes" class="day-checkbox hidden">
+                  <label for="lun"
+                    class="day-button block px-2 sm:px-4 py-2 sm:py-3 hover:bg-yellow-500 border border-gray-300 cursor-pointer font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px first:ml-0 bg-white">
                     Lun
                   </label>
                 </div>
 
                 <div>
-                  <input
-                    type="checkbox"
-                    id="mar"
-                    name="dias[]"
-                    value="martes"
-                    class="day-checkbox hidden"
-                  />
-                  <label
-                    for="mar"
-                    class="day-button transition block px-2 sm:px-4 py-2 sm:py-3 hover:bg-yellow-500 border border-gray-300 cursor-pointer font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px"
-                  >
+                  <input type="checkbox" id="mar" name="dias[]" value="martes" class="day-checkbox hidden">
+                  <label for="mar"
+                    class="day-button block px-2 sm:px-4 py-2 sm:py-3 hover:bg-yellow-500 border border-gray-300 cursor-pointer font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
                     Mar
                   </label>
                 </div>
 
                 <div>
-                  <input
-                    type="checkbox"
-                    id="mie"
-                    name="dias[]"
-                    value="miercoles"
-                    class="day-checkbox hidden"
-                  />
-                  <label
-                    for="mie"
-                    class="day-button transition block px-2 sm:px-4 py-2 sm:py-3 hover:bg-yellow-500 border border-gray-300 cursor-pointer font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px"
-                  >
+                  <input type="checkbox" id="mie" name="dias[]" value="miercoles" class="day-checkbox hidden">
+                  <label for="mie"
+                    class="day-button block px-2 sm:px-4 py-2 sm:py-3 hover:bg-yellow-500 border border-gray-300 cursor-pointer font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
                     Mié
                   </label>
                 </div>
 
                 <div>
-                  <input
-                    type="checkbox"
-                    id="jue"
-                    name="dias[]"
-                    value="jueves"
-                    class="day-checkbox hidden"
-                  />
-                  <label
-                    for="jue"
-                    class="day-button block transition px-2 sm:px-4 py-2 sm:py-3 hover:bg-yellow-500 border border-gray-300 cursor-pointer font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px"
-                  >
+                  <input type="checkbox" id="jue" name="dias[]" value="jueves" class="day-checkbox hidden">
+                  <label for="jue"
+                    class="day-button block px-2 sm:px-4 py-2 sm:py-3 hover:bg-yellow-500 border border-gray-300 cursor-pointer font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
                     Jue
                   </label>
                 </div>
 
                 <div>
-                  <input
-                    type="checkbox"
-                    id="vie"
-                    name="dias[]"
-                    value="viernes"
-                    class="day-checkbox hidden"
-                  />
-                  <label
-                    for="vie"
-                    class="day-button block transition px-2 sm:px-4 py-2 sm:py-3 hover:bg-yellow-500 border border-gray-300 cursor-pointer font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px"
-                  >
+                  <input type="checkbox" id="vie" name="dias[]" value="viernes" class="day-checkbox hidden">
+                  <label for="vie"
+                    class="day-button block px-2 sm:px-4 py-2 sm:py-3 hover:bg-yellow-500 border border-gray-300 cursor-pointer font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
                     Vie
                   </label>
                 </div>
 
                 <div>
-                  <input
-                    type="checkbox"
-                    id="sab"
-                    name="dias[]"
-                    value="sabado"
-                    class="day-checkbox hidden"
-                  />
-                  <label
-                    for="sab"
-                    class="day-button block transition px-2 sm:px-4 py-2 sm:py-3 hover:bg-yellow-500 border border-gray-300 cursor-pointer font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px"
-                  >
+                  <input type="checkbox" id="sab" name="dias[]" value="sabado" class="day-checkbox hidden">
+                  <label for="sab"
+                    class="day-button block px-2 sm:px-4 py-2 sm:py-3 hover:bg-yellow-500 border border-gray-300 cursor-pointer font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
                     Sáb
                   </label>
                 </div>
 
                 <div>
-                  <input
-                    type="checkbox"
-                    id="dom"
-                    name="dias[]"
-                    value="domingo"
-                    class="day-checkbox hidden"
-                  />
-                  <label
-                    for="dom"
-                    class="day-button block transition px-2 sm:px-4 py-2 sm:py-3 hover:bg-yellow-500 border border-gray-300 cursor-pointer font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px"
-                  >
+                  <input type="checkbox" id="dom" name="dias[]" value="domingo" class="day-checkbox hidden">
+                  <label for="dom"
+                    class="day-button block px-2 sm:px-4 py-2 sm:py-3 hover:bg-yellow-500 border border-gray-300 cursor-pointer font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
                     Dom
                   </label>
                 </div>
               </div>
 
               <!-- Tipo de Entrenamiento -->
-              <div class="mb-3 mt-3">
-                <label class="block text-sm font-semibold text-gray-700 mb-2"
-                  >Tipo de Entrenamiento</label
-                >
-                <select
-                  id="type-exercise"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base"
-                >
-                  <option value="1">Bodybuilding</option>
-                  <option value="2">Spinning</option>
-                  <option value="3">Sport-Focus</option>
+              <div class="mt-3 mb-3">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Tipo de Entrenamiento</label>
+                <select id="type-exercise"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
+                  <option value="">Selecciona un tipo de entrenamiento</option>
+                  {% for plan in planes %}
+                    <option value="{{ plan.id }}">{{ plan.nombre }}</option>
+                  {% endfor %}
                 </select>
               </div>
 
@@ -177,19 +117,6 @@
                   </div>
                 </div>
               </div>
-
-              <!-- Comentarios -->
-              <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2"
-                  >Comentarios</label
-                >
-                <textarea
-                  id="comment-area"
-                  rows="1"
-                  placeholder="Ingresa un comentario"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-sm sm:text-base"
-                ></textarea>
-              </div>
             </form>
 
             <!-- Botón Reserva -->
@@ -204,14 +131,15 @@
           </div>
         </div>
 
-        <!-- Right Panel - Available Slots -->
-        <div class="w-full lg:w-1/4 mt-8 lg:mt-24">
+        <!-- Contador Personas -->
+        <div class="w-full lg:w-1/4">
           <div class="bg-white border rounded-lg shadow-lg p-4 sm:p-6">
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3">
               Turnos Disponibles
             </h2>
 
             <!-- TENGO QUE METER UN CONTADOR PARA QUE SUME LA GENTE QUE RESERVO -->
+            <!-- Pensar como hacer para contar la cantidad de usarios hay y que dias tienen sus reservas !!!!! -->
             <div class="space-y-1">
               <!-- Lunes -->
               <div
@@ -443,4 +371,119 @@
     </div>
   </div>
 </div>
-{% endblock %} {% block footer%}{% endblock %}
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+  
+  const dayCheckboxes = document.querySelectorAll('.day-checkbox');
+
+  dayCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function () {
+      const label = this.nextElementSibling;
+      if (this.checked) {
+        label.classList.add('bg-yellow-400', 'text-gray-800', 'font-semibold');
+        label.classList.remove('bg-white', 'text-gray-700');
+      } else {
+        label.classList.remove('bg-yellow-400', 'text-gray-800', 'font-semibold');
+        label.classList.add('bg-white', 'text-gray-700');
+      }
+    });
+  });
+
+  const reserveButton = document.getElementById("button-reserva");
+  if (reserveButton) {
+    reserveButton.addEventListener('click', async function (e) {
+      e.preventDefault();
+
+      const selectedDays = [];
+      dayCheckboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+          selectedDays.push(checkbox.value);
+        }
+      });
+
+      if (selectedDays.length === 0) {
+        alert('Por favor selecciona al menos un día para tu reserva.');
+        return;
+      }
+
+      const trainingType = document.querySelector('#type-exercise').value;
+      const startTime = document.querySelector('#start-time').value;
+      const endTime = document.querySelector('#end-time').value;
+
+      if (!trainingType || trainingType === '') {
+        alert('Por favor selecciona un tipo de entrenamiento válido.');
+        return;
+      }
+
+      const datos_reserva = {
+        dias: selectedDays,
+        tipo_entrenamiento: trainingType,
+        hora_inicio: startTime,
+        hora_fin: endTime
+      };
+
+      try {
+        reserveButton.disabled = true;
+        reserveButton.textContent = "Procesando...";
+
+        const response = await fetch('/procesar_reserva', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(datos_reserva)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert('Reserva procesada exitosamente');
+          limpiarFormulario();
+        } else {
+          alert(result.error || 'Error al procesar la reserva');
+        }
+
+      } catch (error) {
+        console.error("Error al procesar la reserva:", error);
+        alert("Error de conexión. Por favor, intenta nuevamente.");
+      } finally {
+        reserveButton.disabled = false;
+        reserveButton.textContent = "RESERVAR";
+      }
+    });
+  }
+
+  function limpiarFormulario() {
+    dayCheckboxes.forEach(checkbox => {
+      checkbox.checked = false;
+      const label = checkbox.nextElementSibling;
+      label.classList.remove('bg-yellow-400', 'text-gray-800', 'font-semibold');
+      label.classList.add('bg-white', 'text-gray-700');
+    });
+
+    const typeExercise = document.querySelector('#type-exercise');
+    if (typeExercise) typeExercise.selectedIndex = 0;
+
+    const startTime = document.querySelector('#start-time');
+    const endTime = document.querySelector('#end-time');
+    if (startTime) startTime.value = '09:00';
+    if (endTime) endTime.value = '10:00';
+  }
+
+  const touchElements = document.querySelectorAll('.day-button, button, select, input, textarea');
+  touchElements.forEach(element => {
+    element.addEventListener('touchstart', function () {
+      this.style.transform = 'scale(0.98)';
+    });
+
+    element.addEventListener('touchend', function () {
+      this.style.transform = 'scale(1)';
+    });
+  });
+});
+</script>
+
+{% endblock %}
+{% block footer%}{% endblock %}
