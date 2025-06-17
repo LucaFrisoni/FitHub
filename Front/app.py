@@ -88,6 +88,9 @@ def planes():
         respuesta = requests.get(f"{API_HOST}/api/planes/")
         if respuesta.status_code == 200:
             planes = respuesta.json() #lo convierte en lista de diccionario
+            for plan in planes:
+                if plan.get("imagen") is None:
+                    plan["imagen"] = "plan_325e01b34d984c3fb7057f48b61afbd5.jpg"
         else:
             planes = []
     except Exception as e:

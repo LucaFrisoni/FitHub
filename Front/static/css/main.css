@@ -587,6 +587,9 @@
   .h-96 {
     height: calc(var(--spacing) * 96);
   }
+  .h-\[1vw\] {
+    height: 1vw;
+  }
   .h-\[3\.5vw\] {
     height: 3.5vw;
   }
@@ -610,6 +613,9 @@
   }
   .h-\[16vw\] {
     height: 16vw;
+  }
+  .h-\[20vw\] {
+    height: 20vw;
   }
   .h-\[21\%\] {
     height: 21%;
@@ -704,6 +710,24 @@
   .max-h-\[500px\] {
     max-height: 500px;
   }
+  .min-h-\[6\.5px\] {
+    min-height: 6.5px;
+  }
+  .min-h-\[8px\] {
+    min-height: 8px;
+  }
+  .min-h-\[8vw\] {
+    min-height: 8vw;
+  }
+  .min-h-\[16vw\] {
+    min-height: 16vw;
+  }
+  .min-h-\[29\,1px\] {
+    min-height: 29,1px;
+  }
+  .min-h-\[29px\] {
+    min-height: 29px;
+  }
   .min-h-\[40px\] {
     min-height: 40px;
   }
@@ -755,6 +779,9 @@
   .w-72 {
     width: calc(var(--spacing) * 72);
   }
+  .w-\[1vw\] {
+    width: 1vw;
+  }
   .w-\[4\.5vw\] {
     width: 4.5vw;
   }
@@ -766,6 +793,9 @@
   }
   .w-\[10vw\] {
     width: 10vw;
+  }
+  .w-\[12\%\] {
+    width: 12%;
   }
   .w-\[12\.5\%\] {
     width: 12.5%;
@@ -781,6 +811,9 @@
   }
   .w-\[16\.5vw\] {
     width: 16.5vw;
+  }
+  .w-\[20vw\] {
+    width: 20vw;
   }
   .w-\[23px\] {
     width: 23px;
@@ -896,6 +929,15 @@
   .min-w-0 {
     min-width: calc(var(--spacing) * 0);
   }
+  .min-w-\[12px\] {
+    min-width: 12px;
+  }
+  .min-w-\[20px\] {
+    min-width: 20px;
+  }
+  .min-w-\[20vw\] {
+    min-width: 20vw;
+  }
   .min-w-\[40px\] {
     min-width: 40px;
   }
@@ -904,6 +946,9 @@
   }
   .min-w-\[50px\] {
     min-width: 50px;
+  }
+  .min-w-\[64px\] {
+    min-width: 64px;
   }
   .min-w-\[120px\] {
     min-width: 120px;
@@ -1715,14 +1760,17 @@
   .pt-\[5\%\] {
     padding-top: 5%;
   }
+  .pt-\[5vw\] {
+    padding-top: 5vw;
+  }
+  .pt-\[7vw\] {
+    padding-top: 7vw;
+  }
   .pt-\[10\%\] {
     padding-top: 10%;
   }
   .pt-\[10vw\] {
     padding-top: 10vw;
-  }
-  .pt-\[12\.5\%\] {
-    padding-top: 12.5%;
   }
   .pt-\[12vw\] {
     padding-top: 12vw;
@@ -1868,11 +1916,32 @@
   .text-\[19px\] {
     font-size: 19px;
   }
+  .text-\[clamp\(0\.5vw\,0\.5vw\)\] {
+    font-size: clamp(0.5vw, 0.5vw);
+  }
   .text-\[clamp\(1\.2rem\,1\.8vw\,1\.8vw\)\] {
     font-size: clamp(1.2rem, 1.8vw, 1.8vw);
   }
   .text-\[clamp\(1\.2rem\,1\.25vw\,1\.25vw\)\] {
     font-size: clamp(1.2rem, 1.25vw, 1.25vw);
+  }
+  .text-\[clamp\(1\.2rem\,1vw\,1\.25vw\)\] {
+    font-size: clamp(1.2rem, 1vw, 1.25vw);
+  }
+  .text-\[clamp\(1\.2vw\,1\.8vw\,1\.8vw\)\] {
+    font-size: clamp(1.2vw, 1.8vw, 1.8vw);
+  }
+  .text-\[clamp\(1\.2vw\,1\.25vw\,1\.25vw\)\] {
+    font-size: clamp(1.2vw, 1.25vw, 1.25vw);
+  }
+  .text-\[clamp\(1\.25vw\,1\.25vw\)\] {
+    font-size: clamp(1.25vw, 1.25vw);
+  }
+  .text-\[clamp\(1vw\,0\.5vw\)\] {
+    font-size: clamp(1vw, 0.5vw);
+  }
+  .text-\[clamp\(1vw\,1vw\)\] {
+    font-size: clamp(1vw, 1vw);
   }
   .leading-\[2\.8vw\] {
     --tw-leading: 2.8vw;
