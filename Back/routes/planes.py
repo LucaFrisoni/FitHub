@@ -31,6 +31,7 @@ def get_planes():
                     5: plan_db['Precio_5_dias']
                 }
             }
+            print(f"Plan cargado: {plan}")
             
             if plan_db['Deportes_disponibles']:
                 deportes_list = plan_db['Deportes_disponibles'].split(',')

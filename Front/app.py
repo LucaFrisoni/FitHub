@@ -87,10 +87,10 @@ def planes():
     try:
         respuesta = requests.get(f"{API_HOST}/api/planes/")
         if respuesta.status_code == 200:
-            planes = respuesta.json() #lo convierte en lista de diccionario
+            planes = respuesta.json() 
             for plan in planes:
                 if plan.get("imagen") is None:
-                    plan["imagen"] = "plan_325e01b34d984c3fb7057f48b61afbd5.jpg"
+                    plan["imagen"] = "default_plan.jpg"
         else:
             planes = []
     except Exception as e:
@@ -938,7 +938,7 @@ def admin_planes():
                     )
                 else:
                     plan["imagen_url"] = url_for(
-                        "static", filename="images/default_plan.png"
+                        "static", filename="images/default_plan.jpg"
                     )
 
                 planes.append(plan)
@@ -977,7 +977,7 @@ def nuevo_plan():
     imagen = request.form.get("imagen")
 
     # Validaciones básicas
-    if not all([nombre, precio_3_dias, precio_5_dias, deportes_disponibles]):
+    if not all([nombre, precio_3_dias, precio_5_dias]):
         return render_template(
             "admin/nuevo_plan.html",
             error="Todos los campos son obligatorios.",
