@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
+
+{% if error %} {% include "components/toasts/error.html" %} {% endif %}
+<div></div>
+{% if toast_exitoso %} {% include "components/toasts/exito.html" %} {%endif %}
+
 <div class="min-h-screen bg-[url(/static/images/reserva_fondo.png)]">
   <!-- Main Content -->
   <div class="py-4 px-4 sm:px-6 lg:px-8">
@@ -97,13 +102,6 @@
                     <label class="text-xs text-gray-500 mt-1 block">Fin</label>
                   </div>
                 </div>
-              </div>
-
-              <!-- Comentarios -->
-              <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Comentarios</label>
-                <textarea id="comment-area" rows="1" placeholder="Ingresa un comentario"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm sm:text-base"></textarea>
               </div>
             </form>
 

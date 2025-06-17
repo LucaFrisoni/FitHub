@@ -411,7 +411,7 @@ if (reserveButton) {
     const trainingType_number = parseInt(trainingType.value); // Convertir a número el tipo de entrenamiento
     const startTime = document.querySelectorAll('input[type="time"]')[0].value;
     const endTime = document.querySelectorAll('input[type="time"]')[1].value;
-    const comments = document.querySelector('#comment-area').value;
+
 
     // Validar que se seleccionó un tipo de entrenamiento válido
     if (isNaN(trainingType) || trainingType <= 0) {
@@ -424,11 +424,8 @@ if (reserveButton) {
       dias: selectedDays, // conjunto de días seleccionados
       tipo_entrenamiento: trainingType,
       hora_inicio: startTime,
-      hora_fin: endTime,
-      comentarios: comments
+      hora_fin: endTime
     };
-
-    console.log('Datos de reserva:', datos_reserva);
 
     try {
       // Enviar datos al servidor Flask
@@ -479,10 +476,6 @@ function limpiarFormulario() {
   const timeInputs = document.querySelectorAll('input[type="time"]');
   if (timeInputs[0]) timeInputs[0].value = '09:00';
   if (timeInputs[1]) timeInputs[1].value = '10:00';
-
-  // Limpiar comentarios
-  const commentArea = document.querySelector('#comment-area');
-  if (commentArea) commentArea.value = '';
 }
 
 // Mejorar la experiencia táctil en móviles
