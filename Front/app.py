@@ -161,7 +161,7 @@ def procesar_reserva():
 @login_required
 def reservas():
     toast_exitoso = session.pop("toast_exitoso", False)
-    toast_error = session.pop("toast_error", False)  # Obtener error de session
+    toast_error = session.pop("toast_error", False)
     return render_template("reservas.html", 
                          user=current_user, 
                          toast_exitoso=toast_exitoso,

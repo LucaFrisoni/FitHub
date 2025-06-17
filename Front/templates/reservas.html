@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 
-{% if error %} {% include "components/toasts/error.html" %} {% endif %}
-<div></div>
-{% if toast_exitoso %} {% include "components/toasts/exito.html" %} {%endif %}
-
 <div class="min-h-screen bg-[url(/static/images/reserva_fondo.png)]">
+  <div>
+    {% if error %} {% include "components/toasts/error.html" %} {% endif %}
+    {% if toast_exitoso %} {% include "components/toasts/exito.html" %} {%endif %}
+  </div>
+
   <!-- Main Content -->
   <div class="py-4 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7x1 mx-auto">
@@ -16,7 +17,7 @@
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Reservación</h2>
 
             <!-- Disponibilidad -->
-            <form id="miFormulario" class="mb-3">
+            <form id="miFormulario" class="mb-6">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Disponibilidad</label>
               <div class="grid grid-cols-7 gap-1 sm:gap-0">
                 <div>
@@ -77,14 +78,11 @@
               </div>
 
               <!-- Tipo de Entrenamiento -->
-              <div class="mb-3">
+              <div class="mt-3 mb-3">
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Tipo de Entrenamiento</label>
                 <select id="type-exercise"
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
                   <option value="">Selecciona un tipo de entrenamiento</option>
-                  <option value="1">Bodybuilding</option>
-                  <option value="2">Spinning</option>
-                  <option value="3">Sport-Focus</option>
                 </select>
               </div>
 
@@ -271,8 +269,34 @@
 </div>
 
 <script>
-// Funcionalidad de los checkboxes de días (integrada del scripts.js)
-document.addEventListener('DOMContentLoaded', function() {
+async function cargarPlanes() {
+  try {
+    const response = await fetch('/planes');
+    const planes = await response.json();
+    
+    const selectElement = document.getElementById('type-exercise');
+    
+    // Limpiar opciones existentes (excepto la primera)
+    selectElement.innerHTML = '<option value="">Selecciona un tipo de entrenamiento</option>';
+    
+    // Agregar cada plan como opción
+    planes.forEach(plan => {
+      const option = document.createElement('option');
+      option.value = plan.id;
+      option.textContent = plan.nombre; 
+      selectElement.appendChild(option);
+    });
+    
+  } catch (error) {
+    console.error('Error al cargar los planes:', error);
+    alert('Error al cargar los tipos de entrenamiento');
+  }
+}
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  cargarPlanes(); // inicio los planes
+  
   const dayCheckboxes = document.querySelectorAll('.day-checkbox');
 
   dayCheckboxes.forEach(checkbox => {
@@ -294,7 +318,6 @@ document.addEventListener('DOMContentLoaded', function() {
     reserveButton.addEventListener('click', async function (e) {
       e.preventDefault();
 
-      // Obtener días seleccionados
       const selectedDays = [];
       dayCheckboxes.forEach(checkbox => {
         if (checkbox.checked) {
@@ -302,24 +325,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
 
-      // Validar que se haya seleccionado al menos un día
       if (selectedDays.length === 0) {
         alert('Por favor selecciona al menos un día para tu reserva.');
         return;
       }
 
-      // Obtener otros valores del formulario
       const trainingType = document.querySelector('#type-exercise').value;
       const startTime = document.querySelector('#start-time').value;
       const endTime = document.querySelector('#end-time').value;
 
-      // Validar que se seleccionó un tipo de entrenamiento válido
       if (!trainingType || trainingType === '') {
         alert('Por favor selecciona un tipo de entrenamiento válido.');
         return;
       }
 
-      // Preparar datos para enviar
       const datos_reserva = {
         dias: selectedDays,
         tipo_entrenamiento: trainingType,
@@ -328,42 +347,38 @@ document.addEventListener('DOMContentLoaded', function() {
       };
 
       try {
-        // Deshabilitar botón durante la petición
         reserveButton.disabled = true;
         reserveButton.textContent = "Procesando...";
 
         // Enviar datos al servidor Flask
         const response = await fetch('/procesar_reserva', {
           method: 'POST',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(datos_reserva)
         });
 
         const result = await response.json();
-        
+
         if (response.ok) {
-          // Éxito - mostrar mensaje y limpiar formulario
           alert('Reserva procesada exitosamente');
           limpiarFormulario();
         } else {
-          // Error del servidor
           alert(result.error || 'Error al procesar la reserva');
         }
-        
+
       } catch (error) {
         console.error("Error al procesar la reserva:", error);
         alert("Error de conexión. Por favor, intenta nuevamente.");
       } finally {
-        // Rehabilitar botón
         reserveButton.disabled = false;
         reserveButton.textContent = "RESERVAR";
       }
     });
   }
 
-  // Función auxiliar para limpiar el formulario después de una reserva exitosa
+  //Limpio el formulario despues de reservar
   function limpiarFormulario() {
     // Desmarcar todos los checkboxes de días
     dayCheckboxes.forEach(checkbox => {
@@ -373,18 +388,15 @@ document.addEventListener('DOMContentLoaded', function() {
       label.classList.add('bg-white', 'text-gray-700');
     });
 
-    // Resetear select de tipo de entrenamiento
     const typeExercise = document.querySelector('#type-exercise');
     if (typeExercise) typeExercise.selectedIndex = 0;
 
-    // Resetear horarios a valores por defecto
     const startTime = document.querySelector('#start-time');
     const endTime = document.querySelector('#end-time');
     if (startTime) startTime.value = '09:00';
     if (endTime) endTime.value = '10:00';
   }
 
-  // Mejorar la experiencia táctil en móviles
   const touchElements = document.querySelectorAll('.day-button, button, select, input, textarea');
   touchElements.forEach(element => {
     element.addEventListener('touchstart', function () {
@@ -398,5 +410,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-{% endblock %} 
+{% endblock %}
 {% block footer%}{% endblock %}
