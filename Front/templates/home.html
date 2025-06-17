@@ -14,21 +14,24 @@
       src="{{ url_for('static', filename='images/home1.png') }}"
       alt="Home1 deberia ir aca..."
       class="absolute inset-0 w-full h-full object-cover"
+      style="user-select: none;"
+      draggable="false"
     />
 
-    <div class="absolute inset-0 bg-black/30 z-1"></div>
+    <div class="absolute inset-0 bg-black/30 z-1" draggable="false"></div>
     <div
       class="z-2 absolute bottom-0 w-full h-[21%] bg-gradient-to-b from-transparent to-stone-100"
     ></div>
 
     <!-- - - - -///TEXTO INICIAL HOME///- - - - -->
 
-    <header class="z-3 absolute inset-0 flex-col flex items-center pt-[12.5%]">
+    <header class="z-3 absolute inset-0 flex-col flex items-center pt-[10vw]">
       <img
         src="{{ url_for('static', filename='images/home2.png') }}"
         alt="Home2 deberia ir aca..."
         class="w-[35vw] h-[16vw] min-w-[640px] min-h-[291px] hover:translate-y-[-0.2vw] transition"
         style="user-select: none;"
+        draggable="false"
       />
 
       <p
