@@ -1,7 +1,5 @@
 {% extends "base.html" %} {% block content %}
-<div
-  class="flex min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-gray-100 pt-16"
->
+<div class="flex min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-gray-100 pt-16">
   <!-- Sidebar -->
   <aside class="w-full md:w-64 bg-gray-100 p-4 shadow text-black mt-4">
     <h2 class="text-xl font-bold mb-3">Filtrar por categoría</h2>
@@ -10,15 +8,11 @@
       "Accesorios", "Nutrición"] %} {% for cat in categorias %}
       <div class="flex items-center mb-2">
         <input type="checkbox" id="{{ cat }}" name="categorias" value="{{ cat
-        }}" {% if cat in request.args.getlist('categorias') %}checked{% endif %}
-        class="mr-2" >
+        }}" {% if cat in request.args.getlist('categorias') %}checked{% endif %} class="mr-2">
         <label for="{{ cat }}">{{ cat }}</label>
       </div>
       {% endfor %}
-      <button
-        type="submit"
-        class="mt-2 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 cursor-pointer"
-      >
+      <button type="submit" class="mt-2 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 cursor-pointer">
         Aplicar filtros
       </button>
     </form>
@@ -33,61 +27,27 @@
 
       <!-- Carrito (con imagen personalizada) -->
       <div class="flex w-fit h-fit p-4 relative top-0 left-0">
-        <a
-          href="{{ url_for('ver_carrito') }}"
-          class="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition cursor-pointer"
-        >
-          <img
-            src="{{ url_for('static', filename='images/carrito.png') }}"
-            alt="Carrito"
-            class="h-6 w-6"
-          />
+        <a href="{{ url_for('ver_carrito') }}"
+          class="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition cursor-pointer">
+          <img src="{{ url_for('static', filename='images/carrito.png') }}" alt="Carrito" class="h-6 w-6" />
         </a>
       </div>
     </div>
-    <!-- MENSAJES FLASH -->
-    {% with messages = get_flashed_messages() %} {% if messages %}
-    <div class="mb-6">
-      {% for message in messages %}
-      <div
-        class="bg-green-500 text-white px-4 py-3 rounded-lg mb-2 shadow-lg flash-message"
-      >
-        <div class="flex items-center">
-          <span class="text-sm font-medium">✓ {{ message }}</span>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
 
-    <script>
-      setTimeout(function () {
-        const flashMessages = document.querySelectorAll(".flash-message");
-        flashMessages.forEach(function (message) {
-          message.style.transition = "opacity 0.5s ease-out";
-          message.style.opacity = "0";
-          setTimeout(() => message.remove(), 500);
-        });
-      }, 3000);
-    </script>
-    {% endif %} {% endwith %}
+    <!-- MENSAJES FLASH -->
+    {% include 'components/flash.html' %}
+
 
     <h1 class="text-3xl font-bold mb-6">Productos</h1>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       {% for producto in productos %}
       <!-- CAMBIO PRINCIPAL: Quitar el <a> que envuelve toda la tarjeta -->
       <div
-        class="bg-stone-100 text-gray-900 rounded-lg shadow-md p-4 flex flex-col hover:-translate-y-2 transition-transform duration-300 ease-in-out"
-      >
+        class="bg-stone-100 text-gray-900 rounded-lg shadow-md p-4 flex flex-col hover:-translate-y-2 transition-transform duration-300 ease-in-out">
         <!-- Imagen y contenido clickeable para ir al detalle -->
-        <a
-          href="{{ url_for('producto', id=producto.id) }}"
-          class="flex flex-col flex-1"
-        >
-          <img
-            src="{{ url_for('static', filename='images/uploads/productos/' ~ producto.imagen) }}"
-            alt="{{ producto.nombre }}"
-            class="h-40 object-contain mb-4"
-          />
+        <a href="{{ url_for('producto', id=producto.id) }}" class="flex flex-col flex-1">
+          <img src="{{ url_for('static', filename='images/uploads/productos/' ~ producto.imagen) }}"
+            alt="{{ producto.nombre }}" class="h-40 object-contain mb-4" />
           <h3 class="font-semibold text-lg">{{ producto.nombre }}</h3>
           <p class="text-sm text-slate-500">{{ producto.descripcion }}</p>
           <span class="font-bold my-2">${{ producto.precio }}</span>
@@ -96,23 +56,15 @@
         <!-- Botones separados -->
         <div class="flex gap-2 mt-auto">
           <!-- Botón ver detalle -->
-          <a
-            href="{{ url_for('producto', id=producto.id) }}"
-            class="flex-1 bg-gray-200 text-gray-800 text-center font-semibold py-2 hover:bg-gray-300 rounded-2xl transition"
-          >
+          <a href="{{ url_for('producto', id=producto.id) }}"
+            class="flex-1 bg-gray-200 text-gray-800 text-center font-semibold py-2 hover:bg-gray-300 rounded-2xl transition">
             Ver detalle
           </a>
 
           <!-- Formulario para agregar al carrito -->
-          <form
-            method="POST"
-            action="{{ url_for('agregar_carrito', producto_id=producto.id) }}"
-            class="flex-1"
-          >
-            <button
-              type="submit"
-              class="w-full bg-primary text-white font-semibold py-2 hover:bg-primary/95 rounded-2xl cursor-pointer transition"
-            >
+          <form method="POST" action="{{ url_for('agregar_carrito', producto_id=producto.id) }}" class="flex-1">
+            <button type="submit"
+              class="w-full bg-primary text-white font-semibold py-2 hover:bg-primary/95 rounded-2xl cursor-pointer transition">
               Agregar
             </button>
           </form>

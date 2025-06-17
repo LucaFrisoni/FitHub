@@ -1384,10 +1384,14 @@ def agregar_carrito(producto_id):
             f"{API_HOST}/api/productos/", params={"id": producto_id}
         )
         if response.status_code != 200 or not response.json():
-            flash("Producto no encontrado")
+            flash("Producto no encontrado", 'error')
             return redirect(url_for("tienda"))
 
         producto = response.json()[0]
+        if producto.get('Cantidad', 0) < cantidad:
+            flash("No hay suficiente stock del producto!", 'error')
+            return redirect(url_for("tienda"))
+
         carrito = session.get("carrito", [])
 
         for item in carrito:
@@ -1482,7 +1486,7 @@ def pasarela():
         carrito=carrito,
         total=total,
         user=current_user,
-        API_HOST=API_HOST,
+        # API_HOST=API_HOST,
     )
 
 
@@ -1524,6 +1528,15 @@ def estado_carrito():
     except Exception as e:
         return jsonify({"error": "Error al obtener estado del carrito"}), 500
 
+@app.route("/pago", methods=["POST"])
+def pagar():
+    """
+    Ruta definida para hacer un middleware entre el back y la request de la pag
+    porque si no no se porque toma mal el Content-Type si lo haces desde el fetch()
+    """
+    respuesta = requests.post(f"{API_HOST}/api/pago", json=request.get_json())
+    print(respuesta.json())
+    return respuesta.json(), respuesta.status_code
 
 if __name__ == "__main__":
     app.run("localhost", port=3000, debug=True, threaded=True)

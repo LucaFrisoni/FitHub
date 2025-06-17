@@ -21,31 +21,8 @@
     </div>
   </div>
 
-  {% with messages = get_flashed_messages() %} {% if messages %}
-  <div class="mb-6">
-    {% for message in messages %}
-    <div
-      class="bg-green-500 text-white px-4 py-3 rounded-lg mb-2 shadow-lg flash-message"
-    >
-      <div class="flex items-center">
-        <span class="text-sm font-medium">✓ {{ message }}</span>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-
-  <script>
-    // Auto-ocultar mensajes después de 3 segundos
-    setTimeout(function () {
-      const flashMessages = document.querySelectorAll(".flash-message");
-      flashMessages.forEach(function (message) {
-        message.style.transition = "opacity 0.5s ease-out";
-        message.style.opacity = "0";
-        setTimeout(() => message.remove(), 500);
-      });
-    }, 3000);
-  </script>
-  {% endif %} {% endwith %}
+  <!-- MENSAJES FLASH -->
+  {% include 'components/flash.html' %} 
 
   <!-- Contenido principal -->
   <div class="flex flex-col md:flex-row items-center md:items-start gap-10">
@@ -80,7 +57,7 @@
           class="mt-6 flex flex-col gap-4 w-full max-w-sm"
         >
           <label for="cantidad" class="font-semibold text-gray-100"
-            >Cantidad</label
+            >Cantidad: (Disponibles: {{ producto.Cantidad }})</label
           >
           <input
             type="number"
