@@ -573,9 +573,6 @@
   .h-96 {
     height: calc(var(--spacing) * 96);
   }
-  .h-100 {
-    height: calc(var(--spacing) * 100);
-  }
   .h-\[3\.5vw\] {
     height: 3.5vw;
   }
@@ -740,9 +737,6 @@
   }
   .w-72 {
     width: calc(var(--spacing) * 72);
-  }
-  .w-100 {
-    width: calc(var(--spacing) * 100);
   }
   .w-\[4\.5vw\] {
     width: 4.5vw;
@@ -1568,9 +1562,6 @@
   }
   .p-10 {
     padding: calc(var(--spacing) * 10);
-  }
-  .p-24 {
-    padding: calc(var(--spacing) * 24);
   }
   .px-1 {
     padding-inline: calc(var(--spacing) * 1);
