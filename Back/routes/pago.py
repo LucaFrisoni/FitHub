@@ -5,9 +5,11 @@ from util.util import *
 
 pago_bp = Blueprint("pago", __name__)
 
-
-@pago_bp.route("/pago", methods=["POST"])
+@pago_bp.route("/", methods=["POST"])
 def procesar_pago():
+    print(request.method)
+    print(dict(request.headers))
+
     data = request.get_json()
 
     required = ["numero", "fecha", "cvv", "titular", "productos", "user_id"]
@@ -25,9 +27,27 @@ def procesar_pago():
     try:
         conn = get_connection()
         cursor = conn.cursor()
+        
+        stock_invalido = []
+        # Primero verificar que todos los productos estan en stock.
+        # ya se, double loop, que se le va a hacer, sql es asi
+        for item in productos:
+            producto_id = item.get("producto_id")
+            cantidad = item.get("cantidad", 1)
 
+            cursor.execute("SELECT Nombre,Cantidad from productos WHERE ID_Producto = %s LIMIT 1", (producto_id,))
+            datos = cursor.fetchone()
+            print(datos)
+
+            stock_producto = datos[1]
+            if cantidad > stock_producto:
+                stock_invalido.append(datos[0])
+
+        if len(stock_invalido) > 0:
+            return jsonify({
+                "error": f"Los siguientes productos no tienen el suficiente stock: {", ".join(stock_invalido)}"
+            }), 400
         fecha_actual = date.today()
-
         for item in productos:
             producto_id = item.get("producto_id")
             cantidad = item.get("cantidad", 1)
@@ -35,7 +55,6 @@ def procesar_pago():
 
             if not producto_id:
                 continue  # Producto inválido
-
             cursor.execute(
                 """
                 INSERT INTO compras (ID_Usuario, ID_Producto, FechaCompra, Total, Cantidad)
@@ -43,17 +62,17 @@ def procesar_pago():
                 """,
                 (user_id, producto_id, fecha_actual, total, cantidad),
             )
+            nueva_cantidad = stock_producto - cantidad
+            cursor.execute(
+                """
+                UPDATE productos SET Cantidad = %s WHERE ID_Producto = %s
+                """, (nueva_cantidad, producto_id))
 
         conn.commit()
 
-        # Vaciar carrito
-        if "carrito" in session:
-            session["carrito"] = []
-            session.modified = True
-
         return (
             jsonify(
-                {"mensaje": "Pago procesado correctamente", "carrito_limpio": True}
+                { "mensaje": "Pago procesado correctamente" }
             ),
             200,
         )
@@ -65,15 +84,3 @@ def procesar_pago():
     finally:
         cursor.close()
         conn.close()
-
-
-@pago_bp.route("/limpiar-carrito", methods=["POST"])
-def limpiar_carrito():
-    """Endpoint adicional para limpiar carrito si es necesario"""
-    try:
-        if "carrito" in session:
-            session["carrito"] = []
-            session.modified = True
-        return jsonify({"mensaje": "Carrito limpiado correctamente"}), 200
-    except Exception as e:
-        return jsonify({"error": "Error al limpiar carrito"}), 500
