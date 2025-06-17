@@ -6,45 +6,23 @@
   <div class="flex justify-between items-center mb-8">
     <!-- Flecha para atras -->
     {% include "components/button/go_back.html" %}
-
     <!-- Carrito (con imagen personalizada) -->
-    <a
-      href="{{ url_for('ver_carrito') }}"
-      class="inline-block p-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white shadow-lg"
-    >
-      <img
-        src="{{ url_for('static', filename='images/carrito.png') }}"
-        alt="Carrito"
-        class="h-6 w-6 object-contain"
-      />
-    </a>
-  </div>
-
-  {% with messages = get_flashed_messages() %} {% if messages %}
-  <div class="mb-6">
-    {% for message in messages %}
-    <div
-      class="bg-green-500 text-white px-4 py-3 rounded-lg mb-2 shadow-lg flash-message"
-    >
-      <div class="flex items-center">
-        <span class="text-sm font-medium">✓ {{ message }}</span>
-      </div>
+    <div class="flex w-fit h-fit p-4 relative top-0 left-0">
+      <a
+        href="{{ url_for('ver_carrito') }}"
+        class="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition cursor-pointer"
+      >
+        <img
+          src="{{ url_for('static', filename='images/carrito.png') }}"
+          alt="Carrito"
+          class="h-6 w-6"
+        />
+      </a>
     </div>
-    {% endfor %}
   </div>
 
-  <script>
-    // Auto-ocultar mensajes después de 3 segundos
-    setTimeout(function () {
-      const flashMessages = document.querySelectorAll(".flash-message");
-      flashMessages.forEach(function (message) {
-        message.style.transition = "opacity 0.5s ease-out";
-        message.style.opacity = "0";
-        setTimeout(() => message.remove(), 500);
-      });
-    }, 3000);
-  </script>
-  {% endif %} {% endwith %}
+  <!-- MENSAJES FLASH -->
+  {% include 'components/flash.html' %} 
 
   <!-- Contenido principal -->
   <div class="flex flex-col md:flex-row items-center md:items-start gap-10">
@@ -62,16 +40,36 @@
     <!-- Detalles del producto -->
     <div class="w-full md:w-1/2 flex justify-center">
       <div class="w-72">
-        <h1 class="text-2xl font-bold mb-4 text-center">{{ producto.Nombre }}</h1>
+        <h1 class="text-2xl font-bold mb-4 text-center">
+          {{ producto.Nombre }}
+        </h1>
         <p class="text-base mb-4 text-center">{{ producto.Descripcion }}</p>
-        <span class="text-xl font-bold block mb-6 text-center">${{ producto.Precio }}</span>
+        <span
+          id="precio_producto"
+          data-precio="{{ producto.Precio }}"
+          class="text-xl font-bold block mb-6 text-center"
+        >
+          ${{ producto.Precio }}
+        </span>
         <form
           method="POST"
           action="{{ url_for('agregar_carrito', producto_id=producto.ID_Producto) }}"
+          class="mt-6 flex flex-col gap-4 w-full max-w-sm"
         >
+          <label for="cantidad" class="font-semibold text-gray-100"
+            >Cantidad: (Disponibles: {{ producto.Cantidad }})</label
+          >
+          <input
+            type="number"
+            name="cantidad"
+            id="cantidad"
+            min="1"
+            required
+            class="border border-gray-300 rounded px-3 py-2 text-black"
+          />
           <button
             type="submit"
-            class="w-full bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/95 hover:shadow-lg transition cursor-pointer"
+            class="bg-primary hover:bg-primary/85 text-white font-bold py-2 px-4 rounded transition cursor-pointer"
           >
             Agregar al carrito
           </button>
@@ -80,4 +78,21 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const precioSpan = document.getElementById("precio_producto");
+    const inputCantidad = document.getElementById("cantidad");
+
+    // Guardamos el precio original como número
+    const precioUnitario = parseFloat(precioSpan.dataset.precio);
+
+    inputCantidad.addEventListener("input", () => {
+      const cantidad = parseInt(inputCantidad.value) || 1; // default a 1 si no hay valor válido
+      const total = precioUnitario * cantidad;
+      precioSpan.textContent = `$${total.toFixed(2)}`;
+    });
+  });
+</script>
+
 {% endblock %}
