@@ -87,7 +87,7 @@ def planes():
     try:
         respuesta = requests.get(f"{API_HOST}/api/planes/")
         if respuesta.status_code == 200:
-            planes = respuesta.json()
+            planes = respuesta.json() #lo convierte en lista de diccionario
         else:
             planes = []
     except Exception as e:
@@ -325,23 +325,28 @@ def producto(id):
 def user():
     if request.method == "GET":
         toast_exitoso = session.pop("toast_exitoso", False)
+        compras = []  # <-- definila acá para que siempre exista
+
         try:
             # Cargamos las compras del user
             response = requests.get(f"{API_HOST}/api/compras/usuario/{current_user.id}")
             if response.status_code == 200:
                 compras = response.json()
         except Exception as ex:
+            # Podrías loguear el error acá si querés
             return render_template(
                 "user.html", error="Error en el servidor. Intentalo más tarde."
             )
-        finally:
-            return render_template(
-                "user.html",
-                user=current_user,
-                toast_exitoso=toast_exitoso,
-                compras=compras,
-            )
 
+        # No uses finally para el return, sino esto va acá, después del try-except
+        return render_template(
+            "user.html",
+            user=current_user,
+            toast_exitoso=toast_exitoso,
+            compras=compras,
+        )
+
+    # POST
     payload = {
         "Email": current_user.email,  # fijo, para identificar al usuario
         "Nombre": request.form.get("nombre"),
@@ -515,10 +520,11 @@ def registro():
             error = response.json().get("error", "Error desconocido")
             return render_template("auth/registro.html", error=error)
 
-    except Exception:
+    except Exception as ex:
+        print("ERROR EN EL GET:", ex)
         return render_template(
             "auth/registro.html", error="Error en el servidor. Intentalo más tarde."
-        )
+    )
 
 
 @app.route("/logout", methods=["POST"])
@@ -933,6 +939,10 @@ def nuevo_plan():
         }
 
         response = requests.post(f"{API_HOST}/api/planes/", json=payload)
+
+        print(f"Response status: {response.status_code}")
+        print(f"Response text: {response.text}")
+
 
         if response.status_code == 201:
             session["plan_creado"] = True
