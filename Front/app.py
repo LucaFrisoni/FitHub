@@ -1388,11 +1388,13 @@ def agregar_carrito(producto_id):
             return redirect(url_for("tienda"))
 
         producto = response.json()[0]
-        if producto.get('Cantidad', 0) < cantidad:
+        carrito = session.get("carrito", [])
+
+        cantidad_total = cantidad + sum(map(lambda itm: itm['cantidad'] if itm['id'] == producto_id else 0, carrito)) 
+        
+        if producto.get('Cantidad', 0) < cantidad_total:
             flash("No hay suficiente stock del producto!", 'error')
             return redirect(url_for("tienda"))
-
-        carrito = session.get("carrito", [])
 
         for item in carrito:
             if item.get("id") == producto_id and item.get("tipo") == "producto":
@@ -1485,8 +1487,7 @@ def pasarela():
         "pasarela.html",
         carrito=carrito,
         total=total,
-        user=current_user,
-        # API_HOST=API_HOST,
+        user=current_user
     )
 
 
@@ -1535,7 +1536,6 @@ def pagar():
     porque si no no se porque toma mal el Content-Type si lo haces desde el fetch()
     """
     respuesta = requests.post(f"{API_HOST}/api/pago", json=request.get_json())
-    print(respuesta.json())
     return respuesta.json(), respuesta.status_code
 
 if __name__ == "__main__":
