@@ -136,17 +136,16 @@
         <!-- Deportes Disponibles -->
         <div>
           <label for="deportes_disponibles" class="block text-sm font-medium mb-2"
-            >Deportes Disponibles <span class="text-red-400">*</span></label
+            >Deportes Disponibles <span class="text-gray-400">(opcional)</span></label
           >
           <textarea
             id="deportes_disponibles"
             name="deportes_disponibles"
             rows="3"
-            required
             class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none"
             placeholder="Ej: Gym, Cardio, Yoga, Pilates, Natación..."
           ></textarea>
-          <small class="text-gray-400">Lista los deportes incluidos en este plan</small>
+          <small class="text-gray-400">Lista los deportes incluidos en este plan (opcional)</small>
         </div>
 
         <!-- Botones -->
@@ -196,5 +195,4 @@ function previewFotoPlan(input) {
   }
 }
 </script>
-
 {% endblock %}

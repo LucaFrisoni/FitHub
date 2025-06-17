@@ -919,11 +919,11 @@ def nuevo_plan():
     deportes_disponibles = request.form.get("deportes_disponibles")
     imagen = request.form.get("imagen")
 
-    # Validaciones básicas
-    if not all([nombre, precio_3_dias, precio_5_dias, deportes_disponibles]):
+    # Validaciones básicas - solo campos obligatorios
+    if not all([nombre, precio_3_dias, precio_5_dias]):
         return render_template(
             "admin/nuevo_plan.html",
-            error="Todos los campos son obligatorios.",
+            error="Los campos nombre, precio 3 días y precio 5 días son obligatorios.",
             user=current_user,
         )
 
@@ -932,7 +932,7 @@ def nuevo_plan():
             "nombre": nombre,
             "precio_3_dias": int(precio_3_dias),
             "precio_5_dias": int(precio_5_dias),
-            "deportes_disponibles": deportes_disponibles,
+            "deportes_disponibles": deportes_disponibles if deportes_disponibles else "",
             "imagen": imagen,
         }
 
@@ -978,7 +978,7 @@ def editar_plan(id):
     deportes_disponibles = request.form.get("deportes_disponibles")
     imagen = request.form.get("imagen")
 
-    if not all([nombre, precio_3_dias, precio_5_dias, deportes_disponibles]):
+    if not all([nombre, precio_3_dias, precio_5_dias]):
         try:
             response = requests.get(f"{API_HOST}/api/planes/{id}")
             plan = response.json() if response.status_code == 200 else {}
@@ -996,7 +996,7 @@ def editar_plan(id):
             "Nombre": nombre,
             "Precio_3_dias": int(precio_3_dias),
             "Precio_5_dias": int(precio_5_dias),
-            "Deportes_disponibles": deportes_disponibles,
+            "Deportes_disponibles": deportes_disponibles if not deportes_disponibles else "",
             "Imagen": imagen,
         }
 
@@ -1020,20 +1020,6 @@ def editar_plan(id):
             user=current_user,
         )
 
-
-@app.route("/admin/plan/<int:id>/eliminar", methods=["POST"])
-@login_required
-@admin_required
-def eliminar_plan(id):
-    try:
-        response = requests.delete(f"{API_HOST}/api/planes/{id}")
-
-        if response.status_code == 200:
-            session["plan_eliminado"] = True
-
-        return redirect("/admin/planes")
-    except Exception as e:
-        return redirect("/admin/planes")
 
 
 @app.route("/admin/reservas")

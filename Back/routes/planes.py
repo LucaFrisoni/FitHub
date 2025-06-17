@@ -92,32 +92,85 @@ def get_plan(id):
 
 @planes_bp.route("/", methods=["POST"])
 def post_plan():
-    body = request.get_json()
+    # Detectar si es JSON o formulario
+    if request.is_json:
+        # Manejo de JSON (para API)
+        body = request.get_json()
+        
+        # Campos obligatorios
+        required = {
+            "nombre": str, 
+            "precio_3_dias": int, 
+            "precio_5_dias": int
+        }
 
-    required = {
-        "nombre": str, 
-        "imagen": str, 
-        "precio_3_dias": int, 
-        "precio_5_dias": int, 
-        "deportes_disponibles": str
-    }
+        # Campos opcionales
+        optional = {
+            "imagen": str,
+            "deportes_disponibles": str
+        }
 
-    missing = [r for r in required if r not in body]
-    if missing:
-        return jsonify({"error": "Campos faltantes", "missing": missing}), 400
+        # Validar campos obligatorios
+        missing = [r for r in required if r not in body]
+        if missing:
+            return jsonify({"error": "Campos obligatorios faltantes", "missing": missing}), 400
 
-    badtype = [r for r in required if not isinstance(body[r], required[r])]
-    if badtype:
-        return jsonify({"error": "Tipos incorrectos", "campos": badtype}), 400
+        # Validar tipos de campos obligatorios
+        badtype = [r for r in required if not isinstance(body[r], required[r])]
+        if badtype:
+            return jsonify({"error": "Tipos incorrectos en campos obligatorios", "campos": badtype}), 400
 
-    if body["precio_3_dias"] < 0 or body["precio_5_dias"] < 0:
-        return jsonify({"error": "Los precios deben ser positivos"}), 400
+        # Validar tipos de campos opcionales (solo si están presentes)
+        for field, expected_type in optional.items():
+            if field in body and body[field] is not None and not isinstance(body[field], expected_type):
+                return jsonify({"error": f"Tipo incorrecto para campo opcional '{field}'"}), 400
+
+        if body["precio_3_dias"] < 0 or body["precio_5_dias"] < 0:
+            return jsonify({"error": "Los precios deben ser positivos"}), 400
+
+        # Obtener valores con defaults para campos opcionales
+        imagen = body.get("imagen", None)
+        deportes_disponibles = body.get("deportes_disponibles", None)
+        nombre = body["nombre"]
+        precio_3_dias = body["precio_3_dias"]
+        precio_5_dias = body["precio_5_dias"]
+        
+    else:
+        # Manejo de formulario HTML
+        nombre = request.form.get("nombre", "").strip()
+        precio_3_dias_str = request.form.get("precio_3_dias", "").strip()
+        precio_5_dias_str = request.form.get("precio_5_dias", "").strip()
+        imagen = request.form.get("imagen", "").strip()
+        deportes_disponibles = request.form.get("deportes_disponibles", "").strip()
+        
+        # Validaciones básicas
+        if not nombre:
+            return jsonify({"error": "El nombre es requerido"}), 400
+            
+        if not precio_3_dias_str or not precio_5_dias_str:
+            return jsonify({"error": "Los precios son requeridos"}), 400
+        
+        # Convertir precios a enteros
+        try:
+            precio_3_dias = int(precio_3_dias_str)
+            precio_5_dias = int(precio_5_dias_str)
+        except ValueError:
+            return jsonify({"error": "Los precios deben ser números válidos"}), 400
+        
+        if precio_3_dias < 0 or precio_5_dias < 0:
+            return jsonify({"error": "Los precios deben ser positivos"}), 400
+        
+        # Manejar campos opcionales
+        if not imagen:
+            imagen = None
+        if not deportes_disponibles:
+            deportes_disponibles = None
 
     try:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT ID_Plan FROM planes WHERE Nombre = %s", (body["nombre"],)  # columna SQL Nombre
+            "SELECT ID_Plan FROM planes WHERE Nombre = %s", (nombre,)
         )
         if cursor.fetchone():
             return jsonify({"error": "El nombre del plan ya existe"}), 409
@@ -127,8 +180,7 @@ def post_plan():
             INSERT INTO planes (Nombre, Imagen, Precio_3_dias, Precio_5_dias, Deportes_disponibles)
             VALUES (%s, %s, %s, %s, %s)
             """,
-            (body["nombre"], body["imagen"], 
-             body["precio_3_dias"], body["precio_5_dias"], body["deportes_disponibles"]),
+            (nombre, imagen, precio_3_dias, precio_5_dias, deportes_disponibles),
         )
 
         new_id = cursor.lastrowid
@@ -152,23 +204,35 @@ def put_plan(id):
     if not body:
         return jsonify({"error": "No se proporcionaron datos para actualizar"}), 400
     
+    # Campos obligatorios
     required = {
-        "nombre": str, 
-        "imagen": str, 
-        "precio_3_dias": int, 
-        "precio_5_dias": int, 
-        "deportes_disponibles": str
+        "Nombre": str,  # Usando nombres de columnas SQL como en el payload
+        "Precio_3_dias": int, 
+        "Precio_5_dias": int
     }
 
+    # Campos opcionales
+    optional = {
+        "Imagen": str,
+        "Deportes_disponibles": str
+    }
+
+    # Validar campos obligatorios
     missing = [r for r in required if r not in body]
     if missing:
-        return jsonify({"error": "Campos faltantes", "missing": missing}), 400
+        return jsonify({"error": "Campos obligatorios faltantes", "missing": missing}), 400
 
+    # Validar tipos de campos obligatorios
     badtype = [r for r in required if not isinstance(body[r], required[r])]
     if badtype:
-        return jsonify({"error": "Tipos incorrectos", "campos": badtype}), 400
+        return jsonify({"error": "Tipos incorrectos en campos obligatorios", "campos": badtype}), 400
 
-    if body["precio_3_dias"] < 0 or body["precio_5_dias"] < 0:
+    # Validar tipos de campos opcionales (solo si están presentes)
+    for field, expected_type in optional.items():
+        if field in body and body[field] is not None and not isinstance(body[field], expected_type):
+            return jsonify({"error": f"Tipo incorrecto para campo opcional '{field}'"}), 400
+
+    if body["Precio_3_dias"] < 0 or body["Precio_5_dias"] < 0:
         return jsonify({"error": "Los precios deben ser positivos"}), 400
 
     try:
@@ -181,26 +245,23 @@ def put_plan(id):
             
         cursor.execute(
             "SELECT 1 FROM planes WHERE Nombre = %s AND ID_Plan != %s",
-            (body["nombre"], id),
+            (body["Nombre"], id),
         )
         if cursor.fetchone():
             return jsonify({"error": "El nombre del plan ya existe en otro plan"}), 409
 
-        # Mapear los campos del JSON a los nombres de columna SQL
+        # Construir query dinámicamente solo con campos presentes
         set_clauses = []
         params = []
-        # Diccionario para mapear claves JSON -> columnas SQL
-        mapping = {
-            "nombre": "Nombre",
-            "imagen": "Imagen",
-            "precio_3_dias": "Precio_3_dias",
-            "precio_5_dias": "Precio_5_dias",
-            "deportes_disponibles": "Deportes_disponibles"
-        }
-
-        for field_json, field_sql in mapping.items():
-            set_clauses.append(f"{field_sql} = %s")
-            params.append(body[field_json])
+        
+        # Mapear los campos disponibles
+        all_fields = {**required, **optional}
+        
+        for field in all_fields:
+            if field in body:
+                set_clauses.append(f"{field} = %s")
+                params.append(body[field])
+        
         params.append(id)
         
         query = f"UPDATE planes SET {', '.join(set_clauses)} WHERE ID_Plan = %s"
