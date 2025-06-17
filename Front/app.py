@@ -1383,8 +1383,8 @@ def agregar_carrito(producto_id):
         response = requests.get(
             f"{API_HOST}/api/productos/", params={"id": producto_id}
         )
-        if response.status_code != 200:
-            flash("Producto no encontrado")
+        if response.status_code != 200 or not response.json():
+            flash("Producto no encontrado", 'error')
             return redirect(url_for("tienda"))
 
         producto = response.json()[0]
