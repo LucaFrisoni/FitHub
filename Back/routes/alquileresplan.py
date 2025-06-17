@@ -97,12 +97,10 @@ def verificacion_reserva():
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
         
-        # Verificar si existe el usuario
         cursor.execute("SELECT 1 FROM usuarios WHERE ID_usuario = %s", (userid,))
         if not cursor.fetchone():
             return jsonify({"error": "Usuario no encontrado"}), 404
         
-        # Obtener alquileres del usuario
         cursor.execute("""
             SELECT ap.ID_AlquilerPlan, ap.ID_Plan, ap.ID_Usuario, ap.Nota,
                    u.Nombre AS Usuario_Nombre, u.Apellido AS Usuario_Apellido

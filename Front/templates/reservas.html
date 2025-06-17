@@ -6,12 +6,10 @@
     {% if error %} {% include "components/toasts/error.html" %} {% endif %}
     {% if toast_exitoso %} {% include "components/toasts/exito.html" %} {%endif %}
   </div>
-
-  <!-- Main Content -->
   <div class="py-4 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7x1 mx-auto">
       <div class="flex flex-col lg:flex-row justify-center gap-6 mt-22">
-        <!-- Left Panel - Reservation Form -->
+        <!-- Formulario -->
         <div class="w-full lg:w-3/5">
           <div class="bg-white border rounded-lg shadow-lg p-4 sm:p-6">
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Reservación</h2>
@@ -117,12 +115,13 @@
           </div>
         </div>
 
-        <!-- Right Panel - Available Slots -->
+        <!-- Contador Personas -->
         <div class="w-full lg:w-1/4">
           <div class="bg-white border rounded-lg shadow-lg p-4 sm:p-6">
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3">Turnos Disponibles</h2>
 
             <!-- TENGO QUE METER UN CONTADOR PARA QUE SUME LA GENTE QUE RESERVO -->
+            <!-- Pensar como hacer para contar la cantidad de usarios hay y que dias tienen sus reservas !!!!! -->
             <div class="space-y-1">
               <!-- Lunes -->
               <div
@@ -290,7 +289,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Funcionalidad del botón reservar
   const reserveButton = document.getElementById("button-reserva");
   if (reserveButton) {
     reserveButton.addEventListener('click', async function (e) {
@@ -328,7 +326,6 @@ document.addEventListener('DOMContentLoaded', function () {
         reserveButton.disabled = true;
         reserveButton.textContent = "Procesando...";
 
-        // Enviar datos al servidor Flask
         const response = await fetch('/procesar_reserva', {
           method: 'POST',
           headers: {
@@ -356,9 +353,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  //Limpio el formulario despues de reservar
   function limpiarFormulario() {
-    // Desmarcar todos los checkboxes de días
     dayCheckboxes.forEach(checkbox => {
       checkbox.checked = false;
       const label = checkbox.nextElementSibling;

@@ -100,21 +100,16 @@ def planes():
 def procesar_reserva():
     data = request.get_json()
     
-    # Obtener datos del request
     dias = data.get('dias', [])
     tipo_entrenamiento = data.get('tipo_entrenamiento')
     hora_inicio = data.get('hora_inicio')
     hora_fin = data.get('hora_fin')
     
-    # Validaciones básicas
     if not dias:
         return jsonify({"error": "Debe seleccionar al menos un día"}), 400
     
     if not tipo_entrenamiento:
         return jsonify({"error": "Debe seleccionar un tipo de entrenamiento"}), 400
-    
-    if not hora_inicio or not hora_fin:
-        return jsonify({"error": "Debe especificar horarios válidos"}), 400
     
     try:
         tipo_entrenamiento = int(tipo_entrenamiento)
