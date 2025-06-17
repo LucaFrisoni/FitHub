@@ -162,10 +162,31 @@ def procesar_reserva():
 def reservas():
     toast_exitoso = session.pop("toast_exitoso", False)
     toast_error = session.pop("toast_error", False)
+    planes = []
+    
+    try:
+        url_planes = f"{API_HOST}/api/planes/"
+        response_planes = requests.get(url_planes)
+        
+        if response_planes.status_code == 200:
+            planes_data = response_planes.json()
+            planes = [{
+                "id": plan["id"],
+                "nombre": plan["nombre"]} 
+                for plan in planes_data]
+        else:
+            print(f"Error al obtener planes: {response_planes.status_code}")
+            
+    except requests.exceptions.RequestException as e:
+        print(f"Error de conexión al obtener planes: {e}")
+    except Exception as ex:
+        print(f"Error general al obtener planes: {ex}")
+    
     return render_template("reservas.html", 
                          user=current_user, 
                          toast_exitoso=toast_exitoso,
-                         error=toast_error)
+                         error=toast_error,
+                         planes=planes)
         
 
 @app.route("/tienda", methods=["GET"])

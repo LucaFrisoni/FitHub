@@ -83,6 +83,9 @@
                 <select id="type-exercise"
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
                   <option value="">Selecciona un tipo de entrenamiento</option>
+                  {% for plan in planes %}
+                    <option value="{{ plan.id }}">{{ plan.nombre }}</option>
+                  {% endfor %}
                 </select>
               </div>
 
