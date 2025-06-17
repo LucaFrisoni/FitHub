@@ -12,7 +12,7 @@
                     <!-- Información del producto/plan en una línea -->
                     <div class="flex items-center space-x-6 flex-1">
                         {% if item.imagen %}
-                        <img src="{{ url_for('static', filename=item.imagen) }}" alt="{{ item.nombre }}" class="w-16 h-16 object-cover rounded">
+                        <img src="{{ url_for('static', filename='images/uploads/planes/' ~ item.imagen) }}" alt="{{ item.nombre }}" class="w-16 h-16 object-cover rounded">
                         {% endif %}
                         <h2 class="text-lg font-semibold text-black">{{ item.nombre }}</h2>
                         <span class="text-black">Cantidad: {{ item.cantidad }}</span>

@@ -611,7 +611,7 @@ def subir_imagen_producto():
             # Si la API retornó éxito, también generar la URL completa para el frontend
             if data.get("success"):
                 filename = data.get("filename")
-                data["url"] = url_for("static", filename=f"images/uploads/productos/{filename}")
+                data["url"] = url_for("static", filename=f"images/uploads/planes/{filename}")
                 
             return jsonify(data), 200
         else:

@@ -318,7 +318,7 @@ def subir_imagen_producto():
         filename = f"producto_{uuid.uuid4().hex}.{extension}"
         
         # Crear directorio si no existe - RUTA DEL FRONTEND
-        upload_dir = "../Front/static/images/uploads/productos"  # Ruta relativa al backend
+        upload_dir = "../Front/static/images/uploads/planes"  # Ruta relativa al backend
         if not os.path.exists(upload_dir):
             os.makedirs(upload_dir)
 

@@ -17,7 +17,7 @@
       {% else %}
         class="w-full h-96 object-cover mb-4"
       {% endif %}
-      src="{{ url_for('static', filename=plan.imagen) }}"
+      src="{{ url_for('static', filename='images/uploads/planes/' + plan.imagen) }}"      
       alt="imagen de {{ plan.nombre }}"
     />
     

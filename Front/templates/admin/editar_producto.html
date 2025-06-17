@@ -58,7 +58,7 @@
             <div class="relative group h-[120px] w-[120px]">
               <img
                 id="preview-imagen-principal"
-                src="{% if producto.Imagen and producto.Imagen != 'default_producto.png' %}{{ url_for('static', filename='images/uploads/productos/' + producto.Imagen) }}{% else %}{{ url_for('static', filename='images/default_producto.png') }}{% endif %}"
+                src="{% if producto.Imagen and producto.Imagen != 'default_producto.png' %}{{ url_for('static', filename='images/uploads/planes/' + producto.Imagen) }}{% else %}{{ url_for('static', filename='images/default_producto.png') }}{% endif %}"
                 alt="Imagen del producto"
                 class="h-full w-full rounded-lg object-cover object-center shadow-2xl transition duration-300 group-hover:brightness-75"
               />

@@ -79,7 +79,7 @@
         <!-- Imagen y contenido clickeable para ir al detalle -->
         <a href="{{ url_for('producto', id=producto.id) }}" class="flex flex-col flex-1">
           <img
-            src="{{ url_for('static', filename='images/uploads/productos/' ~ producto.imagen) }}"
+            src="{{ url_for('static', filename='images/uploads/planes/' ~ producto.imagen) }}"
             alt="{{ producto.nombre }}"
             class="h-40 object-contain mb-4"
           />
