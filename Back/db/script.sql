@@ -74,7 +74,7 @@ CREATE TABLE productos (
 );
 
 -- Tabla de compras
-CREATE TABLE compras (
+CREATE TABLE compras( 
     ID_Compra INT PRIMARY KEY AUTO_INCREMENT,
     ID_Usuario INT NOT NULL,
     ID_Producto INT NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE compras (
     Total INT,
     Cantidad INT DEFAULT 1,
     FOREIGN KEY (ID_Usuario) REFERENCES usuarios(ID_usuario),
-    FOREIGN KEY (ID_Producto) REFERENCES productos(ID_Producto),
+    FOREIGN KEY (ID_Producto) REFERENCES productos(ID_Producto)
 );
 
 
