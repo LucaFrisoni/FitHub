@@ -1,57 +1,86 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 p-8 pt-50">
+{% extends "base.html" %} {% block content %}
+<div
+  class="min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 p-8 pt-50"
+>
   <div class="max-w-6xl mx-auto">
     <h1 class="text-3xl font-bold text-white mb-8 text-center"></h1>
-    
+
     <div class="flex flex-col lg:flex-row gap-6">
       <!-- Sección de productos -->
       <div class="bg-gray-100 p-6 rounded-lg shadow-lg flex-1">
-        <h2 class="text-2xl font-bold mb-6 text-gray-800">Resumen de tu pedido</h2>
-        
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">
+          Resumen de tu pedido
+        </h2>
+
         {% if carrito %}
         <div class="space-y-4">
           {% for item in carrito %}
-          <div class="flex items-center justify-between border-b pb-4">
+          <div
+            class="flex items-center justify-between border-b pb-4 producto"
+            data-producto-id="{{ item.id }}"
+            data-precio="{{ item.precio }}"
+          >
             <div class="flex items-center space-x-4">
-              {% if item.imagen %}
-              <img src="{{ url_for('static', filename='images/uploads/productos/' + item.imagen) }}" 
-                   alt="{{ item.nombre }}" 
-                   class="w-16 h-16 object-cover rounded">
+              {% if item.imagen %} {% if item.imagen.startswith('producto') %}
+              <img
+                src="{{ url_for('static', filename='images/uploads/productos/' + item.imagen) }}"
+                alt="{{ item.nombre }}"
+                class="w-16 h-16 object-cover rounded"
+              />
               {% else %}
-              <div class="w-16 h-16 bg-gray-300 rounded flex items-center justify-center">
+              <img
+                src="{{ url_for('static', filename='images/uploads/planes/' + item.imagen) }}"
+                alt="{{ item.nombre }}"
+                class="w-16 h-16 object-cover rounded"
+              />
+              {% endif %} {% else %}
+              <div
+                class="w-16 h-16 bg-gray-300 rounded flex items-center justify-center"
+              >
                 <span class="text-gray-500 text-xs">Sin imagen</span>
               </div>
               {% endif %}
-              
+
               <div>
                 <h3 class="font-semibold text-gray-800">{{ item.nombre }}</h3>
                 <p class="text-gray-600">Cantidad: {{ item.cantidad }}</p>
+                <input
+                  type="hidden"
+                  class="cantidad"
+                  value="{{ item.cantidad }}"
+                />
               </div>
             </div>
-            
+
             <div class="text-right">
-              <p class="font-bold text-gray-800">${{ "%.2f"|format(item.precio * item.cantidad) }}</p>
-              <p class="text-sm text-gray-600">${{ "%.2f"|format(item.precio) }} c/u</p>
+              <p id="subtotal-{{ item.id }}" class="font-bold text-gray-800">
+                ${{ "%.2f"|format(item.precio * item.cantidad) }}
+              </p>
+              <p class="text-sm text-gray-600">
+                ${{ "%.2f"|format(item.precio) }} c/u
+              </p>
             </div>
           </div>
           {% endfor %}
         </div>
-        
+        <!-- Total -->
         <div class="mt-6 pt-4 border-t border-gray-300">
           <div class="flex justify-between items-center">
             <span class="text-xl font-bold text-gray-800">Total:</span>
-            <span class="text-2xl font-bold text-yellow-600">${{ "%.2f"|format(total) }}</span>
+            <span class="text-2xl font-bold text-yellow-600"
+              >${{ "%.2f"|format(total) }}</span
+            >
           </div>
         </div>
         {% else %}
         <p class="text-gray-600">Tu carrito está vacío</p>
         {% endif %}
-        
+        <!-- button -->
         <div class="mt-6">
-          <a href="{{ url_for('ver_carrito') }}" 
-             class="inline-block bg-black hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-300">
+          <a
+            href="{{ url_for('ver_carrito') }}"
+            class="inline-block bg-black hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-300"
+          >
             ← Volver al carrito
           </a>
         </div>
@@ -60,55 +89,69 @@
       <!-- Sección de tarjeta -->
       <div class="bg-black text-white p-6 rounded-lg shadow-lg w-full lg:w-96">
         <h2 class="text-xl font-bold mb-6">Datos de la tarjeta</h2>
-        
+
         <form id="pago-form" class="space-y-4">
           <div>
-            <label class="block mb-2 text-sm font-medium">Número de tarjeta</label>
-            <input type="text" 
-                   name="numero" 
-                   id="numero-tarjeta"
-                   placeholder="1234 5678 9012 3456"
-                   maxlength="19"
-                   class="w-full px-4 py-3 rounded bg-gray-800 text-white border border-gray-600 focus:border-yellow-500 focus:outline-none"
-                   required>
+            <label class="block mb-2 text-sm font-medium"
+              >Número de tarjeta</label
+            >
+            <input
+              type="text"
+              name="numero"
+              id="numero-tarjeta"
+              placeholder="1234 5678 9012 3456"
+              maxlength="19"
+              class="w-full px-4 py-3 rounded bg-gray-800 text-white border border-gray-600 focus:border-yellow-500 focus:outline-none"
+              required
+            />
           </div>
 
           <div class="flex gap-4">
             <div class="flex-1">
               <label class="block mb-2 text-sm font-medium">Mes/Año</label>
-              <input type="text" 
-                     name="fecha" 
-                     id="fecha-expiracion"
-                     placeholder="MM/AA"
-                     maxlength="5"
-                     class="w-full px-4 py-3 rounded bg-gray-800 text-white border border-gray-600 focus:border-yellow-500 focus:outline-none"
-                     required>
+              <input
+                type="text"
+                name="fecha"
+                id="fecha-expiracion"
+                placeholder="MM/AA"
+                maxlength="5"
+                class="w-full px-4 py-3 rounded bg-gray-800 text-white border border-gray-600 focus:border-yellow-500 focus:outline-none"
+                required
+              />
             </div>
             <div class="flex-1">
               <label class="block mb-2 text-sm font-medium">CVV</label>
-              <input type="text" 
-                     name="cvv" 
-                     id="cvv"
-                     placeholder="123"
-                     maxlength="4"
-                     class="w-full px-4 py-3 rounded bg-gray-800 text-white border border-gray-600 focus:border-yellow-500 focus:outline-none"
-                     required>
+              <input
+                type="text"
+                name="cvv"
+                id="cvv"
+                placeholder="123"
+                maxlength="4"
+                class="w-full px-4 py-3 rounded bg-gray-800 text-white border border-gray-600 focus:border-yellow-500 focus:outline-none"
+                required
+              />
             </div>
           </div>
 
           <div>
-            <label class="block mb-2 text-sm font-medium">Nombre del titular</label>
-            <input type="text" 
-                   name="titular" 
-                   id="titular"
-                   placeholder="Juan Pérez"
-                   class="w-full px-4 py-3 rounded bg-gray-800 text-white border border-gray-600 focus:border-yellow-500 focus:outline-none"
-                   required>
+            <label class="block mb-2 text-sm font-medium"
+              >Nombre del titular</label
+            >
+            <input
+              type="text"
+              name="titular"
+              id="titular"
+              placeholder="Juan Pérez"
+              class="w-full px-4 py-3 rounded bg-gray-800 text-white border border-gray-600 focus:border-yellow-500 focus:outline-none"
+              required
+            />
           </div>
 
-          <button type="submit" 
-                  id="btn-pagar"
-                  class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-4 rounded transition duration-300 mt-6">
+          <button
+            type="submit"
+            id="btn-pagar"
+            class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-4 rounded transition duration-300 mt-6"
+          >
             <span id="btn-texto">Pagar ${{ "%.2f"|format(total) }}</span>
             <span id="btn-loading" class="hidden">Procesando...</span>
           </button>
@@ -119,106 +162,133 @@
       </div>
     </div>
   </div>
+  <input type="hidden" id="user-id" value="{{ user.id }}" />
 </div>
 
 <script>
-document.getElementById("pago-form").addEventListener("submit", async function (e) {
-  e.preventDefault();
+  document
+    .getElementById("pago-form")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-  const btnTexto = document.getElementById("btn-texto");
-  const btnLoading = document.getElementById("btn-loading");
-  const mensajeDiv = document.getElementById("mensaje");
+      const btnTexto = document.getElementById("btn-texto");
+      const btnLoading = document.getElementById("btn-loading");
+      const mensajeDiv = document.getElementById("mensaje");
+      const userId = document.getElementById("user-id").value;
 
-  btnTexto.classList.add("hidden");
-  btnLoading.classList.remove("hidden");
+      btnTexto.classList.add("hidden");
+      btnLoading.classList.remove("hidden");
 
-  const datos = {
-    numero: document.getElementById("numero-tarjeta").value,
-    fecha: document.getElementById("fecha-expiracion").value,
-    cvv: document.getElementById("cvv").value,
-    titular: document.getElementById("titular").value
-  };
+      // Recolectar productos con id, cantidad y precio
+      const productos = Array.from(document.querySelectorAll(".producto")).map(
+        (productoElem) => {
+          const cantidad = parseInt(
+            productoElem.querySelector("input.cantidad").value,
+            10
+          );
+          const precio = parseFloat(productoElem.dataset.precio);
+          return {
+            producto_id: productoElem.dataset.productoId,
+            cantidad: cantidad,
+            subtotal: cantidad * precio,
+          };
+        }
+      );
 
-  try {
-    const respuesta = await fetch("{{ API_HOST }}/api/pago", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(datos)
-    });
+      const datos = {
+        numero: document.getElementById("numero-tarjeta").value,
+        fecha: document.getElementById("fecha-expiracion").value,
+        cvv: document.getElementById("cvv").value,
+        titular: document.getElementById("titular").value,
+        user_id: userId,
+        productos: productos,
+      };
 
-    const json = await respuesta.json();
-
-    if (respuesta.ok) {
-      mensajeDiv.className = "mt-4 p-3 rounded bg-green-500 text-white";
-      mensajeDiv.textContent = "¡Pago procesado exitosamente! Limpiando carrito...";
-
-      // 1. Limpiar carrito local (localStorage/sessionStorage)
-      if (typeof(Storage) !== "undefined") {
-        localStorage.removeItem('carrito');
-        sessionStorage.removeItem('carrito');
-      }
-
-      // 2. Limpiar carrito en el servidor FRONTEND (puerto 3000)
       try {
-        await fetch("/limpiar-carrito-frontend", {
+        const respuesta = await fetch("{{ API_HOST }}/api/pago", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-Requested-With": "XMLHttpRequest"
-          }
+          },
+          body: JSON.stringify(datos),
         });
-        console.log("Carrito limpiado en frontend");
-      } catch (error) {
-        console.error("Error al limpiar carrito en frontend:", error);
+
+        const json = await respuesta.json();
+        console.log(json);
+        if (respuesta.ok) {
+          mensajeDiv.className = "mt-4 p-3 rounded bg-green-500 text-white";
+          mensajeDiv.textContent =
+            "¡Pago procesado exitosamente! Limpiando carrito...";
+
+          // 1. Limpiar carrito local (localStorage/sessionStorage)
+          if (typeof Storage !== "undefined") {
+            localStorage.removeItem("carrito");
+            sessionStorage.removeItem("carrito");
+          }
+
+          // 2. Limpiar carrito en el servidor FRONTEND (puerto 3000)
+          try {
+            await fetch("/limpiar-carrito-frontend", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+              },
+            });
+            console.log("Carrito limpiado en frontend");
+          } catch (error) {
+            console.error("Error al limpiar carrito en frontend:", error);
+          }
+
+          // Actualizar mensaje y redireccionar
+          mensajeDiv.textContent =
+            "¡Pago procesado exitosamente! Redirigiendo a la tienda...";
+
+          // Redireccionar a la tienda después del pago exitoso
+          setTimeout(() => {
+            window.location.href = "{{ url_for('tienda') }}";
+          }, 2000);
+        } else {
+          mensajeDiv.className = "mt-4 p-3 rounded bg-red-500 text-white";
+          mensajeDiv.textContent =
+            "Error: " + (json.error || "Error al procesar el pago.");
+        }
+      } catch (err) {
+        console.error("Error de conexión:", err);
+        mensajeDiv.className = "mt-4 p-3 rounded bg-red-500 text-white";
+        mensajeDiv.textContent = "Error de conexión con el servidor de pagos.";
+      } finally {
+        mensajeDiv.classList.remove("hidden");
+        btnTexto.classList.remove("hidden");
+        btnLoading.classList.add("hidden");
       }
+    });
 
-      // Actualizar mensaje y redireccionar
-      mensajeDiv.textContent = "¡Pago procesado exitosamente! Redirigiendo a la tienda...";
-      
-      // Redireccionar a la tienda después del pago exitoso
-      setTimeout(() => {
-        window.location.href = "{{ url_for('tienda') }}";
-      }, 2000);
+  // Formatear número de tarjeta mientras el usuario escribe
+  document
+    .getElementById("numero-tarjeta")
+    .addEventListener("input", function (e) {
+      let value = e.target.value.replace(/\s/g, "").replace(/[^0-9]/gi, "");
+      let formattedValue = value.match(/.{1,4}/g)?.join(" ") || value;
+      if (formattedValue !== e.target.value) {
+        e.target.value = formattedValue;
+      }
+    });
 
-    } else {
-      mensajeDiv.className = "mt-4 p-3 rounded bg-red-500 text-white";
-      mensajeDiv.textContent = "Error: " + (json.error || "Error al procesar el pago.");
-    }
+  // Formatear fecha de expiración
+  document
+    .getElementById("fecha-expiracion")
+    .addEventListener("input", function (e) {
+      let value = e.target.value.replace(/\D/g, "");
+      if (value.length >= 2) {
+        value = value.substring(0, 2) + "/" + value.substring(2, 4);
+      }
+      e.target.value = value;
+    });
 
-  } catch (err) {
-    console.error("Error de conexión:", err);
-    mensajeDiv.className = "mt-4 p-3 rounded bg-red-500 text-white";
-    mensajeDiv.textContent = "Error de conexión con el servidor de pagos.";
-  } finally {
-    mensajeDiv.classList.remove("hidden");
-    btnTexto.classList.remove("hidden");
-    btnLoading.classList.add("hidden");
-  }
-});
-
-// Formatear número de tarjeta mientras el usuario escribe
-document.getElementById("numero-tarjeta").addEventListener("input", function(e) {
-  let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
-  let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
-  if (formattedValue !== e.target.value) {
-    e.target.value = formattedValue;
-  }
-});
-
-// Formatear fecha de expiración
-document.getElementById("fecha-expiracion").addEventListener("input", function(e) {
-  let value = e.target.value.replace(/\D/g, '');
-  if (value.length >= 2) {
-    value = value.substring(0, 2) + '/' + value.substring(2, 4);
-  }
-  e.target.value = value;
-});
-
-// Solo números en CVV
-document.getElementById("cvv").addEventListener("input", function(e) {
-  e.target.value = e.target.value.replace(/[^0-9]/g, '');
-});
+  // Solo números en CVV
+  document.getElementById("cvv").addEventListener("input", function (e) {
+    e.target.value = e.target.value.replace(/[^0-9]/g, "");
+  });
 </script>
 {% endblock %}

@@ -121,6 +121,7 @@ def get_by_usuario(id):
             FROM compras c
             JOIN productos p ON c.ID_Producto = p.ID_Producto
             WHERE c.ID_Usuario = %s
+            ORDER BY c.FechaCompra DESC
         """,
             (id,),
         )

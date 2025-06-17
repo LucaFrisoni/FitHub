@@ -1283,6 +1283,7 @@ def eliminar_reserva(id):
         return redirect("/admin/reservas")
 
 
+# ----------------------Rutas||Tienda----------------------
 @app.route("/agregar_plan_carrito/<path:plan_nombre>", methods=["POST"])
 @login_required
 def agregar_plan_carrito(plan_nombre):
@@ -1374,10 +1375,15 @@ def agregar_plan_carrito(plan_nombre):
 @login_required
 def agregar_carrito(producto_id):
     try:
+        # Capturamos la cantidad enviada desde el formulario
+        cantidad = int(request.form.get("cantidad", 1))
+        if cantidad < 1:
+            cantidad = 1
+
         response = requests.get(
             f"{API_HOST}/api/productos/", params={"id": producto_id}
         )
-        if response.status_code != 200:
+        if response.status_code != 200 or not response.json():
             flash("Producto no encontrado")
             return redirect(url_for("tienda"))
 
@@ -1386,7 +1392,7 @@ def agregar_carrito(producto_id):
 
         for item in carrito:
             if item.get("id") == producto_id and item.get("tipo") == "producto":
-                item["cantidad"] += 1
+                item["cantidad"] += cantidad
                 break
         else:
             carrito.append(
@@ -1394,7 +1400,7 @@ def agregar_carrito(producto_id):
                     "id": producto.get("ID_Producto", producto_id),
                     "nombre": producto.get("Nombre", ""),
                     "precio": float(producto.get("Precio", 0)),
-                    "cantidad": 1,
+                    "cantidad": cantidad,
                     "imagen": producto.get("Imagen", ""),
                     "tipo": "producto",
                 }
@@ -1404,7 +1410,6 @@ def agregar_carrito(producto_id):
         session.modified = True
         flash("Producto agregado al carrito")
         return redirect(request.referrer or url_for("tienda"))
-
     except Exception as ex:
         print(f"Error al agregar producto al carrito: {ex}")
         flash("Error al agregar producto al carrito")

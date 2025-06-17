@@ -10,13 +10,19 @@
       <div class="flex items-center justify-between">
         <!-- Información del producto/plan en una línea -->
         <div class="flex items-center space-x-6 flex-1">
-          {% if item.imagen %}
+          {% if item.imagen %} {% if item.imagen.startswith('producto') %}
           <img
-            src="{{ url_for('static', filename=item.imagen) }}"
+            src="{{ url_for('static', filename='images/uploads/productos/' + item.imagen) }}"
             alt="{{ item.nombre }}"
             class="w-16 h-16 object-cover rounded"
           />
-          {% endif %}
+          {% else %}
+          <img
+            src="{{ url_for('static', filename='images/uploads/planes/' + item.imagen) }}"
+            alt="{{ item.nombre }}"
+            class="w-16 h-16 object-cover rounded"
+          />
+          {% endif %} {% endif %}
           <h2 class="text-lg font-bold text-black">{{ item.nombre }}</h2>
           <p class="text-black font-bold">
             Cantidad:
