@@ -1019,7 +1019,19 @@ def editar_plan(id):
             error="Error en el servidor. Inténtalo más tarde.",
             user=current_user,
         )
+@app.route("/admin/plan/<int:id>/eliminar", methods=["POST"])
+@login_required
+@admin_required
+def eliminar_plan(id):
+    try:
+        response = requests.delete(f"{API_HOST}/api/planes/{id}")
 
+        if response.status_code == 200:
+            session["plan_eliminado"] = True
+
+        return redirect("/admin/planes")
+    except Exception as e:
+        return redirect("/admin/planes")
 
 
 @app.route("/admin/reservas")
