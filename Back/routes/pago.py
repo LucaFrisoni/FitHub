@@ -7,9 +7,6 @@ pago_bp = Blueprint("pago", __name__)
 
 @pago_bp.route("/", methods=["POST"])
 def procesar_pago():
-    print(request.method)
-    print(dict(request.headers))
-
     data = request.get_json()
 
     required = ["numero", "fecha", "cvv", "titular", "productos", "user_id"]
@@ -37,8 +34,6 @@ def procesar_pago():
 
             cursor.execute("SELECT Nombre,Cantidad from productos WHERE ID_Producto = %s LIMIT 1", (producto_id,))
             datos = cursor.fetchone()
-            print(datos)
-
             stock_producto = datos[1]
             if cantidad > stock_producto:
                 stock_invalido.append(datos[0])
