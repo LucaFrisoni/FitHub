@@ -269,33 +269,8 @@
 </div>
 
 <script>
-async function cargarPlanes() {
-  try {
-    const response = await fetch('/planes');
-    const planes = await response.json();
-    
-    const selectElement = document.getElementById('type-exercise');
-    
-    // Limpiar opciones existentes (excepto la primera)
-    selectElement.innerHTML = '<option value="">Selecciona un tipo de entrenamiento</option>';
-    
-    // Agregar cada plan como opción
-    planes.forEach(plan => {
-      const option = document.createElement('option');
-      option.value = plan.id;
-      option.textContent = plan.nombre; 
-      selectElement.appendChild(option);
-    });
-    
-  } catch (error) {
-    console.error('Error al cargar los planes:', error);
-    alert('Error al cargar los tipos de entrenamiento');
-  }
-}
-
 
 document.addEventListener('DOMContentLoaded', function () {
-  cargarPlanes(); // inicio los planes
   
   const dayCheckboxes = document.querySelectorAll('.day-checkbox');
 
