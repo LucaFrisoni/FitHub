@@ -139,7 +139,12 @@ def editar_foto():
         return jsonify({"error": "Formato no permitido."}), 400
 
     filename = secure_filename(f"user_{user_id}.{extension}")
-    filepath = os.path.join("static/images/uploads/perfil", filename)
+    # Crear directorio si no existe - RUTA DEL FRONTEND
+    upload_dir = "../Front/static/images/uploads/perfil"  # Ruta relativa al backend
+    if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir)
+            
+    filepath = os.path.join(upload_dir, filename)
     nueva_imagen.save(filepath)
     try:
         conn = get_connection()
