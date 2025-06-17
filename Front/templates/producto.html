@@ -70,13 +70,20 @@
         <span class="text-xl font-bold block mb-6 text-center"
           >${{ producto.Precio }}</span
         >
-        <form
-          method="POST"
-          action="{{ url_for('agregar_carrito', producto_id=producto.ID_Producto) }}"
-        >
+        <form method="POST" action="{{ url_for('agregar_carrito', producto_id=producto.ID_Producto) }}" class="mt-6 flex flex-col gap-4 w-full max-w-sm">
+          <label for="cantidad" class="font-semibold text-gray-100">Cantidad</label>
+          <input
+            type="number"
+            name="cantidad"
+            id="cantidad"
+            value="1"
+            min="1"
+            required
+            class="border border-gray-300 rounded px-3 py-2 text-white"
+          />
           <button
             type="submit"
-            class="w-full bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/95 hover:shadow-lg transition cursor-pointer"
+            class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded"
           >
             Agregar al carrito
           </button>
