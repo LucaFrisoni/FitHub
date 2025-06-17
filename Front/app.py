@@ -99,12 +99,27 @@ def planes():
 @login_required
 def procesar_reserva():
     data = request.get_json()
+    
     # Obtener datos del request
     dias = data.get('dias', [])
     tipo_entrenamiento = data.get('tipo_entrenamiento')
     hora_inicio = data.get('hora_inicio')
     hora_fin = data.get('hora_fin')
-    tipo_entrenamiento = int(tipo_entrenamiento)
+    
+    # Validaciones básicas
+    if not dias:
+        return jsonify({"error": "Debe seleccionar al menos un día"}), 400
+    
+    if not tipo_entrenamiento:
+        return jsonify({"error": "Debe seleccionar un tipo de entrenamiento"}), 400
+    
+    if not hora_inicio or not hora_fin:
+        return jsonify({"error": "Debe especificar horarios válidos"}), 400
+    
+    try:
+        tipo_entrenamiento = int(tipo_entrenamiento)
+    except ValueError:
+        return jsonify({"error": "Tipo de entrenamiento inválido"}), 400
     
     try:
         url_alquileres = f"{API_HOST}/api/alquileres/verificacion_reserva"
@@ -117,30 +132,30 @@ def procesar_reserva():
         if response_alquileres.status_code == 200:
             horario_completo = f"{hora_inicio} - {hora_fin}"
             dias_str = ", ".join(dias)
+            
             payload_horario = {
                 "Dias": dias_str,
                 "Horario": horario_completo,
                 "ID_Plan": tipo_entrenamiento,
                 "ID_Usuario": current_user.id
             }
+            
             url_horarios = f"{API_HOST}/api/horariosentrenamiento/"
             response_horario = requests.post(url_horarios, json=payload_horario)
             
             if response_horario.status_code == 201:
-                session["toast_exitoso"] = "Reserva Realizada"
-                return redirect("/reservas")
+                return jsonify({"message": "Reserva realizada con éxito"}), 200
             else:
-                error_msg = response_horario.json().get("error", "Error inesperado")
-                session["toast_error"] = error_msg  # Guardar error en session
-                return redirect("/reservas")
+                error_msg = response_horario.json().get("error", "Error al crear el horario")
+                return jsonify({"error": error_msg}), 400
         else:
-            error_msg = response_alquileres.json().get("error", "Error inesperado")
-            session["toast_error"] = error_msg  # Guardar error en session
-            return redirect("/reservas")
+            error_msg = response_alquileres.json().get("error", "Error en la verificación")
+            return jsonify({"error": error_msg}), 400
             
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": "Error de conexión con el servidor"}), 500
     except Exception as ex:
-        session["toast_error"] = "Error en el servidor. Intentalo más tarde."
-        return redirect("/reservas")
+        return jsonify({"error": "Error interno del servidor"}), 500
 
 @app.route("/reservas")
 @login_required
