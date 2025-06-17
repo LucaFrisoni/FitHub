@@ -95,65 +95,62 @@ def planes():
         planes = []
     return render_template("planes.html", planes=planes, user=current_user)
 
-@app.route("/reservas")
-@login_required
-def reservas():
-    toast_exitoso = session.pop("toast_exitoso", False)
-    return render_template("reservas.html", user=current_user, toast_exitoso=toast_exitoso)
-
 @app.route('/procesar_reserva', methods=['POST'])
 @login_required
 def procesar_reserva():
     data = request.get_json()
-    
     # Obtener datos del request
     dias = data.get('dias', [])
     tipo_entrenamiento = data.get('tipo_entrenamiento')
     hora_inicio = data.get('hora_inicio')
-    hora_fin = data.get('hora_fin')    
-
+    hora_fin = data.get('hora_fin')
     tipo_entrenamiento = int(tipo_entrenamiento)
     
     try:
         url_alquileres = f"{API_HOST}/api/alquileres/verificacion_reserva"
-        
         payload = {
-            "user_id":current_user.id,
-            "tipoEntrenamiento":tipo_entrenamiento
+            "user_id": current_user.id,
+            "tipoEntrenamiento": tipo_entrenamiento
         }
-        
-        response_alquileres = requests.post(url_alquileres,json=payload)
+        response_alquileres = requests.post(url_alquileres, json=payload)
         
         if response_alquileres.status_code == 200:
-            
             horario_completo = f"{hora_inicio} - {hora_fin}"
             dias_str = ", ".join(dias)
-        
-
             payload_horario = {
                 "Dias": dias_str,
                 "Horario": horario_completo,
                 "ID_Plan": tipo_entrenamiento,
                 "ID_Usuario": current_user.id
             }
-
             url_horarios = f"{API_HOST}/api/horariosentrenamiento/"
-        
             response_horario = requests.post(url_horarios, json=payload_horario)
-        
+            
             if response_horario.status_code == 201:
                 session["toast_exitoso"] = "Reserva Realizada"
                 return redirect("/reservas")
             else:
                 error_msg = response_horario.json().get("error", "Error inesperado")
-                return render_template("reservas.html", user=current_user, error=error_msg)
+                session["toast_error"] = error_msg  # Guardar error en session
+                return redirect("/reservas")
         else:
             error_msg = response_alquileres.json().get("error", "Error inesperado")
-            return render_template("reservas.html", user=current_user, error=error_msg) 
+            session["toast_error"] = error_msg  # Guardar error en session
+            return redirect("/reservas")
+            
     except Exception as ex:
-        return render_template(
-            "reservas.html", error="Error en el servidor. Intentalo más tarde.", user=current_user
-        )
+        session["toast_error"] = "Error en el servidor. Intentalo más tarde."
+        return redirect("/reservas")
+
+@app.route("/reservas")
+@login_required
+def reservas():
+    toast_exitoso = session.pop("toast_exitoso", False)
+    toast_error = session.pop("toast_error", False)  # Obtener error de session
+    return render_template("reservas.html", 
+                         user=current_user, 
+                         toast_exitoso=toast_exitoso,
+                         error=toast_error)
         
 
 @app.route("/tienda", methods=["GET"])

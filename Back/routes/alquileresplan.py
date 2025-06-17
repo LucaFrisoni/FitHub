@@ -117,13 +117,11 @@ def verificacion_reserva():
         if not alquileres:
             return jsonify({"error": "El usuario no tiene alquileres registrados"}), 400
         
-        # Verificar si el usuario tiene el plan solicitado
         planes_usuario = [alquiler['ID_Plan'] for alquiler in alquileres]
         
         if int(typeEnt) not in [int(plan_id) for plan_id in planes_usuario]:
             return jsonify({"error": "No puedes alquilar planes que no posees"}), 400
         
-        # Si llegamos aquí, la verificación fue exitosa
         return jsonify({
             "success": True,
             "message": "Verificación exitosa",
