@@ -74,12 +74,66 @@ def get_alquileres_por_usuario(id_usuario):
         if alquileres:
             return jsonify(alquileres)
         else:
-            return jsonify({"message": "El usuario no tiene alquileres registrados"}), 200
+            return jsonify({"error": "El usuario no tiene alquileres registrados"}), 200
     except Exception as ex:
         return devolver_error(ruta=f'alquileres_plan/usuario/{id_usuario}', ex=ex)
     finally:
         if cursor: cursor.close()
         if conn: conn.close()
+        
+@alquileres_plan_bp.route("/verificacion_reserva", methods=["POST"])
+def verificacion_reserva():
+    data = request.get_json()
+    userid = data.get("user_id")
+    typeEnt = data.get("tipoEntrenamiento")
+    
+    if not userid:
+        return jsonify({"error": "userid requerido"}), 400
+    
+    if not typeEnt:
+        return jsonify({"error": "tipoEntrenamiento requerido"}), 400
+    
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("SELECT 1 FROM usuarios WHERE ID_usuario = %s", (userid,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Usuario no encontrado"}), 404
+        
+        cursor.execute("""
+            SELECT ap.ID_AlquilerPlan, ap.ID_Plan, ap.ID_Usuario, ap.Nota,
+                   u.Nombre AS Usuario_Nombre, u.Apellido AS Usuario_Apellido
+            FROM alquileresplan ap
+            JOIN planes p ON ap.ID_Plan = p.ID_Plan
+            JOIN usuarios u ON ap.ID_Usuario = u.ID_Usuario
+            WHERE ap.ID_Usuario = %s
+        """, (userid,))
+        
+        alquileres = cursor.fetchall()
+        
+        if not alquileres:
+            return jsonify({"error": "El usuario no tiene alquileres registrados"}), 400
+        
+        planes_usuario = [alquiler['ID_Plan'] for alquiler in alquileres]
+        
+        if int(typeEnt) not in [int(plan_id) for plan_id in planes_usuario]:
+            return jsonify({"error": "No puedes alquilar planes que no posees"}), 400
+        
+        return jsonify({
+            "success": True,
+            "message": "Verificación exitosa",
+            "planes_usuario": planes_usuario
+        }), 200
+        
+    except Exception as ex:
+        return devolver_error(ruta=f'alquileres_plan/verificacion_reserva/{userid}', ex=ex)
+    
+    finally:
+        if cursor: 
+            cursor.close()
+        if conn: 
+            conn.close()
 
 @alquileres_plan_bp.route("/", methods=["POST"])
 def post_alquiler_plan():

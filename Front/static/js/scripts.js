@@ -432,11 +432,13 @@ dayCheckboxes.forEach(checkbox => {
   });
 });
 
+// Funcionalidad del botón reservar
 const reserveButton = document.getElementById("button-reserva");
 if (reserveButton) {
   reserveButton.addEventListener('click', async function (e) {
     e.preventDefault();
 
+    // Obtener días seleccionados
     const selectedDays = [];
     dayCheckboxes.forEach(checkbox => {
       if (checkbox.checked) {
@@ -444,6 +446,7 @@ if (reserveButton) {
       }
     });
 
+    // Validar que se haya seleccionado al menos un día
     if (selectedDays.length === 0) {
       alert('Por favor selecciona al menos un día para tu reserva.');
       return;
@@ -464,7 +467,7 @@ if (reserveButton) {
 
     // Preparar datos para enviar
     const datos_reserva = {
-      dias: selectedDays, 
+      dias: selectedDays, // conjunto de días seleccionados
       tipo_entrenamiento: trainingType,
       hora_inicio: startTime,
       hora_fin: endTime,
