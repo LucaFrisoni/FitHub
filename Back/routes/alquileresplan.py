@@ -74,7 +74,7 @@ def get_alquileres_por_usuario(id_usuario):
         if alquileres:
             return jsonify(alquileres)
         else:
-            return jsonify({"error": "El usuario no tiene alquileres registrados"}), 200
+            return jsonify({"error": "El usuario no tiene alquileres registrados"}), 404
     except Exception as ex:
         return devolver_error(ruta=f'alquileres_plan/usuario/{id_usuario}', ex=ex)
     finally:
