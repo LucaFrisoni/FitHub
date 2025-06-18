@@ -64,7 +64,6 @@
 </div>
 
 <script>
-  // Imagen por defecto para restaurar al cerrar el modal
   const previewOriginalPlan =
     "{{ url_for('static', filename='images/default_plan.jpg') }}";
 
@@ -73,7 +72,6 @@
     .addEventListener("submit", function (e) {
       e.preventDefault();
 
-      // Mostrar loader
       mostrarLoaderPlan();
 
       const formData = new FormData(this);
@@ -90,7 +88,6 @@
         })
         .then((data) => {
           if (data.success) {
-            // Actualizar vista previa principal
             const previewPrincipal = document.getElementById(
               "preview-imagen-principal"
             );
@@ -98,16 +95,19 @@
               previewPrincipal.src = data.url;
             }
 
-            // Actualizar campo oculto con el nombre de la imagen
             const hiddenInput = document.getElementById("nombre_imagen_plan");
             if (hiddenInput) {
               hiddenInput.value = data.filename;
             }
 
-            // Cerrar modal
+            window.imagenSubida = true;
+            
+            if (typeof window.actualizarEstadoBotonCrear === 'function') {
+              window.actualizarEstadoBotonCrear();
+            }
+
             cerrarModalPlan();
 
-            // Opcional: mostrar mensaje de éxito
             console.log("Imagen subida correctamente");
           } else {
             alert("Error: " + (data.error || "Error desconocido"));
@@ -155,18 +155,15 @@
       "preview-imagen-principal"
     );
 
-    // Ruta absoluta de la imagen por defecto
     const defaultPath =
       "{{ url_for('static', filename='images/default_plan.jpg') }}";
 
-    // Comparar solo el final del src, por si hay dominio o path diferente
     const tieneImagen = !previewPrincipal.src.endsWith(
       "images/default_plan.jpg"
     );
 
     previewModal.src = tieneImagen ? previewPrincipal.src : defaultPath;
 
-    // Guardar en dataset la imagen original para restaurar al cerrar
     previewModal.dataset.original = previewModal.src;
   }
 
