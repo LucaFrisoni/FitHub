@@ -17,9 +17,11 @@
           {% for item in carrito %}
           <div
             class="flex items-center justify-between border-b pb-4 producto"
-            data-producto-id="{{ item.id }}"
+            data-id="{{ item.id }}"
             data-precio="{{ item.precio }}"
+            data-tipo="{% if item.imagen.startswith('producto') %}producto{% else %}plan{% endif %}"
           >
+            <!-- Imagen -->
             <div class="flex items-center space-x-4">
               {% if item.imagen %} {% if item.imagen.startswith('producto') %}
               <img
@@ -51,7 +53,7 @@
                 />
               </div>
             </div>
-
+            <!-- Precio -->
             <div class="text-right">
               <p id="subtotal-{{ item.id }}" class="font-bold text-gray-800">
                 ${{ "%.2f"|format(item.precio * item.cantidad) }}
@@ -187,11 +189,21 @@
             10
           );
           const precio = parseFloat(productoElem.dataset.precio);
-          return {
-            producto_id: productoElem.dataset.productoId,
+          const tipo = productoElem.dataset.tipo;
+          const id = productoElem.dataset.id;
+
+          const item = {
             cantidad: cantidad,
             subtotal: cantidad * precio,
           };
+
+          if (tipo === "producto") {
+            item.producto_id = id;
+          } else if (tipo === "plan") {
+            item.plan_id = id;
+          }
+
+          return item;
         }
       );
 
@@ -209,7 +221,7 @@
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json"
+            Accept: "application/json",
           },
           body: JSON.stringify(datos),
         });
@@ -249,7 +261,6 @@
           setTimeout(() => {
             window.location.href = "{{ url_for('tienda') }}";
           }, 2000);
-          
         } else {
           mensajeDiv.className = "mt-4 p-3 rounded bg-red-500 text-white";
           mensajeDiv.textContent =
