@@ -275,7 +275,7 @@
       <div class="h-[40px] w-full">
         <p class="font-bold pl-3 pt-3">Mis compras</p>
       </div>
-      <div class="flex w-max h-[80%]">
+      <div class="flex w-full h-[80%]">
         <!-- Card -->
         {% if compras %} {% for compra in compras %}
         <a
@@ -318,7 +318,9 @@
           </div>
         </a>
         {% endfor %} {% else %}
-        <div class="flex flex-col w-full h-full items-center justify-center">
+        <div
+          class="flex flex-col w-full h-full items-center justify-center text-center"
+        >
           <!-- Cajita -->
 
           <p class="py-8 text-2xl font-bold">Aun no hay compras realizadas</p>
@@ -362,19 +364,20 @@
 
   <!--Historial Reservas -->
   <div
-    class="w-full h-[350px] border-2 border-b-black rounded-2xl mb-8 bg-white flex flex-col px-4"
+    class="w-full h-[400px] border-2 border-b-black rounded-2xl mb-8 bg-white flex flex-col px-4"
   >
     <!-- Título -->
     <div class="h-[40px] pt-3">
       <p class="font-bold">Historial Reservas</p>
     </div>
 
+    {% if reservas %}
     <!-- Contenido principal: cuadro de reservas -->
-    <div class="flex-1 mt-2 bg-stone-100 rounded-xl mx-4">
+    <div class="flex-1 mt-2 bg-stone-100 rounded-xl mx-2 overflow-y-auto">
       <!-- titulos -->
       <div class="flex px-6 py-2 justify-between">
         <div class="w-1/3 flex items-center">
-          <p class="font-bold text-lg">Reserva</p>
+          <p class="font-bold sm:text-lg text-sm">Reserva</p>
           <img
             class="pl-2"
             src="{{ url_for('static',filename='images/reserva_icono.png')}}"
@@ -382,7 +385,7 @@
           />
         </div>
         <div class="w-1/3 flex items-center">
-          <p class="font-bold text-lg">Día</p>
+          <p class="font-bold pl-4 sm:pl-0 sm:text-lg text-sm">Día</p>
           <img
             class="pl-2"
             src="{{ url_for('static',filename='images/calendario_icono.png')}}"
@@ -390,7 +393,7 @@
           />
         </div>
         <div class="w-1/3 flex items-center">
-          <p class="font-bold text-lg">Horario</p>
+          <p class="font-bold sm:text-lg text-sm">Horario</p>
           <img
             class="pl-2"
             src="{{ url_for('static',filename='images/reloj_icono.png')}}"
@@ -399,19 +402,22 @@
         </div>
       </div>
       <!-- reservas -->
+      {% for reserva in reservas %}
       <div class="flex px-6 py-2 justify-between group">
         <div class="w-1/3 flex items-center">
           <div
             class="w-full flex items-center bg-white shadow-md h-[32px] rounded-l-md peer group-hover:bg-stone-100 transition"
           >
-            <p class="pl-3">Boxeo</p>
+            <p class="pl-3 sm:text-base text-sm truncate">
+              {{ reserva.Nombre_plan }}
+            </p>
           </div>
         </div>
         <div class="w-1/3 flex items-center relative">
           <div
             class="w-full flex items-center bg-white shadow-md h-[32px] group-hover:bg-stone-100 transition"
           >
-            <p class="pl-3">Boxeo</p>
+            <p class="pl-3 sm:text-base text-sm truncate">{{ reserva.Dias }}</p>
           </div>
           <div class="absolute top-0 left-0 h-full w-px bg-black"></div>
           <div class="absolute top-0 right-0 h-full w-px bg-black"></div>
@@ -420,31 +426,33 @@
           <div
             class="w-full flex items-center bg-white shadow-md h-[32px] rounded-r-md group-hover:bg-stone-100 transition"
           >
-            <p class="pl-3">Boxeo</p>
+            <p class="pl-3 sm:text-base text-sm">{{reserva.Horario}} hs</p>
           </div>
         </div>
       </div>
+      {% endfor %}
     </div>
+    {% else %}
+    <div
+      class="flex flex-col w-full h-full items-center justify-center text-center"
+    >
+      <!-- Cajita -->
 
-    <!-- Botones al final -->
-    <div class="flex justify-end items-center h-[40px] gap-2 my-2 mx-3">
-      <button
-        class="rounded-md bg-stone-100 p-2.5 border border-transparent text-center text-sm transition-all shadow-sm hover:shadow-lg cursor-pointer hover:bg-black active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-        type="button"
-      >
-        <img
-          src="{{ url_for('static',filename='images/flecha_izq_icono.png')}}"
-        />
-      </button>
-      <button
-        class="rounded-md bg-stone-100 p-2.5 border border-transparent text-center text-sm transition-all shadow-sm hover:shadow-lg cursor-pointer hover:bg-black active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-        type="button"
-      >
-        <img
-          src="{{ url_for('static',filename='images/flecha_der_icono.png')}}"
-        />
-      </button>
+      <p class="py-8 text-2xl font-bold">Aun no hay reservas realizadas</p>
+      <!-- Boton -->
+      <div class="flex items-center justify-center">
+        <a
+          href="{{ url_for('reservas') }}"
+          type="button"
+          class="opacity-100 scale-100 cursor-pointer py-2 px-3 sm:py-3 sm:px-5 bg-primary font-bold text-stone-100 rounded-xl shadow-md hover:bg-primary/85 hover:shadow-lg transition duration-300 ease-in-out"
+        >
+          Reservar
+        </a>
+      </div>
     </div>
+    {% endif %}
+
+    <div class="h-[40px]"></div>
   </div>
   <!-- Modal subir foto -->
   {% include "components/modales/modal_user_profile.html" %}
