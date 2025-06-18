@@ -207,3 +207,4 @@ def delete_horario(id_horario):
             cursor.close()
         if conn:
             conn.close()
+
