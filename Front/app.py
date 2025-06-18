@@ -99,7 +99,6 @@ def planes():
 @login_required
 def procesar_reserva():
     data = request.get_json()
-    
     dias = data.get('dias', [])
     tipo_entrenamiento = data.get('tipo_entrenamiento')
     hora_inicio = data.get('hora_inicio')
@@ -107,7 +106,6 @@ def procesar_reserva():
     
     if not dias:
         return jsonify({"error": "Debe seleccionar al menos un día"}), 400
-    
     if not tipo_entrenamiento:
         return jsonify({"error": "Debe seleccionar un tipo de entrenamiento"}), 400
     
@@ -124,29 +122,42 @@ def procesar_reserva():
         }
         response_alquileres = requests.post(url_alquileres, json=payload)
         
-        if response_alquileres.status_code == 200:
-            horario_completo = f"{hora_inicio} - {hora_fin}"
-            dias_str = ", ".join(dias)
-            
+        if response_alquileres.status_code != 200:
+            error_msg = response_alquileres.json().get("error", "Error en la verificación")
+            return jsonify({"error": error_msg}), 400
+        
+        horario_completo = f"{hora_inicio} - {hora_fin}"
+        url_horarios = f"{API_HOST}/api/horariosentrenamiento/"
+        
+        reservas_creadas = []
+        for dia in dias:
             payload_horario = {
-                "Dias": dias_str,
+                "Dias": dia,  
                 "Horario": horario_completo,
                 "ID_Plan": tipo_entrenamiento,
                 "ID_Usuario": current_user.id
             }
             
-            url_horarios = f"{API_HOST}/api/horariosentrenamiento/"
             response_horario = requests.post(url_horarios, json=payload_horario)
             
             if response_horario.status_code == 201:
-                return jsonify({"message": "Reserva realizada con éxito"}), 200
+                reserva_id = response_horario.json().get("id")
+                reservas_creadas.append({"dia": dia, "id": reserva_id})
             else:
+                for reserva in reservas_creadas:
+                    try:
+                        requests.delete(f"{url_horarios}{reserva['id']}")
+                    except:
+                        pass
+                
                 error_msg = response_horario.json().get("error", "Error al crear el horario")
-                return jsonify({"error": error_msg}), 400
-        else:
-            error_msg = response_alquileres.json().get("error", "Error en la verificación")
-            return jsonify({"error": error_msg}), 400
-            
+                return jsonify({"error": f"Error al crear reserva para {dia}: {error_msg}"}), 400
+        
+        return jsonify({
+            "message": "Reservas realizadas con éxito",
+            "reservas": reservas_creadas
+        }), 200
+        
     except requests.exceptions.RequestException as e:
         return jsonify({"error": "Error de conexión con el servidor"}), 500
     except Exception as ex:

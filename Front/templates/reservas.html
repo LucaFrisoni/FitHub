@@ -2,10 +2,9 @@
 {% block content %}
 
 <div class="min-h-screen bg-[url(/static/images/reserva_fondo.png)]">
-  <div>
-    {% if error %} {% include "components/toasts/error.html" %} {% endif %}
-    {% if toast_exitoso %} {% include "components/toasts/exito.html" %} {%endif %}
-  </div>
+  {% if error %} {% include "components/toasts/error.html" %} {% endif %}
+  <div></div>
+  {% if toast_exitoso %} {% include "components/toasts/exito.html" %} {%endif %}
   <div class="py-4 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7x1 mx-auto">
       <div class="flex flex-col lg:flex-row justify-center gap-6 mt-22">
@@ -19,7 +18,7 @@
               <label class="block text-sm font-semibold text-gray-700 mb-2">Disponibilidad</label>
               <div class="grid grid-cols-7 gap-1 sm:gap-0">
                 <div>
-                  <input type="checkbox" id="lun" name="dias[]" value="lunes" class="day-checkbox hidden" {% if not
+                  <input type="checkbox" id="lun" name="dias[]" value="Lunes" class="day-checkbox hidden" {% if not
                     dias_disponibles.lunes %}disabled{% endif %}>
                   <label for="lun"
                     class="day-button block px-2 sm:px-4 py-2 sm:py-3 {% if dias_disponibles.lunes %}hover:bg-yellow-500 cursor-pointer{% else %}bg-red-200 cursor-not-allowed opacity-60{% endif %} border border-gray-300 font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px first:ml-0 bg-white">
@@ -29,7 +28,7 @@
                 </div>
 
                 <div>
-                  <input type="checkbox" id="mar" name="dias[]" value="martes" class="day-checkbox hidden" {% if not
+                  <input type="checkbox" id="mar" name="dias[]" value="Martes" class="day-checkbox hidden" {% if not
                     dias_disponibles.martes %}disabled{% endif %}>
                   <label for="mar"
                     class="day-button block px-2 sm:px-4 py-2 sm:py-3 {% if dias_disponibles.martes %}hover:bg-yellow-500 cursor-pointer{% else %}bg-red-200 cursor-not-allowed opacity-60{% endif %} border border-gray-300 font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
@@ -39,7 +38,7 @@
                 </div>
 
                 <div>
-                  <input type="checkbox" id="mie" name="dias[]" value="miercoles" class="day-checkbox hidden" {% if not
+                  <input type="checkbox" id="mie" name="dias[]" value="Miercoles" class="day-checkbox hidden" {% if not
                     dias_disponibles.miercoles %}disabled{% endif %}>
                   <label for="mie"
                     class="day-button block px-2 sm:px-4 py-2 sm:py-3 {% if dias_disponibles.miercoles %}hover:bg-yellow-500 cursor-pointer{% else %}bg-red-200 cursor-not-allowed opacity-60{% endif %} border border-gray-300 font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
@@ -50,7 +49,7 @@
                 </div>
 
                 <div>
-                  <input type="checkbox" id="jue" name="dias[]" value="jueves" class="day-checkbox hidden" {% if not
+                  <input type="checkbox" id="jue" name="dias[]" value="Jueves" class="day-checkbox hidden" {% if not
                     dias_disponibles.jueves %}disabled{% endif %}>
                   <label for="jue"
                     class="day-button block px-2 sm:px-4 py-2 sm:py-3 {% if dias_disponibles.jueves %}hover:bg-yellow-500 cursor-pointer{% else %}bg-red-200 cursor-not-allowed opacity-60{% endif %} border border-gray-300 font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
@@ -60,7 +59,7 @@
                 </div>
 
                 <div>
-                  <input type="checkbox" id="vie" name="dias[]" value="viernes" class="day-checkbox hidden" {% if not
+                  <input type="checkbox" id="vie" name="dias[]" value="Viernes" class="day-checkbox hidden" {% if not
                     dias_disponibles.viernes %}disabled{% endif %}>
                   <label for="vie"
                     class="day-button block px-2 sm:px-4 py-2 sm:py-3 {% if dias_disponibles.viernes %}hover:bg-yellow-500 cursor-pointer{% else %}bg-red-200 cursor-not-allowed opacity-60{% endif %} border border-gray-300 font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
@@ -70,7 +69,7 @@
                 </div>
 
                 <div>
-                  <input type="checkbox" id="sab" name="dias[]" value="sabado" class="day-checkbox hidden" {% if not
+                  <input type="checkbox" id="sab" name="dias[]" value="Sabado" class="day-checkbox hidden" {% if not
                     dias_disponibles.sabado %}disabled{% endif %}>
                   <label for="sab"
                     class="day-button block px-2 sm:px-4 py-2 sm:py-3 {% if dias_disponibles.sabado %}hover:bg-yellow-500 cursor-pointer{% else %}bg-red-200 cursor-not-allowed opacity-60{% endif %} border border-gray-300 font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
@@ -80,7 +79,7 @@
                 </div>
 
                 <div>
-                  <input type="checkbox" id="dom" name="dias[]" value="domingo" class="day-checkbox hidden" {% if not
+                  <input type="checkbox" id="dom" name="dias[]" value="Domingo" class="day-checkbox hidden" {% if not
                     dias_disponibles.domingo %}disabled{% endif %}>
                   <label for="dom"
                     class="day-button block px-2 sm:px-4 py-2 sm:py-3 {% if dias_disponibles.domingo %}hover:bg-yellow-500 cursor-pointer{% else %}bg-red-200 cursor-not-allowed opacity-60{% endif %} border border-gray-300 font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
@@ -133,7 +132,6 @@
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3">
               Turnos Disponibles
             </h2>
-
             <div class="space-y-1">
               <!-- Lunes -->
               <div
@@ -235,7 +233,7 @@
                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
                         clip-rule="evenodd" />
                     </svg>
-                    {% elif contador_dias.miercoles >= 18 %}
+                    {% elif contador_dias.miercoles >= 15 %}
                     <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd"
                         d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
@@ -261,7 +259,7 @@
                   </span>
                   {% if contador_dias.miercoles >= 20 %}
                   <span class="text-xs text-red-600 font-semibold">COMPLETO</span>
-                  {% elif contador_dias.miercoles >= 18 %}
+                  {% elif contador_dias.miercoles >= 15 %}
                   <span class="text-xs text-yellow-600 font-semibold">CASI LLENO</span>
                   {% endif %}
                 </div>
@@ -279,7 +277,7 @@
                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
                         clip-rule="evenodd" />
                     </svg>
-                    {% elif contador_dias.jueves >= 18 %}
+                    {% elif contador_dias.jueves >= 15 %}
                     <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd"
                         d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
@@ -305,7 +303,7 @@
                   </span>
                   {% if contador_dias.jueves >= 20 %}
                   <span class="text-xs text-red-600 font-semibold">COMPLETO</span>
-                  {% elif contador_dias.jueves >= 18 %}
+                  {% elif contador_dias.jueves >= 15 %}
                   <span class="text-xs text-yellow-600 font-semibold">CASI LLENO</span>
                   {% endif %}
                 </div>
@@ -323,7 +321,7 @@
                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
                         clip-rule="evenodd" />
                     </svg>
-                    {% elif contador_dias.viernes >= 18 %}
+                    {% elif contador_dias.viernes >= 15 %}
                     <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd"
                         d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
@@ -349,7 +347,7 @@
                   </span>
                   {% if contador_dias.viernes >= 20 %}
                   <span class="text-xs text-red-600 font-semibold">COMPLETO</span>
-                  {% elif contador_dias.viernes >= 18 %}
+                  {% elif contador_dias.viernes >= 15 %}
                   <span class="text-xs text-yellow-600 font-semibold">CASI LLENO</span>
                   {% endif %}
                 </div>
@@ -367,7 +365,7 @@
                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
                         clip-rule="evenodd" />
                     </svg>
-                    {% elif contador_dias.sabado >= 18 %}
+                    {% elif contador_dias.sabado >= 15 %}
                     <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd"
                         d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
@@ -393,7 +391,7 @@
                   </span>
                   {% if contador_dias.sabado >= 20 %}
                   <span class="text-xs text-red-600 font-semibold">COMPLETO</span>
-                  {% elif contador_dias.sabado >= 18 %}
+                  {% elif contador_dias.sabado >= 15 %}
                   <span class="text-xs text-yellow-600 font-semibold">CASI LLENO</span>
                   {% endif %}
                 </div>
@@ -411,7 +409,7 @@
                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
                         clip-rule="evenodd" />
                     </svg>
-                    {% elif contador_dias.domingo >= 18 %}
+                    {% elif contador_dias.domingo >= 15 %}
                     <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd"
                         d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
@@ -437,7 +435,7 @@
                   </span>
                   {% if contador_dias.domingo >= 20 %}
                   <span class="text-xs text-red-600 font-semibold">COMPLETO</span>
-                  {% elif contador_dias.domingo >= 18 %}
+                  {% elif contador_dias.domingo >= 15 %}
                   <span class="text-xs text-yellow-600 font-semibold">CASI LLENO</span>
                   {% endif %}
                 </div>
