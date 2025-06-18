@@ -3,17 +3,18 @@
   <!-- toast -->
   {% if toast_exitoso %} {% include "components/toasts/exito.html" %} {%endif %}
 
+
   <img
     src="{{ url_for('static', filename='images/fondo.png') }}"
     alt="fondo deberia ir aca..."
-    class="absolute h-[120vw] z-0 mt-[40vw] translate-x-[-55vw]"
+    class="absolute h-[120vw] z-0 mt-[40vw] translate-x-[-6.6vw]"
   />
 
-  <section class="relative w-full h-screen overflow-hidden">
+  <section class="relative w-full min-h-screen ">
     <img
       src="{{ url_for('static', filename='images/home1.png') }}"
       alt="Home1 deberia ir aca..."
-      class="absolute inset-0 w-full h-full object-cover"
+      class="absolute inset-0 w-full h-full object-cover flex-col flex items-center"
       style="user-select: none;"
       draggable="false"
     />
@@ -25,17 +26,17 @@
 
     <!-- - - - -///TEXTO INICIAL HOME///- - - - -->
 
-    <header class="z-3 absolute inset-0 flex-col flex items-center pt-[10vw]">
+    <header class="z-3 relative translate-x-[0vw] inset-0 flex-col flex items-center pt-[10vw] pb-[5vw] h-full w-full">
       <img
         src="{{ url_for('static', filename='images/home2.png') }}"
         alt="Home2 deberia ir aca..."
-        class="w-[35vw] h-[16vw] min-w-[64px] min-h-[29,1px] hover:translate-y-[-0.2vw] transition"
+        class="w-[35vw] h-[16vw] min-w-[320px] min-h-[145.5px] hover:translate-y-[-0.2vw] transition"
         style="user-select: none;"
         draggable="false"
       />
 
       <p
-        class="text-stone-100 text-[clamp(1.2vw,1.25vw,1.25vw)] max-w-[50%] pt-[1.5vw] pb-[2vw] text-center"
+        class="text-stone-100 sm:text-[clamp(1.2vh,1.25vw,1.25vw)] text-[clamp(2vh,1.25vw,1.25vw)] max-w-[50%] pt-[1.5vw] pb-[2vw] text-center"
       >
         En Fithub, el entrenamiento no es un reto ni una meta a corto plazo.
         Creemos que superarse día a día y mejorar la salud a través del deporte
@@ -47,20 +48,22 @@
 
       <!-- Botones -->
       <div
-        class="flex flex-col justify-center sm:flex-row gap-[5%] w-full min-w-[1000px]"
+        class="flex flex-col justify-center items-center sm:flex-row gap-[5vw] w-full"
       >
-        <a class="w-[12.5%]" href="#HISTORIA">
+        <a href="#HISTORIA">
           <button
             type="button"
-            class="w-[12.5vw] h-[4vw] min-w-[12px] min-h-[6.5px] text-[clamp(1.2vw,1.8vw,1.8vw)] rounded-xl shadow-sm cursor-pointer bg-transparent border-[5px] border-black box-border font-bold text-stone-100 hover:bg-black transition"
+            class="w-[12.5vw] h-[4vw] min-w-[120px] min-h-[65px] text-[clamp(3vw,1.8vw,1.8vw)] sm:text-[clamp(1.2vh,1.8vw,1.8vw)] rounded-xl shadow-sm cursor-pointer bg-transparent border-[5px]
+             border-black box-border font-bold text-stone-100 hover:bg-black transition"
           >
             Saber mas
           </button>
         </a>
-        <a class="w-[12.5%]" href="{{ url_for('registro') }}">
+        <a href="{{ url_for('registro') }}">
           <button
             type="button"
-            class="w-[12.5vw] h-[4vw] min-w-[12px] min-h-[6.5px] text-[clamp(1.2vw,1.8vw,1.8vw)] rounded-xl shadow-sm cursor-pointer bg-primary border-[5px] border-primary box-border font-bold text-black hover:bg-secondary transition hover:border-secondary"
+            class="w-[12.5vw] h-[4vw] min-w-[120px] min-h-[65px] text-[clamp(2vh,1.8vw,1.8vw)] sm:text-[clamp(1.2vh,1.8vw,1.8vw)] rounded-xl shadow-sm cursor-pointer
+             bg-primary border-[5px] border-primary box-border font-bold text-black hover:bg-secondary transition hover:border-secondary"
           >
             Unirme ya
           </button>
@@ -239,7 +242,7 @@
                   class="rounded-[2%] border-primary border-[0.3vw] h-[16.5vw] w-[16.5vw] translate-y-[-2vw]"
                 />
                 <ul
-                  class="list-disc list-outside font-semi-bold pl-8 text-gray-900 text-base text-left leading-relaxed"
+                  class="list-disc list-outside font-semi-bold pl-8 text-gray-900 text-left leading-relaxed text-[1vw]"
                 >
                   <li>Rutina de entrenamiento</li>
                   <li>Plan de alimentación</li>
@@ -269,7 +272,7 @@
                   class="rounded-[2%] border-primary border-[0.3vw] h-[16.5vw] w-[16.5vw] translate-y-[-2vw]"
                 />
                 <ul
-                  class="list-disc list-outside font-semi-bold pl-8 text-gray-900 text-base text-left leading-relaxed"
+                  class="list-disc list-outside font-semi-bold pl-8 text-gray-900 text-base text-left leading-relaxed text-[1vw]"
                 >
                   <li>Clases dinámicas semanales</li>
                   <li>Plan de alimentación</li>
@@ -300,7 +303,7 @@
                   class="rounded-[2%] border-primary border-[0.3vw] h-[16.5vw] w-[16.5vw] translate-y-[-2vw]"
                 />
                 <ul
-                  class="list-disc list-outside font-semi-bold pl-8 text-gray-900 text-base text-left leading-relaxed"
+                  class="list-disc list-outside font-semi-bold pl-8 text-gray-900 text-base text-left leading-relaxed text-[1vw]"
                 >
                   <li>
                     Plan de entrenamiento específico <br />
@@ -310,7 +313,7 @@
                     Plan nutricional optimizado para un alto rendimiento
                     deportivo
                   </li>
-                  <li>Evaluación y ajuste según tus necesidades deportivas</li>
+                  <li>Evaluación y ajuste según tus necesidades</li>
                 </ul>
               </div>
               <!-- PLAN 3 FIN -->

@@ -23,6 +23,26 @@ function updateprice(plan, dias) {
   }
 }
 document.addEventListener("DOMContentLoaded", () => {
+
+  //navbar principal ocultandose en el home hasta cierto punto
+  const navbar = document.getElementById("navbar");
+
+    if (window.location.pathname === "/") {
+
+    navbar.classList.add("-translate-y-full");
+    
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > innerHeight) {
+        navbar.classList.remove("-translate-y-full");
+        navbar.classList.add("translate-y-0");
+      } else {
+        navbar.classList.remove("translate-y-0");
+        navbar.classList.add("-translate-y-full");
+      }
+    });
+  };
+
+
   // Código del primer bloque...
   // ------------------------------------------updateprice y botones .button-dias
   const botonesdias = document.querySelectorAll(".button-dias");
@@ -140,6 +160,10 @@ document.addEventListener("DOMContentLoaded", () => {
     cerrarSesion.addEventListener("click", ocultarMenu);
   }
 
+
+
+
+  
   //------------------------------------------------------------------------------------Funcionalidad toast: cerrar al click en la X
   const botonCerrar = document.getElementById("button_alert");
 
