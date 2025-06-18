@@ -87,7 +87,10 @@ def planes():
     try:
         respuesta = requests.get(f"{API_HOST}/api/planes/")
         if respuesta.status_code == 200:
-            planes = respuesta.json()
+            planes = respuesta.json() 
+            for plan in planes:
+                if plan.get("imagen") is None:
+                    plan["imagen"] = "default_plan.jpg"
         else:
             planes = []
     except Exception as e:
@@ -95,11 +98,11 @@ def planes():
         planes = []
     return render_template("planes.html", planes=planes, user=current_user)
 
-@app.route('/procesar_reserva', methods=['POST'])
+
+@app.route("/procesar_reserva", methods=["POST"])
 @login_required
 def procesar_reserva():
     data = request.get_json()
-    
     dias = data.get('dias', [])
     tipo_entrenamiento = data.get('tipo_entrenamiento')
     hora_inicio = data.get('hora_inicio')
@@ -107,50 +110,60 @@ def procesar_reserva():
     
     if not dias:
         return jsonify({"error": "Debe seleccionar al menos un día"}), 400
-    
     if not tipo_entrenamiento:
         return jsonify({"error": "Debe seleccionar un tipo de entrenamiento"}), 400
-    
+
     try:
         tipo_entrenamiento = int(tipo_entrenamiento)
     except ValueError:
         return jsonify({"error": "Tipo de entrenamiento inválido"}), 400
-    
+
     try:
         url_alquileres = f"{API_HOST}/api/alquileres/verificacion_reserva"
-        payload = {
-            "user_id": current_user.id,
-            "tipoEntrenamiento": tipo_entrenamiento
-        }
+        payload = {"user_id": current_user.id, "tipoEntrenamiento": tipo_entrenamiento}
         response_alquileres = requests.post(url_alquileres, json=payload)
         
-        if response_alquileres.status_code == 200:
-            horario_completo = f"{hora_inicio} - {hora_fin}"
-            dias_str = ", ".join(dias)
-            
-            payload_horario = {
-                "Dias": dias_str,
-                "Horario": horario_completo,
-                "ID_Plan": tipo_entrenamiento,
-                "ID_Usuario": current_user.id
-            }
-            
-            url_horarios = f"{API_HOST}/api/horariosentrenamiento/"
-            response_horario = requests.post(url_horarios, json=payload_horario)
-            
-            if response_horario.status_code == 201:
-                return jsonify({"message": "Reserva realizada con éxito"}), 200
-            else:
-                error_msg = response_horario.json().get("error", "Error al crear el horario")
-                return jsonify({"error": error_msg}), 400
-        else:
+        if response_alquileres.status_code != 200:
             error_msg = response_alquileres.json().get("error", "Error en la verificación")
             return jsonify({"error": error_msg}), 400
+        
+        horario_completo = f"{hora_inicio} - {hora_fin}"
+        url_horarios = f"{API_HOST}/api/horariosentrenamiento/"
+        
+        reservas_creadas = []
+        for dia in dias:
+            payload_horario = {
+                "Dias": dia,  
+                "Horario": horario_completo,
+                "ID_Plan": tipo_entrenamiento,
+                "ID_Usuario": current_user.id,
+            }
             
+            response_horario = requests.post(url_horarios, json=payload_horario)
+
+            if response_horario.status_code == 201:
+                reserva_id = response_horario.json().get("id")
+                reservas_creadas.append({"dia": dia, "id": reserva_id})
+            else:
+                for reserva in reservas_creadas:
+                    try:
+                        requests.delete(f"{url_horarios}{reserva['id']}")
+                    except:
+                        pass
+                
+                error_msg = response_horario.json().get("error", "Error al crear el horario")
+                return jsonify({"error": f"Error al crear reserva para {dia}: {error_msg}"}), 400
+        
+        return jsonify({
+            "message": "Reservas realizadas con éxito",
+            "reservas": reservas_creadas
+        }), 200
+        
     except requests.exceptions.RequestException as e:
         return jsonify({"error": "Error de conexión con el servidor"}), 500
     except Exception as ex:
         return jsonify({"error": "Error interno del servidor"}), 500
+
 
 @app.route("/reservas")
 @login_required
@@ -158,30 +171,78 @@ def reservas():
     toast_exitoso = session.pop("toast_exitoso", False)
     toast_error = session.pop("toast_error", False)
     planes = []
+    contador_dias = {
+        'lunes': 0,
+        'martes': 0,
+        'miercoles': 0,
+        'jueves': 0,
+        'viernes': 0,
+        'sabado': 0,
+        'domingo': 0
+    }
+    
+    # Diccionario para controlar límites por día
+    dias_disponibles = {
+        'lunes': True,
+        'martes': True,
+        'miercoles': True,
+        'jueves': True,
+        'viernes': True,
+        'sabado': True,
+        'domingo': True
+    }
     
     try:
         url_planes = f"{API_HOST}/api/planes/"
         response_planes = requests.get(url_planes)
-        
+
         if response_planes.status_code == 200:
             planes_data = response_planes.json()
             planes = [{
                 "id": plan["id"],
-                "nombre": plan["nombre"]} 
+                "nombre": plan["nombre"]}
                 for plan in planes_data]
         else:
             print(f"Error al obtener planes: {response_planes.status_code}")
             
+        url_horarios = f"{API_HOST}/api/horariosentrenamiento/"
+        response_horarios = requests.get(url_horarios)
+        
+        if response_horarios.status_code == 200:
+            horarios_data = response_horarios.json()
+            
+            for horario in horarios_data:
+                dias_reserva = horario.get('Dias', '').lower()
+                
+                if ',' in dias_reserva:
+                    dias_lista = [dia.strip() for dia in dias_reserva.split(',')]
+                    for dia in dias_lista:
+                        if dia in contador_dias:
+                            contador_dias[dia] += 1
+                            # Verificar límite de 20
+                            if contador_dias[dia] >= 20:
+                                dias_disponibles[dia] = False
+                else:
+                    if dias_reserva in contador_dias:
+                        contador_dias[dias_reserva] += 1
+                        # Verificar límite de 20
+                        if contador_dias[dias_reserva] >= 20:
+                            dias_disponibles[dias_reserva] = False
+        else:
+            print(f"Error al obtener horarios: {response_horarios.status_code}")
+            
     except requests.exceptions.RequestException as e:
-        print(f"Error de conexión al obtener planes: {e}")
+        print(f"Error de conexión: {e}")
     except Exception as ex:
-        print(f"Error general al obtener planes: {ex}")
+        print(f"Error general: {ex}")
     
-    return render_template("reservas.html", 
-                         user=current_user, 
-                         toast_exitoso=toast_exitoso,
-                         error=toast_error,
-                         planes=planes)
+    return render_template("reservas.html",
+                          user=current_user,
+                          toast_exitoso=toast_exitoso,
+                          error=toast_error,
+                          planes=planes,
+                          contador_dias=contador_dias,
+                          dias_disponibles=dias_disponibles)
         
 
 @app.route("/tienda", methods=["GET"])
@@ -235,12 +296,21 @@ def producto(id):
 def user():
     if request.method == "GET":
         toast_exitoso = session.pop("toast_exitoso", False)
+        compras = []  # <-- definila acá para que siempre exista
+
         try:
             # Cargamos las compras del user
             response = requests.get(f"{API_HOST}/api/compras/usuario/{current_user.id}")
             if response.status_code == 200:
                 compras = response.json()
+            # Cargamos las reservas del user
+            response2 = requests.get(
+                f"{API_HOST}/api/horariosentrenamiento/usuario/{current_user.id}"
+            )
+            if response2.status_code == 200:
+                reservas = response2.json()
         except Exception as ex:
+            # Podrías loguear el error acá si querés
             return render_template(
                 "user.html", error="Error en el servidor. Intentalo más tarde."
             )
@@ -250,8 +320,10 @@ def user():
                 user=current_user,
                 toast_exitoso=toast_exitoso,
                 compras=compras,
+                reservas=reservas,
             )
 
+    # POST
     payload = {
         "Email": current_user.email,  # fijo, para identificar al usuario
         "Nombre": request.form.get("nombre"),
@@ -425,10 +497,11 @@ def registro():
             error = response.json().get("error", "Error desconocido")
             return render_template("auth/registro.html", error=error)
 
-    except Exception:
+    except Exception as ex:
+        print("ERROR EN EL GET:", ex)
         return render_template(
             "auth/registro.html", error="Error en el servidor. Intentalo más tarde."
-        )
+    )
 
 
 @app.route("/logout", methods=["POST"])
@@ -795,7 +868,7 @@ def admin_planes():
                     )
                 else:
                     plan["imagen_url"] = url_for(
-                        "static", filename="images/default_plan.png"
+                        "static", filename="images/default_plan.jpg"
                     )
 
                 planes.append(plan)
@@ -847,7 +920,8 @@ def nuevo_plan():
     deportes_disponibles = request.form.get("deportes_disponibles")
     imagen = request.form.get("imagen")
 
-    if not all([nombre, precio_3_dias, precio_5_dias, deportes_disponibles]):
+    # Validaciones básicas
+    if not all([nombre, precio_3_dias, precio_5_dias]):
         return render_template(
             "admin/nuevo_plan.html",
             error="Todos los campos son obligatorios.",
@@ -864,6 +938,10 @@ def nuevo_plan():
         }
 
         response = requests.post(f"{API_HOST}/api/planes/", json=payload)
+
+        print(f"Response status: {response.status_code}")
+        print(f"Response text: {response.text}")
+
 
         if response.status_code == 201:
             session["plan_creado"] = True
@@ -1257,16 +1335,18 @@ def agregar_carrito(producto_id):
             f"{API_HOST}/api/productos/", params={"id": producto_id}
         )
         if response.status_code != 200 or not response.json():
-            flash("Producto no encontrado", 'error')
+            flash("Producto no encontrado", "error")
             return redirect(url_for("tienda"))
 
         producto = response.json()[0]
         carrito = session.get("carrito", [])
 
-        cantidad_total = cantidad + sum(map(lambda itm: itm['cantidad'] if itm['id'] == producto_id else 0, carrito)) 
-        
-        if producto.get('Cantidad', 0) < cantidad_total:
-            flash("No hay suficiente stock del producto!", 'error')
+        cantidad_total = cantidad + sum(
+            map(lambda itm: itm["cantidad"] if itm["id"] == producto_id else 0, carrito)
+        )
+
+        if producto.get("Cantidad", 0) < cantidad_total:
+            flash("No hay suficiente stock del producto!", "error")
             return redirect(url_for("tienda"))
 
         for item in carrito:
@@ -1357,10 +1437,7 @@ def pasarela():
         return redirect(url_for("tienda"))
     total = sum(item["precio"] * item["cantidad"] for item in carrito)
     return render_template(
-        "pasarela.html",
-        carrito=carrito,
-        total=total,
-        user=current_user
+        "pasarela.html", carrito=carrito, total=total, user=current_user
     )
 
 
@@ -1402,6 +1479,7 @@ def estado_carrito():
     except Exception as e:
         return jsonify({"error": "Error al obtener estado del carrito"}), 500
 
+
 @app.route("/pago", methods=["POST"])
 def pagar():
     """
@@ -1410,6 +1488,7 @@ def pagar():
     """
     respuesta = requests.post(f"{API_HOST}/api/pago", json=request.get_json())
     return respuesta.json(), respuesta.status_code
+
 
 if __name__ == "__main__":
     app.run("localhost", port=3000, debug=True, threaded=True)

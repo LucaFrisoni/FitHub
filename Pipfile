@@ -12,7 +12,6 @@ mysql-connector-python = "*"
 requests = "*"
 flask-login = "*"
 werkzeug = "*"
-concurrently = "*"
 flask = "*"
 flask-cors = "*"
 
