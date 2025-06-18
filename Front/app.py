@@ -87,7 +87,10 @@ def planes():
     try:
         respuesta = requests.get(f"{API_HOST}/api/planes/")
         if respuesta.status_code == 200:
-            planes = respuesta.json()
+            planes = respuesta.json() 
+            for plan in planes:
+                if plan.get("imagen") is None:
+                    plan["imagen"] = "default_plan.jpg"
         else:
             planes = []
     except Exception as e:
@@ -293,6 +296,8 @@ def producto(id):
 def user():
     if request.method == "GET":
         toast_exitoso = session.pop("toast_exitoso", False)
+        compras = []  # <-- definila acá para que siempre exista
+
         try:
             # Cargamos las compras del user
             response = requests.get(f"{API_HOST}/api/compras/usuario/{current_user.id}")
@@ -305,6 +310,7 @@ def user():
             if response2.status_code == 200:
                 reservas = response2.json()
         except Exception as ex:
+            # Podrías loguear el error acá si querés
             return render_template(
                 "user.html", error="Error en el servidor. Intentalo más tarde."
             )
@@ -317,6 +323,7 @@ def user():
                 reservas=reservas,
             )
 
+    # POST
     payload = {
         "Email": current_user.email,  # fijo, para identificar al usuario
         "Nombre": request.form.get("nombre"),
@@ -490,10 +497,11 @@ def registro():
             error = response.json().get("error", "Error desconocido")
             return render_template("auth/registro.html", error=error)
 
-    except Exception:
+    except Exception as ex:
+        print("ERROR EN EL GET:", ex)
         return render_template(
             "auth/registro.html", error="Error en el servidor. Intentalo más tarde."
-        )
+    )
 
 
 @app.route("/logout", methods=["POST"])
@@ -860,7 +868,7 @@ def admin_planes():
                     )
                 else:
                     plan["imagen_url"] = url_for(
-                        "static", filename="images/default_plan.png"
+                        "static", filename="images/default_plan.jpg"
                     )
 
                 planes.append(plan)
@@ -912,7 +920,8 @@ def nuevo_plan():
     deportes_disponibles = request.form.get("deportes_disponibles")
     imagen = request.form.get("imagen")
 
-    if not all([nombre, precio_3_dias, precio_5_dias, deportes_disponibles]):
+    # Validaciones básicas
+    if not all([nombre, precio_3_dias, precio_5_dias]):
         return render_template(
             "admin/nuevo_plan.html",
             error="Todos los campos son obligatorios.",
@@ -929,6 +938,10 @@ def nuevo_plan():
         }
 
         response = requests.post(f"{API_HOST}/api/planes/", json=payload)
+
+        print(f"Response status: {response.status_code}")
+        print(f"Response text: {response.text}")
+
 
         if response.status_code == 201:
             session["plan_creado"] = True
@@ -1024,202 +1037,6 @@ def eliminar_plan(id):
         return redirect("/admin/planes")
     except Exception as e:
         return redirect("/admin/planes")
-
-
-@app.route("/admin/reservas")
-@login_required
-@admin_required
-def admin_reservas():
-    try:
-        response = requests.get(f"{API_HOST}/api/alquileres/")
-        reservas = response.json() if response.status_code == 200 else []
-
-        usuarios_response = requests.get(f"{API_HOST}/api/usuarios/")
-        usuarios = (
-            {u["ID_usuario"]: u for u in usuarios_response.json()}
-            if usuarios_response.status_code == 200
-            else {}
-        )
-
-        planes_response = requests.get(f"{API_HOST}/api/planes/")
-        planes = (
-            {p["ID_Plan"]: p for p in planes_response.json()}
-            if planes_response.status_code == 200
-            else {}
-        )
-
-    except Exception as e:
-        print(f"Error al obtener reservas: {e}")
-        reservas = []
-        usuarios = {}
-        planes = {}
-
-    reserva_editada = session.pop("reserva_editada", False)
-    reserva_creada = session.pop("reserva_creada", False)
-    reserva_eliminada = session.pop("reserva_eliminada", False)
-
-    return render_template(
-        "admin/admin_reservas.html",
-        reservas=reservas,
-        usuarios=usuarios,
-        planes=planes,
-        user=current_user,
-        reserva_editada=reserva_editada,
-        reserva_creada=reserva_creada,
-        reserva_eliminada=reserva_eliminada,
-    )
-
-
-@app.route("/admin/reserva/nueva", methods=["GET", "POST"])
-@login_required
-@admin_required
-def nueva_reserva():
-    try:
-        usuarios_response = requests.get(f"{API_HOST}/api/usuarios/")
-        usuarios = (
-            usuarios_response.json() if usuarios_response.status_code == 200 else []
-        )
-
-        planes_response = requests.get(f"{API_HOST}/api/planes/")
-        planes = planes_response.json() if planes_response.status_code == 200 else []
-
-        if request.method == "GET":
-            return render_template(
-                "admin/nueva_reserva.html",
-                usuarios=usuarios,
-                planes=planes,
-                user=current_user,
-            )
-
-        usuario_id = request.form.get("usuario")
-        plan_id = request.form.get("plan")
-        nota = request.form.get("nota", "")
-
-        if not usuario_id or not plan_id:
-            return render_template(
-                "admin/nueva_reserva.html",
-                usuarios=usuarios,
-                planes=planes,
-                error="Usuario y Plan son obligatorios",
-                user=current_user,
-            )
-
-        payload = {"ID_Usuario": int(usuario_id), "ID_Plan": int(plan_id), "Nota": nota}
-
-        response = requests.post(f"{API_HOST}/api/alquileres/", json=payload)
-
-        if response.status_code == 201:
-            session["reserva_creada"] = True
-            return redirect("/admin/reservas")
-        else:
-            error_msg = response.json().get("error", "Error al crear reserva")
-            return render_template(
-                "admin/nueva_reserva.html",
-                usuarios=usuarios,
-                planes=planes,
-                error=error_msg,
-                user=current_user,
-            )
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return render_template(
-            "admin/nueva_reserva.html",
-            usuarios=usuarios,
-            planes=planes,
-            error="Error en el servidor",
-            user=current_user,
-        )
-
-
-@app.route("/admin/reserva/<int:id>/editar", methods=["GET", "POST"])
-@login_required
-@admin_required
-def editar_reserva(id):
-    try:
-        # Obtener reserva actual
-        response = requests.get(f"{API_HOST}/api/alquileres/{id}")
-        if response.status_code != 200:
-            return "Reserva no encontrada", 404
-        reserva = response.json()
-
-        # Obtener usuarios y planes para los selects
-        usuarios_response = requests.get(f"{API_HOST}/api/usuarios/")
-        usuarios = (
-            usuarios_response.json() if usuarios_response.status_code == 200 else []
-        )
-
-        planes_response = requests.get(f"{API_HOST}/api/planes/")
-        planes = planes_response.json() if planes_response.status_code == 200 else []
-
-        if request.method == "GET":
-            return render_template(
-                "admin/editar_reserva.html",
-                reserva=reserva,
-                usuarios=usuarios,
-                planes=planes,
-                user=current_user,
-            )
-
-        # POST - Actualizar reserva
-        usuario_id = request.form.get("usuario")
-        plan_id = request.form.get("plan")
-        nota = request.form.get("nota", "")
-
-        if not usuario_id or not plan_id:
-            return render_template(
-                "admin/editar_reserva.html",
-                reserva=reserva,
-                usuarios=usuarios,
-                planes=planes,
-                error="Usuario y Plan son obligatorios",
-                user=current_user,
-            )
-
-        payload = {"ID_Usuario": int(usuario_id), "ID_Plan": int(plan_id), "Nota": nota}
-
-        response = requests.put(f"{API_HOST}/api/alquileres/{id}", json=payload)
-
-        if response.status_code == 200:
-            session["reserva_editada"] = True
-            return redirect("/admin/reservas")
-        else:
-            error_msg = response.json().get("error", "Error al actualizar reserva")
-            return render_template(
-                "admin/editar_reserva.html",
-                reserva=reserva,
-                usuarios=usuarios,
-                planes=planes,
-                error=error_msg,
-                user=current_user,
-            )
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return render_template(
-            "admin/editar_reserva.html",
-            reserva=reserva,
-            usuarios=usuarios,
-            planes=planes,
-            error="Error en el servidor",
-            user=current_user,
-        )
-
-
-@app.route("/admin/reserva/<int:id>/eliminar", methods=["POST"])
-@login_required
-@admin_required
-def eliminar_reserva(id):
-    try:
-        response = requests.delete(f"{API_HOST}/api/alquileres/{id}")
-
-        if response.status_code == 200:
-            session["reserva_eliminada"] = True
-
-        return redirect("/admin/reservas")
-    except Exception as e:
-        return redirect("/admin/reservas")
-
 
 # ----------------------Rutas||Tienda----------------------
 @app.route("/agregar_plan_carrito/<path:plan_nombre>", methods=["POST"])
