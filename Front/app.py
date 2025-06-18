@@ -772,19 +772,19 @@ def subir_imagen_plan():
 @admin_required
 def admin_planes():
     try:
-        # Obtener planes desde la API
         response = requests.get(f"{API_HOST}/api/planes/")
         if response.status_code == 200:
             planes_api = response.json()
             planes = []
 
-            # Transformar los datos del API al formato esperado por el template
             for plan_api in planes_api:
+                precio_dias = plan_api.get("precio_dias", {})
+                
                 plan = {
                     "ID_Plan": plan_api.get("id"),
                     "Nombre": plan_api.get("nombre"),
-                    "Precio_3_dias": plan_api.get("precio_dias", {}).get(3, 0),
-                    "Precio_5_dias": plan_api.get("precio_dias", {}).get(5, 0),
+                    "Precio_3_dias": precio_dias.get('3', 0), 
+                    "Precio_5_dias": precio_dias.get('5', 0), 
                     "Deportes_disponibles": ", ".join(plan_api.get("deportes", [])),
                     "Imagen": plan_api.get("imagen"),
                 }
@@ -799,11 +799,25 @@ def admin_planes():
                     )
 
                 planes.append(plan)
+                
+            promedio_3_dias = 0
+            promedio_5_dias = 0
+            if planes:
+                total_3 = sum(plan['Precio_3_dias'] for plan in planes)
+                total_5 = sum(plan['Precio_5_dias'] for plan in planes)
+                promedio_3_dias = round(total_3 / len(planes), 2)
+                promedio_5_dias = round(total_5 / len(planes), 2)
+                
         else:
+            print(f"Error al obtener planes de la API: {response.status_code}")
             planes = []
+            promedio_3_dias = 0
+            promedio_5_dias = 0
     except Exception as e:
         print(f"Error al obtener planes: {e}")
         planes = []
+        promedio_3_dias = 0
+        promedio_5_dias = 0
 
     plan_editado = session.pop("plan_editado", False)
     plan_creado = session.pop("plan_creado", False)
@@ -812,12 +826,13 @@ def admin_planes():
     return render_template(
         "admin/admin_planes.html",
         planes=planes,
+        promedio_3_dias=promedio_3_dias,
+        promedio_5_dias=promedio_5_dias,
         user=current_user,
         plan_editado=plan_editado,
         plan_creado=plan_creado,
         plan_eliminado=plan_eliminado,
     )
-
 
 @app.route("/admin/plan/nuevo", methods=["GET", "POST"])
 @login_required
@@ -826,14 +841,12 @@ def nuevo_plan():
     if request.method == "GET":
         return render_template("admin/nuevo_plan.html", user=current_user)
 
-    # Obtener datos del formulario
     nombre = request.form.get("nombre")
     precio_3_dias = request.form.get("precio_3_dias")
     precio_5_dias = request.form.get("precio_5_dias")
     deportes_disponibles = request.form.get("deportes_disponibles")
     imagen = request.form.get("imagen")
 
-    # Validaciones básicas
     if not all([nombre, precio_3_dias, precio_5_dias, deportes_disponibles]):
         return render_template(
             "admin/nuevo_plan.html",
@@ -885,7 +898,6 @@ def editar_plan(id):
         except Exception as e:
             return "Error del servidor", 500
 
-    # POST - Actualizar plan
     nombre = request.form.get("nombre")
     precio_3_dias = request.form.get("precio_3_dias")
     precio_5_dias = request.form.get("precio_5_dias")
@@ -921,7 +933,6 @@ def editar_plan(id):
             return redirect("/admin/planes")
         else:
             error_msg = response.json().get("error", "Error al actualizar plan")
-            # Obtener plan actual para mostrar en caso de error
             plan_response = requests.get(f"{API_HOST}/api/planes/{id}")
             plan = plan_response.json() if plan_response.status_code == 200 else {}
             return render_template(
@@ -955,11 +966,9 @@ def eliminar_plan(id):
 @admin_required
 def admin_reservas():
     try:
-        # Obtener reservas desde la API
         response = requests.get(f"{API_HOST}/api/alquileres/")
         reservas = response.json() if response.status_code == 200 else []
 
-        # Obtener usuarios y planes para mostrar nombres
         usuarios_response = requests.get(f"{API_HOST}/api/usuarios/")
         usuarios = (
             {u["ID_usuario"]: u for u in usuarios_response.json()}
@@ -1001,7 +1010,6 @@ def admin_reservas():
 @admin_required
 def nueva_reserva():
     try:
-        # Obtener usuarios y planes para los selects
         usuarios_response = requests.get(f"{API_HOST}/api/usuarios/")
         usuarios = (
             usuarios_response.json() if usuarios_response.status_code == 200 else []
@@ -1018,7 +1026,6 @@ def nueva_reserva():
                 user=current_user,
             )
 
-        # POST - Crear nueva reserva
         usuario_id = request.form.get("usuario")
         plan_id = request.form.get("plan")
         nota = request.form.get("nota", "")
