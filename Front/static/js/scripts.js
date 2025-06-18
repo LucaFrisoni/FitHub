@@ -23,6 +23,26 @@ function updateprice(plan, dias) {
   }
 }
 document.addEventListener("DOMContentLoaded", () => {
+
+  //navbar principal ocultandose en el home hasta cierto punto
+  const navbar = document.getElementById("navbar");
+
+    if (window.location.pathname === "/") {
+
+    navbar.classList.add("-translate-y-full");
+    
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > innerHeight) {
+        navbar.classList.remove("-translate-y-full");
+        navbar.classList.add("translate-y-0");
+      } else {
+        navbar.classList.remove("translate-y-0");
+        navbar.classList.add("-translate-y-full");
+      }
+    });
+  };
+
+
   // Código del primer bloque...
   // ------------------------------------------updateprice y botones .button-dias
   const botonesdias = document.querySelectorAll(".button-dias");
@@ -140,6 +160,10 @@ document.addEventListener("DOMContentLoaded", () => {
     cerrarSesion.addEventListener("click", ocultarMenu);
   }
 
+
+
+
+  
   //------------------------------------------------------------------------------------Funcionalidad toast: cerrar al click en la X
   const botonCerrar = document.getElementById("button_alert");
 
@@ -237,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("user_usuario"),
     document.getElementById("user_telefono"),
     document.getElementById("user_nacimiento"),
-  ].filter((input) => input !== null); // <- Esta línea evita errores;
+  ].filter((input) => input !== null); 
 
   const valoresOriginales = {};
 
@@ -332,8 +356,54 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  //------------------------------------------------------------------------------------Home
-  // Slide para las ventas y productos
+
+  //----------------- Script para el efecto 3D sutil que sigue al cursor
+    const cards = document.querySelectorAll('.efecto-3d');
+    cards.forEach(card => {
+
+      let currentRotationX = 0;
+      let currentRotationY = 0;
+      let targetRotationX = 0;
+      let targetRotationY = 0;
+
+      function handleMouseMove(event) {
+          const rect = card.getBoundingClientRect();
+          
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          
+          const mouseX = event.clientX;
+          const mouseY = event.clientY;
+          
+          const deltaX = mouseX - centerX;
+          const deltaY = mouseY - centerY;
+          
+          targetRotationY = (deltaX / rect.width) * 8;  
+          targetRotationX = -(deltaY / rect.height) * 8; 
+      }
+
+      function animate() {
+          currentRotationX += (targetRotationX - currentRotationX) * 0.5;
+          currentRotationY += (targetRotationY - currentRotationY) * 0.5;
+          
+          card.style.transform = `perspective(1000px) rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
+          
+          requestAnimationFrame(animate);
+      }
+
+      function handleMouseLeave() {
+          targetRotationX = 0;
+          targetRotationY = 0;
+      }
+
+      card.addEventListener('mousemove', handleMouseMove);
+      card.addEventListener('mouseleave', handleMouseLeave);
+
+      animate();
+  });
+  
+});
+
 
   let currentIndex = 0;
   const images = document.querySelectorAll("#carrusel img");
@@ -356,7 +426,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   setInterval(nextSlide, 3000);
 
-  //Animacion de titulo
   const titulo = document.getElementById("titulo-animado");
   if (titulo) {
     const texto = titulo.innerText;
@@ -367,4 +436,341 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     titulo.innerHTML = letras.join("");
   }
+
+
+
+// -------------------- RESERVAS ----------------------
+// Funcionalidad de los checkboxes de días
+const dayCheckboxes = document.querySelectorAll('.day-checkbox');
+
+dayCheckboxes.forEach(checkbox => {
+  checkbox.addEventListener('change', function () {
+    const label = this.nextElementSibling;
+    if (this.checked) {
+      label.classList.add('bg-yellow-400', 'text-gray-800', 'font-semibold');
+      label.classList.remove('bg-white', 'text-gray-700');
+    } else {
+      label.classList.remove('bg-yellow-400', 'text-gray-800', 'font-semibold');
+      label.classList.add('bg-white', 'text-gray-700');
+    }
+  });
 });
+
+// Funcionalidad del botón reservar
+const reserveButton = document.getElementById("button-reserva");
+if (reserveButton) {
+  reserveButton.addEventListener('click', async function (e) {
+    e.preventDefault();
+
+    // Obtener días seleccionados
+    const selectedDays = [];
+    dayCheckboxes.forEach(checkbox => {
+      if (checkbox.checked) {
+        selectedDays.push(checkbox.value);
+      }
+    });
+
+    // Validar que se haya seleccionado al menos un día
+    if (selectedDays.length === 0) {
+      alert('Por favor selecciona al menos un día para tu reserva.');
+      return;
+    }
+
+    // Obtener otros valores del formulario
+    const trainingType = document.querySelector('#type-exercise').value;
+    const trainingType_number = parseInt(trainingType.value); // Convertir a número el tipo de entrenamiento
+    const startTime = document.querySelectorAll('input[type="time"]')[0].value;
+    const endTime = document.querySelectorAll('input[type="time"]')[1].value;
+    const comments = document.querySelector('#comment-area').value;
+
+    // Validar que se seleccionó un tipo de entrenamiento válido
+    if (isNaN(trainingType) || trainingType <= 0) {
+      alert('Por favor selecciona un tipo de entrenamiento válido.');
+      return;
+    }
+
+    // Preparar datos para enviar
+    const datos_reserva = {
+      dias: selectedDays, // conjunto de días seleccionados
+      tipo_entrenamiento: trainingType,
+      hora_inicio: startTime,
+      hora_fin: endTime,
+      comentarios: comments
+    };
+
+    console.log('Datos de reserva:', datos_reserva);
+
+    try {
+      // Enviar datos al servidor Flask
+      const response = await fetch('/procesar_reserva', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(datos_reserva)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        alert("¡Reserva exitosa!");
+        // limpiar el formulario después de una reserva exitosa
+        limpiarFormulario();
+      } else {
+        alert(`Error: ${result.error || 'Error desconocido'}`);
+      }
+    } catch (error) {
+      console.error("Error al procesar la reserva:", error);
+      alert("Error de conexión. Por favor, intenta nuevamente.");
+    }
+  });
+}
+
+// Función auxiliar para limpiar el formulario después de una reserva exitosa
+function limpiarFormulario() {
+  // Desmarcar todos los checkboxes de días
+  dayCheckboxes.forEach(checkbox => {
+    checkbox.checked = false;
+    const label = checkbox.nextElementSibling;
+    label.classList.remove('bg-yellow-400', 'text-gray-800', 'font-semibold');
+    label.classList.add('bg-white', 'text-gray-700');
+  });
+
+  // Resetear select de tipo de entrenamiento
+  const typeExercise = document.querySelector('#type-exercise');
+  if (typeExercise) typeExercise.selectedIndex = 0;
+
+  // Resetear horarios a valores por defecto
+  const timeInputs = document.querySelectorAll('input[type="time"]');
+  if (timeInputs[0]) timeInputs[0].value = '09:00';
+  if (timeInputs[1]) timeInputs[1].value = '10:00';
+
+  // Limpiar comentarios
+  const commentArea = document.querySelector('#comment-area');
+  if (commentArea) commentArea.value = '';
+}
+
+// Mejorar la experiencia táctil en móviles
+const touchElements = document.querySelectorAll('.day-button, button, select, input, textarea');
+touchElements.forEach(element => {
+  element.addEventListener('touchstart', function () {
+    this.style.transform = 'scale(0.98)';
+  });
+
+  element.addEventListener('touchend', function () {
+    this.style.transform = 'scale(1)';
+  });
+});
+
+//Script para subir una imagen en planes
+function abrirModalPlan() {
+  document.getElementById("modal-imagen-plan").classList.add("flex");
+  document.getElementById("modal-imagen-plan").classList.remove("hidden");
+}
+
+function cerrarModalPlan() {
+  document.getElementById("modal-imagen-plan").classList.add("hidden");
+  document.getElementById("modal-imagen-plan").classList.remove("flex");
+}
+
+function previewFotoPlan(input) {
+  const preview = document.getElementById("preview-imagen-plan");
+  const file = input.files[0];
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      preview.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+
+  //otro script para subir imagenes pero al editar el plan
+  // Imagen actual del plan para restaurar al cerrar el modal
+  const previewOriginalPlan =
+    "{% if plan.Imagen and plan.Imagen != 'default_plan.jpg' %}{{ url_for('static', filename='images/uploads/planes/' + plan.Imagen) }}{% else %}{{ url_for('static', filename='images/default_plan.jpg') }}{% endif %}";
+
+  document
+    .getElementById("form-subir-imagen-plan")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      // Mostrar loader
+      mostrarLoaderPlan();
+
+      const formData = new FormData(this);
+
+      fetch(this.action, {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.success) {
+            // Actualizar vista previa principal
+            const previewPrincipal = document.getElementById(
+              "preview-imagen-principal"
+            );
+            if (previewPrincipal) {
+              previewPrincipal.src = data.url;
+            }
+
+            // Actualizar campo oculto con el nombre de la imagen
+            const hiddenInput = document.getElementById("nombre_imagen_plan");
+            if (hiddenInput) {
+              hiddenInput.value = data.filename;
+            }
+
+            // Cerrar modal
+            cerrarModalPlan();
+
+            // Marcar que el formulario ha cambiado
+            formChanged = true;
+
+            console.log("Imagen subida correctamente");
+          } else {
+            alert("Error: " + (data.error || "Error desconocido"));
+            ocultarLoaderPlan();
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Error al subir la imagen: " + error.message);
+          ocultarLoaderPlan();
+        });
+    });
+
+  function mostrarLoaderPlan() {
+    document.getElementById("loader").classList.add("flex");
+    document.getElementById("loader").classList.remove("hidden");
+
+    document.getElementById("btn-submit-plan").disabled = true;
+
+    document.getElementById("format-plan").classList.remove("flex");
+    document.getElementById("format-plan").classList.add("hidden");
+
+    document.getElementById("imagen_plan_prev").classList.add("hidden");
+  }
+
+  function ocultarLoaderPlan() {
+    document.getElementById("loader").classList.add("hidden");
+    document.getElementById("loader").classList.remove("flex");
+
+    document.getElementById("btn-submit-plan").disabled = false;
+
+    document.getElementById("format-plan").classList.add("flex");
+    document.getElementById("format-plan").classList.remove("hidden");
+
+    document.getElementById("imagen_plan_prev").classList.remove("hidden");
+  }
+
+  function abrirModalPlan() {
+    document.getElementById("modal-imagen-plan").classList.add("flex");
+    document.getElementById("modal-imagen-plan").classList.remove("hidden");
+
+    // Resetear el preview del modal a la imagen actual
+    document.getElementById("preview-imagen-plan").src = previewOriginalPlan;
+  }
+
+  function previewFotoPlan(input) {
+    const preview = document.getElementById("preview-imagen-plan");
+    const file = input.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function cerrarModalPlan() {
+    document.getElementById("modal-imagen-plan").classList.add("hidden");
+    document.getElementById("modal-imagen-plan").classList.remove("flex");
+
+    // Restaurar vista previa a la imagen actual del plan
+    document.getElementById("preview-imagen-plan").src = previewOriginalPlan;
+    document.getElementById("form-subir-imagen-plan").reset();
+
+    // Asegurar que el loader está oculto
+    ocultarLoaderPlan();
+  }
+
+  // Validación en tiempo real
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("form-editar");
+
+    // Validación antes del envío
+    form.addEventListener("submit", function (e) {
+      let isValid = true;
+      let errors = [];
+
+      // Validar nombre
+      const nombre = document.getElementById("nombre").value.trim();
+      if (!nombre || nombre.length < 3) {
+        errors.push("El nombre debe tener al menos 3 caracteres");
+        isValid = false;
+      }
+
+      // Validar precio 3 días
+      const precio3 = parseFloat(document.getElementById("precio_3_dias").value);
+      if (isNaN(precio3) || precio3 < 0) {
+        errors.push("El precio de 3 días debe ser un número válido mayor o igual a 0");
+        isValid = false;
+      }
+
+      // Validar precio 5 días
+      const precio5 = parseFloat(document.getElementById("precio_5_dias").value);
+      if (isNaN(precio5) || precio5 < 0) {
+        errors.push("El precio de 5 días debe ser un número válido mayor o igual a 0");
+        isValid = false;
+      }
+
+      // Validar deportes disponibles
+      const deportes = document.getElementById("deportes_disponibles").value.trim();
+      if (!deportes || deportes.length < 5) {
+        errors.push("Los deportes disponibles deben tener al menos 5 caracteres");
+        isValid = false;
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+        alert(
+          "Por favor, corrige los siguientes errores:\n\n" + errors.join("\n")
+        );
+      }
+    });
+  });
+
+  // Confirmación antes de salir con cambios no guardados
+  let formChanged = false;
+  const form = document.getElementById("form-editar");
+
+  form.addEventListener("input", function () {
+    formChanged = true;
+  });
+
+  window.addEventListener("beforeunload", function (e) {
+    if (formChanged) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  });
+
+  // No mostrar confirmación al enviar el formulario
+  form.addEventListener("submit", function () {
+    formChanged = false;
+  });

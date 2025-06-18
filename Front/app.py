@@ -87,7 +87,10 @@ def planes():
     try:
         respuesta = requests.get(f"{API_HOST}/api/planes/")
         if respuesta.status_code == 200:
-            planes = respuesta.json()
+            planes = respuesta.json() 
+            for plan in planes:
+                if plan.get("imagen") is None:
+                    plan["imagen"] = "default_plan.jpg"
         else:
             planes = []
     except Exception as e:
@@ -293,6 +296,8 @@ def producto(id):
 def user():
     if request.method == "GET":
         toast_exitoso = session.pop("toast_exitoso", False)
+        compras = []  # <-- definila acá para que siempre exista
+
         try:
             # Cargamos las compras del user
             response = requests.get(f"{API_HOST}/api/compras/usuario/{current_user.id}")
@@ -305,6 +310,7 @@ def user():
             if response2.status_code == 200:
                 reservas = response2.json()
         except Exception as ex:
+            # Podrías loguear el error acá si querés
             return render_template(
                 "user.html", error="Error en el servidor. Intentalo más tarde."
             )
@@ -317,6 +323,7 @@ def user():
                 reservas=reservas,
             )
 
+    # POST
     payload = {
         "Email": current_user.email,  # fijo, para identificar al usuario
         "Nombre": request.form.get("nombre"),
@@ -490,10 +497,11 @@ def registro():
             error = response.json().get("error", "Error desconocido")
             return render_template("auth/registro.html", error=error)
 
-    except Exception:
+    except Exception as ex:
+        print("ERROR EN EL GET:", ex)
         return render_template(
             "auth/registro.html", error="Error en el servidor. Intentalo más tarde."
-        )
+    )
 
 
 @app.route("/logout", methods=["POST"])
@@ -860,7 +868,7 @@ def admin_planes():
                     )
                 else:
                     plan["imagen_url"] = url_for(
-                        "static", filename="images/default_plan.png"
+                        "static", filename="images/default_plan.jpg"
                     )
 
                 planes.append(plan)
@@ -912,7 +920,8 @@ def nuevo_plan():
     deportes_disponibles = request.form.get("deportes_disponibles")
     imagen = request.form.get("imagen")
 
-    if not all([nombre, precio_3_dias, precio_5_dias, deportes_disponibles]):
+    # Validaciones básicas
+    if not all([nombre, precio_3_dias, precio_5_dias]):
         return render_template(
             "admin/nuevo_plan.html",
             error="Todos los campos son obligatorios.",
@@ -929,6 +938,10 @@ def nuevo_plan():
         }
 
         response = requests.post(f"{API_HOST}/api/planes/", json=payload)
+
+        print(f"Response status: {response.status_code}")
+        print(f"Response text: {response.text}")
+
 
         if response.status_code == 201:
             session["plan_creado"] = True
