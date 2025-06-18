@@ -8,7 +8,7 @@ MYSQL_HOST = os.getenv("MYSQL_HOST")
 MYSQL_PORT = os.getenv("MYSQL_PORT")
 MYSQL_USERNAME = os.getenv("MYSQL_USERNAME")
 MYSQL_PASSWD = os.getenv("MYSQL_PASSWD")
-
+MYSQL_DATABASE = os.getenv("MYSQL_DATABASE") or "fithub_db"
 
 def get_connection():
     return mysql.connector.connect(
@@ -16,5 +16,5 @@ def get_connection():
         port=MYSQL_PORT,
         user=MYSQL_USERNAME,
         password=MYSQL_PASSWD,
-        database="fithub_db",
+        database=MYSQL_DATABASE,
     )

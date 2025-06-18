@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npx tailwindcss -i ./static/css/src/tailwind.css -o ./static/css/main.css --watch\" \"python app.py\"",
     "dev2": "concurrently \"npx tailwindcss -i ./static/css/src/tailwind.css -o ./static/css/main.css --watch\" \"flask run --debug --port 3000\"",
-    "prod": "concurrently \"npx tailwindcss -i ./static/css/src/tailwind.css -o ./static/css/main.css\" \"flask run --port 3000\""
+    "build": "tailwindcss -i ./static/css/src/tailwind.css -o ./static/css/output.css --minify"
   },
   "keywords": [],
   "author": "",
