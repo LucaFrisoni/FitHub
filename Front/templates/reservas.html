@@ -1,10 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
 
+<!-- Alerta de éxito -->
+<div id="alert-success"
+  class="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 hidden">
+  <span>✓</span>
+  <span id="success-message">Reserva procesada exitosamente</span>
+  <button id="button_alert_success" class="ml-4 text-white hover:text-gray-200">
+    <span class="text-lg">&times;</span>
+  </button>
+</div>
+
+<!-- Alerta de error -->
+<div id="alert-error"
+  class="fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 hidden">
+  <span>⚠️</span>
+  <span id="error-message">Error al procesar la reserva</span>
+  <button id="button_alert_error" class="ml-4 text-white hover:text-gray-200">
+    <span class="text-lg">&times;</span>
+  </button>
+</div>
+
+<!-- Alerta de advertencia -->
+<div id="alert-warning"
+  class="fixed top-4 right-4 z-50 bg-yellow-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 hidden">
+  <span>⚠️</span>
+  <span id="warning-message">Por favor completa todos los campos</span>
+  <button id="button_alert_warning" class="ml-4 text-white hover:text-gray-200">
+    <span class="text-lg">&times;</span>
+  </button>
+</div>
+
 <div class="min-h-screen bg-[url(/static/images/reserva_fondo.png)]">
-  {% if error %} {% include "components/toasts/error.html" %} {% endif %}
-  <div></div>
-  {% if toast_exitoso %} {% include "components/toasts/exito.html" %} {%endif %}
   <div class="py-4 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7x1 mx-auto">
       <div class="flex flex-col lg:flex-row justify-center gap-6 mt-22">
@@ -448,11 +475,56 @@
   </div>
 </div>
 
+
 <script>
+  function mostrarAlerta(tipo, mensaje) {
+    ocultarTodasLasAlertas();
+
+    const alerta = document.getElementById(`alert-${tipo}`);
+    const mensajeElement = document.getElementById(`${tipo}-message`);
+
+    if (alerta && mensajeElement) {
+      mensajeElement.textContent = mensaje;
+      alerta.classList.remove('hidden');
+
+      // Auto-ocultar después de 5 segundos
+      setTimeout(() => {
+        alerta.classList.add('hidden');
+      }, 5000);
+    }
+  }
+
+  function ocultarTodasLasAlertas() {
+    const alertas = ['alert-success', 'alert-error', 'alert-warning'];
+    alertas.forEach(id => {
+      const alerta = document.getElementById(id);
+      if (alerta) {
+        alerta.classList.add('hidden');
+      }
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('miFormulario');
+    if (form) {
+      form.setAttribute('novalidate', 'novalidate');
+    }
+
+    const botonesAlert = ['button_alert_success', 'button_alert_error', 'button_alert_warning'];
+
+    botonesAlert.forEach(id => {
+      const boton = document.getElementById(id);
+      if (boton) {
+        boton.onclick = () => {
+          const alerta = boton.closest('[id^="alert-"]');
+          if (alerta) {
+            alerta.classList.add('hidden');
+          }
+        };
+      }
+    });
 
     const dayCheckboxes = document.querySelectorAll('.day-checkbox');
-
     dayCheckboxes.forEach(checkbox => {
       checkbox.addEventListener('change', function () {
         const label = this.nextElementSibling;
@@ -470,6 +542,7 @@
     if (reserveButton) {
       reserveButton.addEventListener('click', async function (e) {
         e.preventDefault();
+        e.stopPropagation();
 
         const selectedDays = [];
         dayCheckboxes.forEach(checkbox => {
@@ -479,7 +552,7 @@
         });
 
         if (selectedDays.length === 0) {
-          alert('Por favor selecciona al menos un día para tu reserva.');
+          mostrarAlerta('warning', 'Por favor selecciona al menos un día para tu reserva.');
           return;
         }
 
@@ -488,7 +561,17 @@
         const endTime = document.querySelector('#end-time').value;
 
         if (!trainingType || trainingType === '') {
-          alert('Por favor selecciona un tipo de entrenamiento válido.');
+          mostrarAlerta('warning', 'Por favor selecciona un tipo de entrenamiento válido.');
+          return;
+        }
+
+        if (!startTime || startTime === '') {
+          mostrarAlerta('warning', 'Por favor selecciona una hora de inicio.');
+          return;
+        }
+
+        if (!endTime || endTime === '') {
+          mostrarAlerta('warning', 'Por favor selecciona una hora de fin.');
           return;
         }
 
@@ -514,15 +597,14 @@
           const result = await response.json();
 
           if (response.ok) {
-            alert('Reserva procesada exitosamente');
+            mostrarAlerta('success', 'Reserva procesada exitosamente');
             limpiarFormulario();
           } else {
-            alert(result.error || 'Error al procesar la reserva');
+            mostrarAlerta('error', result.error || 'Error al procesar la reserva');
           }
-
         } catch (error) {
           console.error("Error al procesar la reserva:", error);
-          alert("Error de conexión. Por favor, intenta nuevamente.");
+          mostrarAlerta('error', "Error de conexión. Por favor, intenta nuevamente.");
         } finally {
           reserveButton.disabled = false;
           reserveButton.textContent = "RESERVAR";
@@ -546,7 +628,9 @@
       if (startTime) startTime.value = '09:00';
       if (endTime) endTime.value = '10:00';
 
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     }
 
     const touchElements = document.querySelectorAll('.day-button, button, select, input, textarea');
@@ -554,13 +638,11 @@
       element.addEventListener('touchstart', function () {
         this.style.transform = 'scale(0.98)';
       });
-
       element.addEventListener('touchend', function () {
         this.style.transform = 'scale(1)';
       });
     });
   });
 </script>
-
 {% endblock %}
 {% block footer%}{% endblock %}
