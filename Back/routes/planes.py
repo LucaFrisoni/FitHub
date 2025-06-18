@@ -54,6 +54,9 @@ def get_planes():
 
 @planes_bp.route("/<int:id>")
 def get_plan(id):
+    conn = None
+    cursor = None
+    
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
@@ -62,10 +65,15 @@ def get_plan(id):
         
         if plan_db:
             plan = {
+                "ID_Plan": plan_db['ID_Plan'],
+                "Nombre": plan_db['Nombre'],
+                "Imagen": plan_db['Imagen'],
+                "Precio_3_dias": plan_db['Precio_3_dias'],
+                "Precio_5_dias": plan_db['Precio_5_dias'],
+                "Deportes_disponibles": plan_db['Deportes_disponibles'],
                 "id": plan_db['ID_Plan'],
                 "nombre": plan_db['Nombre'],
-                "dias_elegidos": 3,  
-                "imagen": plan_db['Imagen'],
+                "dias_elegidos": 3,
                 "precio_dias": {
                     3: plan_db['Precio_3_dias'], 
                     5: plan_db['Precio_5_dias']
@@ -86,8 +94,10 @@ def get_plan(id):
     except Exception as ex:
         return devolver_error(ruta=f"planes/{id}", ex=ex)
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
 @planes_bp.route("/", methods=["POST"])
