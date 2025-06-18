@@ -158,6 +158,26 @@ def reservas():
     toast_exitoso = session.pop("toast_exitoso", False)
     toast_error = session.pop("toast_error", False)
     planes = []
+    contador_dias = {
+        'lunes': 0,
+        'martes': 0,
+        'miercoles': 0,
+        'jueves': 0,
+        'viernes': 0,
+        'sabado': 0,
+        'domingo': 0
+    }
+    
+    # Diccionario para controlar límites por día
+    dias_disponibles = {
+        'lunes': True,
+        'martes': True,
+        'miercoles': True,
+        'jueves': True,
+        'viernes': True,
+        'sabado': True,
+        'domingo': True
+    }
     
     try:
         url_planes = f"{API_HOST}/api/planes/"
@@ -167,21 +187,49 @@ def reservas():
             planes_data = response_planes.json()
             planes = [{
                 "id": plan["id"],
-                "nombre": plan["nombre"]} 
+                "nombre": plan["nombre"]}
                 for plan in planes_data]
         else:
             print(f"Error al obtener planes: {response_planes.status_code}")
             
+        url_horarios = f"{API_HOST}/api/horariosentrenamiento/"
+        response_horarios = requests.get(url_horarios)
+        
+        if response_horarios.status_code == 200:
+            horarios_data = response_horarios.json()
+            
+            for horario in horarios_data:
+                dias_reserva = horario.get('Dias', '').lower()
+                
+                if ',' in dias_reserva:
+                    dias_lista = [dia.strip() for dia in dias_reserva.split(',')]
+                    for dia in dias_lista:
+                        if dia in contador_dias:
+                            contador_dias[dia] += 1
+                            # Verificar límite de 20
+                            if contador_dias[dia] >= 20:
+                                dias_disponibles[dia] = False
+                else:
+                    if dias_reserva in contador_dias:
+                        contador_dias[dias_reserva] += 1
+                        # Verificar límite de 20
+                        if contador_dias[dias_reserva] >= 20:
+                            dias_disponibles[dias_reserva] = False
+        else:
+            print(f"Error al obtener horarios: {response_horarios.status_code}")
+            
     except requests.exceptions.RequestException as e:
-        print(f"Error de conexión al obtener planes: {e}")
+        print(f"Error de conexión: {e}")
     except Exception as ex:
-        print(f"Error general al obtener planes: {ex}")
+        print(f"Error general: {ex}")
     
-    return render_template("reservas.html", 
-                         user=current_user, 
-                         toast_exitoso=toast_exitoso,
-                         error=toast_error,
-                         planes=planes)
+    return render_template("reservas.html",
+                          user=current_user,
+                          toast_exitoso=toast_exitoso,
+                          error=toast_error,
+                          planes=planes,
+                          contador_dias=contador_dias,
+                          dias_disponibles=dias_disponibles)
         
 
 @app.route("/tienda", methods=["GET"])
