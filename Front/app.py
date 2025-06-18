@@ -95,62 +95,65 @@ def planes():
         planes = []
     return render_template("planes.html", planes=planes, user=current_user)
 
-@app.route('/procesar_reserva', methods=['POST'])
+
+@app.route("/procesar_reserva", methods=["POST"])
 @login_required
 def procesar_reserva():
     data = request.get_json()
-    
-    dias = data.get('dias', [])
-    tipo_entrenamiento = data.get('tipo_entrenamiento')
-    hora_inicio = data.get('hora_inicio')
-    hora_fin = data.get('hora_fin')
-    
+
+    dias = data.get("dias", [])
+    tipo_entrenamiento = data.get("tipo_entrenamiento")
+    hora_inicio = data.get("hora_inicio")
+    hora_fin = data.get("hora_fin")
+
     if not dias:
         return jsonify({"error": "Debe seleccionar al menos un día"}), 400
-    
+
     if not tipo_entrenamiento:
         return jsonify({"error": "Debe seleccionar un tipo de entrenamiento"}), 400
-    
+
     try:
         tipo_entrenamiento = int(tipo_entrenamiento)
     except ValueError:
         return jsonify({"error": "Tipo de entrenamiento inválido"}), 400
-    
+
     try:
         url_alquileres = f"{API_HOST}/api/alquileres/verificacion_reserva"
-        payload = {
-            "user_id": current_user.id,
-            "tipoEntrenamiento": tipo_entrenamiento
-        }
+        payload = {"user_id": current_user.id, "tipoEntrenamiento": tipo_entrenamiento}
         response_alquileres = requests.post(url_alquileres, json=payload)
-        
+
         if response_alquileres.status_code == 200:
             horario_completo = f"{hora_inicio} - {hora_fin}"
             dias_str = ", ".join(dias)
-            
+
             payload_horario = {
                 "Dias": dias_str,
                 "Horario": horario_completo,
                 "ID_Plan": tipo_entrenamiento,
-                "ID_Usuario": current_user.id
+                "ID_Usuario": current_user.id,
             }
-            
+
             url_horarios = f"{API_HOST}/api/horariosentrenamiento/"
             response_horario = requests.post(url_horarios, json=payload_horario)
-            
+
             if response_horario.status_code == 201:
                 return jsonify({"message": "Reserva realizada con éxito"}), 200
             else:
-                error_msg = response_horario.json().get("error", "Error al crear el horario")
+                error_msg = response_horario.json().get(
+                    "error", "Error al crear el horario"
+                )
                 return jsonify({"error": error_msg}), 400
         else:
-            error_msg = response_alquileres.json().get("error", "Error en la verificación")
+            error_msg = response_alquileres.json().get(
+                "error", "Error en la verificación"
+            )
             return jsonify({"error": error_msg}), 400
-            
+
     except requests.exceptions.RequestException as e:
         return jsonify({"error": "Error de conexión con el servidor"}), 500
     except Exception as ex:
         return jsonify({"error": "Error interno del servidor"}), 500
+
 
 @app.route("/reservas")
 @login_required
@@ -158,31 +161,32 @@ def reservas():
     toast_exitoso = session.pop("toast_exitoso", False)
     toast_error = session.pop("toast_error", False)
     planes = []
-    
+
     try:
         url_planes = f"{API_HOST}/api/planes/"
         response_planes = requests.get(url_planes)
-        
+
         if response_planes.status_code == 200:
             planes_data = response_planes.json()
-            planes = [{
-                "id": plan["id"],
-                "nombre": plan["nombre"]} 
-                for plan in planes_data]
+            planes = [
+                {"id": plan["id"], "nombre": plan["nombre"]} for plan in planes_data
+            ]
         else:
             print(f"Error al obtener planes: {response_planes.status_code}")
-            
+
     except requests.exceptions.RequestException as e:
         print(f"Error de conexión al obtener planes: {e}")
     except Exception as ex:
         print(f"Error general al obtener planes: {ex}")
-    
-    return render_template("reservas.html", 
-                         user=current_user, 
-                         toast_exitoso=toast_exitoso,
-                         error=toast_error,
-                         planes=planes)
-        
+
+    return render_template(
+        "reservas.html",
+        user=current_user,
+        toast_exitoso=toast_exitoso,
+        error=toast_error,
+        planes=planes,
+    )
+
 
 @app.route("/tienda", methods=["GET"])
 def tienda():
@@ -240,6 +244,12 @@ def user():
             response = requests.get(f"{API_HOST}/api/compras/usuario/{current_user.id}")
             if response.status_code == 200:
                 compras = response.json()
+            # Cargamos las reservas del user
+            response2 = requests.get(
+                f"{API_HOST}/api/horariosentrenamiento/usuario/{current_user.id}"
+            )
+            if response2.status_code == 200:
+                reservas = response2.json()
         except Exception as ex:
             return render_template(
                 "user.html", error="Error en el servidor. Intentalo más tarde."
@@ -250,6 +260,7 @@ def user():
                 user=current_user,
                 toast_exitoso=toast_exitoso,
                 compras=compras,
+                reservas=reservas,
             )
 
     payload = {
@@ -1250,16 +1261,18 @@ def agregar_carrito(producto_id):
             f"{API_HOST}/api/productos/", params={"id": producto_id}
         )
         if response.status_code != 200 or not response.json():
-            flash("Producto no encontrado", 'error')
+            flash("Producto no encontrado", "error")
             return redirect(url_for("tienda"))
 
         producto = response.json()[0]
         carrito = session.get("carrito", [])
 
-        cantidad_total = cantidad + sum(map(lambda itm: itm['cantidad'] if itm['id'] == producto_id else 0, carrito)) 
-        
-        if producto.get('Cantidad', 0) < cantidad_total:
-            flash("No hay suficiente stock del producto!", 'error')
+        cantidad_total = cantidad + sum(
+            map(lambda itm: itm["cantidad"] if itm["id"] == producto_id else 0, carrito)
+        )
+
+        if producto.get("Cantidad", 0) < cantidad_total:
+            flash("No hay suficiente stock del producto!", "error")
             return redirect(url_for("tienda"))
 
         for item in carrito:
@@ -1350,10 +1363,7 @@ def pasarela():
         return redirect(url_for("tienda"))
     total = sum(item["precio"] * item["cantidad"] for item in carrito)
     return render_template(
-        "pasarela.html",
-        carrito=carrito,
-        total=total,
-        user=current_user
+        "pasarela.html", carrito=carrito, total=total, user=current_user
     )
 
 
@@ -1395,6 +1405,7 @@ def estado_carrito():
     except Exception as e:
         return jsonify({"error": "Error al obtener estado del carrito"}), 500
 
+
 @app.route("/pago", methods=["POST"])
 def pagar():
     """
@@ -1403,6 +1414,7 @@ def pagar():
     """
     respuesta = requests.post(f"{API_HOST}/api/pago", json=request.get_json())
     return respuesta.json(), respuesta.status_code
+
 
 if __name__ == "__main__":
     app.run("localhost", port=3000, debug=True, threaded=True)
