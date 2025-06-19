@@ -392,6 +392,210 @@ document.addEventListener("DOMContentLoaded", () => {
 
     animate();
   });
+
+  //Script para subir una imagen en planes
+  function abrirModalPlan() {
+    document.getElementById("modal-imagen-plan").classList.add("flex");
+    document.getElementById("modal-imagen-plan").classList.remove("hidden");
+  }
+
+  function cerrarModalPlan() {
+    document.getElementById("modal-imagen-plan").classList.add("hidden");
+    document.getElementById("modal-imagen-plan").classList.remove("flex");
+  }
+
+  function previewFotoPlan(input) {
+    const preview = document.getElementById("preview-imagen-plan");
+    const file = input.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  //otro script para subir imagenes pero al editar el plan
+  // Imagen actual del plan para restaurar al cerrar el modal
+  const previewOriginalPlan =
+    "{% if plan.Imagen and plan.Imagen != 'default_plan.jpg' %}{{ url_for('static', filename='images/uploads/planes/' + plan.Imagen) }}{% else %}{{ url_for('static', filename='images/default_plan.jpg') }}{% endif %}";
+
+  const formSubirImagen = document.getElementById("form-subir-imagen-plan");
+  if (formSubirImagen) {
+    formSubirImagen.addEventListener("submit", function (e) {
+      e.preventDefault();
+      mostrarLoaderPlan();
+
+      const formData = new FormData(this);
+
+      fetch(this.action, {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.success) {
+            const previewPrincipal = document.getElementById(
+              "preview-imagen-principal"
+            );
+            if (previewPrincipal) {
+              previewPrincipal.src = data.url;
+            }
+
+            const hiddenInput = document.getElementById("nombre_imagen_plan");
+            if (hiddenInput) {
+              hiddenInput.value = data.filename;
+            }
+
+            cerrarModalPlan();
+            formChanged = true;
+
+            console.log("Imagen subida correctamente");
+          } else {
+            alert("Error: " + (data.error || "Error desconocido"));
+            ocultarLoaderPlan();
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Error al subir la imagen: " + error.message);
+          ocultarLoaderPlan();
+        });
+    });
+  }
+
+  function mostrarLoaderPlan() {
+    document.getElementById("loader").classList.add("flex");
+    document.getElementById("loader").classList.remove("hidden");
+
+    document.getElementById("btn-submit-plan").disabled = true;
+
+    document.getElementById("format-plan").classList.remove("flex");
+    document.getElementById("format-plan").classList.add("hidden");
+
+    document.getElementById("imagen_plan_prev").classList.add("hidden");
+  }
+
+  function ocultarLoaderPlan() {
+    document.getElementById("loader").classList.add("hidden");
+    document.getElementById("loader").classList.remove("flex");
+
+    document.getElementById("btn-submit-plan").disabled = false;
+
+    document.getElementById("format-plan").classList.add("flex");
+    document.getElementById("format-plan").classList.remove("hidden");
+
+    document.getElementById("imagen_plan_prev").classList.remove("hidden");
+  }
+
+  function abrirModalPlan() {
+    document.getElementById("modal-imagen-plan").classList.add("flex");
+    document.getElementById("modal-imagen-plan").classList.remove("hidden");
+
+    // Resetear el preview del modal a la imagen actual
+    document.getElementById("preview-imagen-plan").src = previewOriginalPlan;
+  }
+
+  function previewFotoPlan(input) {
+    const preview = document.getElementById("preview-imagen-plan");
+    const file = input.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function cerrarModalPlan() {
+    document.getElementById("modal-imagen-plan").classList.add("hidden");
+    document.getElementById("modal-imagen-plan").classList.remove("flex");
+
+    // Restaurar vista previa a la imagen actual del plan
+    document.getElementById("preview-imagen-plan").src = previewOriginalPlan;
+    document.getElementById("form-subir-imagen-plan").reset();
+
+    // Asegurar que el loader está oculto
+    ocultarLoaderPlan();
+  }
+
+  const form = document.getElementById("form-editar");
+
+  if (form) {
+    // Validación antes del envío
+    form.addEventListener("submit", function (e) {
+      let isValid = true;
+      let errors = [];
+
+      const nombre = document.getElementById("nombre").value.trim();
+      if (!nombre || nombre.length < 3) {
+        errors.push("El nombre debe tener al menos 3 caracteres");
+        isValid = false;
+      }
+
+      const precio3 = parseFloat(
+        document.getElementById("precio_3_dias").value
+      );
+      if (isNaN(precio3) || precio3 < 0) {
+        errors.push(
+          "El precio de 3 días debe ser un número válido mayor o igual a 0"
+        );
+        isValid = false;
+      }
+
+      const precio5 = parseFloat(
+        document.getElementById("precio_5_dias").value
+      );
+      if (isNaN(precio5) || precio5 < 0) {
+        errors.push(
+          "El precio de 5 días debe ser un número válido mayor o igual a 0"
+        );
+        isValid = false;
+      }
+
+      const deportes = document
+        .getElementById("deportes_disponibles")
+        .value.trim();
+      if (!deportes || deportes.length < 5) {
+        errors.push(
+          "Los deportes disponibles deben tener al menos 5 caracteres"
+        );
+        isValid = false;
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+        alert(
+          "Por favor, corrige los siguientes errores:\n\n" + errors.join("\n")
+        );
+      } else {
+        formChanged = false;
+      }
+    });
+
+    // Detectar cambios para advertencia al salir
+    form.addEventListener("input", function () {
+      formChanged = true;
+    });
+  }
+
+  // Confirmación antes de salir si hay cambios sin guardar
+  let formChanged = false;
+  window.addEventListener("beforeunload", function (e) {
+    if (formChanged) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  });
 });
 
 let currentIndex = 0;
@@ -425,209 +629,3 @@ if (titulo) {
   });
   titulo.innerHTML = letras.join("");
 }
-
-//Script para subir una imagen en planes
-function abrirModalPlan() {
-  document.getElementById("modal-imagen-plan").classList.add("flex");
-  document.getElementById("modal-imagen-plan").classList.remove("hidden");
-}
-
-function cerrarModalPlan() {
-  document.getElementById("modal-imagen-plan").classList.add("hidden");
-  document.getElementById("modal-imagen-plan").classList.remove("flex");
-}
-
-function previewFotoPlan(input) {
-  const preview = document.getElementById("preview-imagen-plan");
-  const file = input.files[0];
-
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      preview.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
-//otro script para subir imagenes pero al editar el plan
-// Imagen actual del plan para restaurar al cerrar el modal
-const previewOriginalPlan =
-  "{% if plan.Imagen and plan.Imagen != 'default_plan.jpg' %}{{ url_for('static', filename='images/uploads/planes/' + plan.Imagen) }}{% else %}{{ url_for('static', filename='images/default_plan.jpg') }}{% endif %}";
-
-
-const formSubirImagen = document.getElementById("form-subir-imagen-plan");
-  if (formSubirImagen) {
-    formSubirImagen.addEventListener("submit", function (e) {
-      e.preventDefault();
-      mostrarLoaderPlan();
-
-    const formData = new FormData(this);
-
-      fetch(this.action, {
-        method: "POST",
-        body: formData,
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then((data) => {
-          if (data.success) {
-            const previewPrincipal = document.getElementById("preview-imagen-principal");
-            if (previewPrincipal) {
-              previewPrincipal.src = data.url;
-            }
-
-            const hiddenInput = document.getElementById("nombre_imagen_plan");
-            if (hiddenInput) {
-              hiddenInput.value = data.filename;
-            }
-
-            cerrarModalPlan();
-            formChanged = true;
-
-            console.log("Imagen subida correctamente");
-          } else {
-            alert("Error: " + (data.error || "Error desconocido"));
-            ocultarLoaderPlan();
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          alert("Error al subir la imagen: " + error.message);
-          ocultarLoaderPlan();
-        });
-    });
-  }
-
-function mostrarLoaderPlan() {
-  document.getElementById("loader").classList.add("flex");
-  document.getElementById("loader").classList.remove("hidden");
-
-  document.getElementById("btn-submit-plan").disabled = true;
-
-  document.getElementById("format-plan").classList.remove("flex");
-  document.getElementById("format-plan").classList.add("hidden");
-
-  document.getElementById("imagen_plan_prev").classList.add("hidden");
-}
-
-function ocultarLoaderPlan() {
-  document.getElementById("loader").classList.add("hidden");
-  document.getElementById("loader").classList.remove("flex");
-
-  document.getElementById("btn-submit-plan").disabled = false;
-
-  document.getElementById("format-plan").classList.add("flex");
-  document.getElementById("format-plan").classList.remove("hidden");
-
-  document.getElementById("imagen_plan_prev").classList.remove("hidden");
-}
-
-function abrirModalPlan() {
-  document.getElementById("modal-imagen-plan").classList.add("flex");
-  document.getElementById("modal-imagen-plan").classList.remove("hidden");
-
-  // Resetear el preview del modal a la imagen actual
-  document.getElementById("preview-imagen-plan").src = previewOriginalPlan;
-}
-
-function previewFotoPlan(input) {
-  const preview = document.getElementById("preview-imagen-plan");
-  const file = input.files[0];
-
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      preview.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
-function cerrarModalPlan() {
-  document.getElementById("modal-imagen-plan").classList.add("hidden");
-  document.getElementById("modal-imagen-plan").classList.remove("flex");
-
-  // Restaurar vista previa a la imagen actual del plan
-  document.getElementById("preview-imagen-plan").src = previewOriginalPlan;
-  document.getElementById("form-subir-imagen-plan").reset();
-
-    // Asegurar que el loader está oculto
-    ocultarLoaderPlan();
-  }
-  // Validación en tiempo real
-   const form = document.getElementById("form-editar");
-
-  // Validación antes del envío
-  form.addEventListener("submit", function (e) {
-    let isValid = true;
-    let errors = [];
-
-    // Validar nombre
-    const nombre = document.getElementById("nombre").value.trim();
-    if (!nombre || nombre.length < 3) {
-      errors.push("El nombre debe tener al menos 3 caracteres");
-      isValid = false;
-    }
-
-    // Validar precio 3 días
-    const precio3 = parseFloat(document.getElementById("precio_3_dias").value);
-    if (isNaN(precio3) || precio3 < 0) {
-      errors.push(
-        "El precio de 3 días debe ser un número válido mayor o igual a 0"
-      );
-      isValid = false;
-    }
-
-    // Validar precio 5 días
-    const precio5 = parseFloat(document.getElementById("precio_5_dias").value);
-    if (isNaN(precio5) || precio5 < 0) {
-      errors.push(
-        "El precio de 5 días debe ser un número válido mayor o igual a 0"
-      );
-      isValid = false;
-    }
-
-    // Validar deportes disponibles
-    const deportes = document
-      .getElementById("deportes_disponibles")
-      .value.trim();
-    if (!deportes || deportes.length < 5) {
-      errors.push("Los deportes disponibles deben tener al menos 5 caracteres");
-      isValid = false;
-    }
-
-    if (!isValid) {
-      e.preventDefault();
-      alert(
-        "Por favor, corrige los siguientes errores:\n\n" + errors.join("\n")
-      );
-    }
-  });
-});
-
-  // Confirmación antes de salir con cambios no guardados
-  let formChanged = false;
-  const form = document.getElementById("form-editar");
-if(form){form.addEventListener("input", function () {
-    formChanged = true;
-  });}
-  
-
-window.addEventListener("beforeunload", function (e) {
-  if (formChanged) {
-    e.preventDefault();
-    e.returnValue = "";
-  }
-});
-
-if(form){  // No mostrar confirmación al enviar el formulario
-  form.addEventListener("submit", function () {
-    formChanged = false;})}
-
- 
-  });
