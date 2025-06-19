@@ -23,16 +23,15 @@ function updateprice(plan, dias) {
   }
 }
 document.addEventListener("DOMContentLoaded", () => {
-
   //navbar principal ocultandose en el home hasta cierto punto
   const navbar = document.getElementById("navbar");
 
-    if (window.location.pathname === "/") {
-
+  if (window.location.pathname === "/") {
     navbar.classList.add("-translate-y-full");
-    
+
     window.addEventListener("scroll", () => {
-      if (window.scrollY > innerHeight * 0.1) {
+
+      if (window.scrollY > innerHeight * 0.05) {
         navbar.classList.remove("-translate-y-full");
         navbar.classList.add("translate-y-0");
       } else {
@@ -40,8 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         navbar.classList.add("-translate-y-full");
       }
     });
-  };
-
+  }
 
   // Código del primer bloque...
   // ------------------------------------------updateprice y botones .button-dias
@@ -160,10 +158,6 @@ document.addEventListener("DOMContentLoaded", () => {
     cerrarSesion.addEventListener("click", ocultarMenu);
   }
 
-
-
-
-  
   //------------------------------------------------------------------------------------Funcionalidad toast: cerrar al click en la X
   const botonCerrar = document.getElementById("button_alert");
 
@@ -261,7 +255,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("user_usuario"),
     document.getElementById("user_telefono"),
     document.getElementById("user_nacimiento"),
-  ].filter((input) => input !== null); 
+  ].filter((input) => input !== null);
 
   const valoresOriginales = {};
 
@@ -356,119 +350,80 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-
   //----------------- Script para el efecto 3D sutil que sigue al cursor
-    const cards = document.querySelectorAll('.efecto-3d');
-    cards.forEach(card => {
+  const cards = document.querySelectorAll(".efecto-3d");
+  cards.forEach((card) => {
+    let currentRotationX = 0;
+    let currentRotationY = 0;
+    let targetRotationX = 0;
+    let targetRotationY = 0;
 
-      let currentRotationX = 0;
-      let currentRotationY = 0;
-      let targetRotationX = 0;
-      let targetRotationY = 0;
+    function handleMouseMove(event) {
+      const rect = card.getBoundingClientRect();
 
-      function handleMouseMove(event) {
-          const rect = card.getBoundingClientRect();
-          
-          const centerX = rect.left + rect.width / 2;
-          const centerY = rect.top + rect.height / 2;
-          
-          const mouseX = event.clientX;
-          const mouseY = event.clientY;
-          
-          const deltaX = mouseX - centerX;
-          const deltaY = mouseY - centerY;
-          
-          targetRotationY = (deltaX / rect.width) * 8;  
-          targetRotationX = -(deltaY / rect.height) * 8; 
-      }
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
 
-      function animate() {
-          currentRotationX += (targetRotationX - currentRotationX) * 0.5;
-          currentRotationY += (targetRotationY - currentRotationY) * 0.5;
-          
-          card.style.transform = `perspective(1000px) rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
-          
-          requestAnimationFrame(animate);
-      }
+      const mouseX = event.clientX;
+      const mouseY = event.clientY;
 
-      function handleMouseLeave() {
-          targetRotationX = 0;
-          targetRotationY = 0;
-      }
+      const deltaX = mouseX - centerX;
+      const deltaY = mouseY - centerY;
 
-      card.addEventListener('mousemove', handleMouseMove);
-      card.addEventListener('mouseleave', handleMouseLeave);
+      targetRotationY = (deltaX / rect.width) * 8;
+      targetRotationX = -(deltaY / rect.height) * 8;
+    }
 
-      animate();
+    function animate() {
+      currentRotationX += (targetRotationX - currentRotationX) * 0.5;
+      currentRotationY += (targetRotationY - currentRotationY) * 0.5;
+
+      card.style.transform = `perspective(1000px) rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
+
+      requestAnimationFrame(animate);
+    }
+
+    function handleMouseLeave() {
+      targetRotationX = 0;
+      targetRotationY = 0;
+    }
+
+    card.addEventListener("mousemove", handleMouseMove);
+    card.addEventListener("mouseleave", handleMouseLeave);
+
+    animate();
   });
-  
-});
 
-
-  let currentIndex = 0;
-  const images = document.querySelectorAll("#carrusel img");
-  const totalImages = images.length;
-
-  function updateCarousel() {
-    const container = document.getElementById("carrusel");
-    if (!container) return;
-    container.style.transform = `translateX(-${currentIndex * 100}%)`;
+  //Script para subir una imagen en planes
+  function abrirModalPlan() {
+    document.getElementById("modal-imagen-plan").classList.add("flex");
+    document.getElementById("modal-imagen-plan").classList.remove("hidden");
   }
 
-  function nextSlide() {
-    currentIndex = (currentIndex + 1) % totalImages;
-    updateCarousel();
+  function cerrarModalPlan() {
+    document.getElementById("modal-imagen-plan").classList.add("hidden");
+    document.getElementById("modal-imagen-plan").classList.remove("flex");
   }
 
-  function prevSlide() {
-    currentIndex = (currentIndex - 1 + totalImages) % totalImages;
-    updateCarousel();
+  function previewFotoPlan(input) {
+    const preview = document.getElementById("preview-imagen-plan");
+    const file = input.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
   }
-  setInterval(nextSlide, 3000);
-
-  const titulo = document.getElementById("titulo-animado");
-  if (titulo) {
-    const texto = titulo.innerText;
-    const letras = texto.split("").map((char) => {
-      if (char === " ") return `<span class="inline-block">&nbsp;</span>`;
-      if (char === "*") return "<br>";
-      return `<span class="inline-block transition hover:-translate-y-[0.2vw]">${char}</span>`;
-    });
-    titulo.innerHTML = letras.join("");
-  }
-
-//Script para subir una imagen en planes
-function abrirModalPlan() {
-  document.getElementById("modal-imagen-plan").classList.add("flex");
-  document.getElementById("modal-imagen-plan").classList.remove("hidden");
-}
-
-function cerrarModalPlan() {
-  document.getElementById("modal-imagen-plan").classList.add("hidden");
-  document.getElementById("modal-imagen-plan").classList.remove("flex");
-}
-
-function previewFotoPlan(input) {
-  const preview = document.getElementById("preview-imagen-plan");
-  const file = input.files[0];
-
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      preview.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
 
   //otro script para subir imagenes pero al editar el plan
   // Imagen actual del plan para restaurar al cerrar el modal
   const previewOriginalPlan =
     "{% if plan.Imagen and plan.Imagen != 'default_plan.jpg' %}{{ url_for('static', filename='images/uploads/planes/' + plan.Imagen) }}{% else %}{{ url_for('static', filename='images/default_plan.jpg') }}{% endif %}";
 
-
-const formSubirImagen = document.getElementById("form-subir-imagen-plan");
+  const formSubirImagen = document.getElementById("form-subir-imagen-plan");
   if (formSubirImagen) {
     formSubirImagen.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -488,7 +443,9 @@ const formSubirImagen = document.getElementById("form-subir-imagen-plan");
         })
         .then((data) => {
           if (data.success) {
-            const previewPrincipal = document.getElementById("preview-imagen-principal");
+            const previewPrincipal = document.getElementById(
+              "preview-imagen-principal"
+            );
             if (previewPrincipal) {
               previewPrincipal.src = data.url;
             }
@@ -571,39 +528,48 @@ const formSubirImagen = document.getElementById("form-subir-imagen-plan");
     // Asegurar que el loader está oculto
     ocultarLoaderPlan();
   }
-  // Validación en tiempo real
-   const form = document.getElementById("form-editar");
 
+  const form = document.getElementById("form-editar");
+
+  if (form) {
     // Validación antes del envío
     form.addEventListener("submit", function (e) {
       let isValid = true;
       let errors = [];
 
-      // Validar nombre
       const nombre = document.getElementById("nombre").value.trim();
       if (!nombre || nombre.length < 3) {
         errors.push("El nombre debe tener al menos 3 caracteres");
         isValid = false;
       }
 
-      // Validar precio 3 días
-      const precio3 = parseFloat(document.getElementById("precio_3_dias").value);
+      const precio3 = parseFloat(
+        document.getElementById("precio_3_dias").value
+      );
       if (isNaN(precio3) || precio3 < 0) {
-        errors.push("El precio de 3 días debe ser un número válido mayor o igual a 0");
+        errors.push(
+          "El precio de 3 días debe ser un número válido mayor o igual a 0"
+        );
         isValid = false;
       }
 
-      // Validar precio 5 días
-      const precio5 = parseFloat(document.getElementById("precio_5_dias").value);
+      const precio5 = parseFloat(
+        document.getElementById("precio_5_dias").value
+      );
       if (isNaN(precio5) || precio5 < 0) {
-        errors.push("El precio de 5 días debe ser un número válido mayor o igual a 0");
+        errors.push(
+          "El precio de 5 días debe ser un número válido mayor o igual a 0"
+        );
         isValid = false;
       }
 
-      // Validar deportes disponibles
-      const deportes = document.getElementById("deportes_disponibles").value.trim();
+      const deportes = document
+        .getElementById("deportes_disponibles")
+        .value.trim();
       if (!deportes || deportes.length < 5) {
-        errors.push("Los deportes disponibles deben tener al menos 5 caracteres");
+        errors.push(
+          "Los deportes disponibles deben tener al menos 5 caracteres"
+        );
         isValid = false;
       }
 
@@ -612,28 +578,55 @@ const formSubirImagen = document.getElementById("form-subir-imagen-plan");
         alert(
           "Por favor, corrige los siguientes errores:\n\n" + errors.join("\n")
         );
+      } else {
+        formChanged = false;
       }
     });
-  });
 
-  // Confirmación antes de salir con cambios no guardados
+    // Detectar cambios para advertencia al salir
+    form.addEventListener("input", function () {
+      formChanged = true;
+    });
+  }
+
+  // Confirmación antes de salir si hay cambios sin guardar
   let formChanged = false;
-  const form = document.getElementById("form-editar");
-if(form){form.addEventListener("input", function () {
-    formChanged = true;
-  });}
-  
-
   window.addEventListener("beforeunload", function (e) {
     if (formChanged) {
       e.preventDefault();
       e.returnValue = "";
     }
   });
+});
 
-if(form){  // No mostrar confirmación al enviar el formulario
-  form.addEventListener("submit", function () {
-    formChanged = false;})}
+let currentIndex = 0;
+const images = document.querySelectorAll("#carrusel img");
+const totalImages = images.length;
 
- 
+function updateCarousel() {
+  const container = document.getElementById("carrusel");
+  if (!container) return;
+  container.style.transform = `translateX(-${currentIndex * 100}%)`;
+}
+
+function nextSlide() {
+  currentIndex = (currentIndex + 1) % totalImages;
+  updateCarousel();
+}
+
+function prevSlide() {
+  currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+  updateCarousel();
+}
+setInterval(nextSlide, 3000);
+
+const titulo = document.getElementById("titulo-animado");
+if (titulo) {
+  const texto = titulo.innerText;
+  const letras = texto.split("").map((char) => {
+    if (char === " ") return `<span class="inline-block">&nbsp;</span>`;
+    if (char === "*") return "<br>";
+    return `<span class="inline-block transition hover:-translate-y-[0.2vw]">${char}</span>`;
   });
+  titulo.innerHTML = letras.join("");
+}

@@ -87,7 +87,7 @@ def planes():
     try:
         respuesta = requests.get(f"{API_HOST}/api/planes/")
         if respuesta.status_code == 200:
-            planes = respuesta.json() 
+            planes = respuesta.json()
             for plan in planes:
                 if plan.get("imagen") is None:
                     plan["imagen"] = "default_plan.jpg"
@@ -103,11 +103,11 @@ def planes():
 @login_required
 def procesar_reserva():
     data = request.get_json()
-    dias = data.get('dias', [])
-    tipo_entrenamiento = data.get('tipo_entrenamiento')
-    hora_inicio = data.get('hora_inicio')
-    hora_fin = data.get('hora_fin')
-    
+    dias = data.get("dias", [])
+    tipo_entrenamiento = data.get("tipo_entrenamiento")
+    hora_inicio = data.get("hora_inicio")
+    hora_fin = data.get("hora_fin")
+
     if not dias:
         return jsonify({"error": "Debe seleccionar al menos un día"}), 400
     if not tipo_entrenamiento:
@@ -122,23 +122,25 @@ def procesar_reserva():
         url_alquileres = f"{API_HOST}/api/alquileres/verificacion_reserva"
         payload = {"user_id": current_user.id, "tipoEntrenamiento": tipo_entrenamiento}
         response_alquileres = requests.post(url_alquileres, json=payload)
-        
+
         if response_alquileres.status_code != 200:
-            error_msg = response_alquileres.json().get("error", "Error en la verificación")
+            error_msg = response_alquileres.json().get(
+                "error", "Error en la verificación"
+            )
             return jsonify({"error": error_msg}), 400
-        
+
         horario_completo = f"{hora_inicio} - {hora_fin}"
         url_horarios = f"{API_HOST}/api/horariosentrenamiento/"
-        
+
         reservas_creadas = []
         for dia in dias:
             payload_horario = {
-                "Dias": dia,  
+                "Dias": dia,
                 "Horario": horario_completo,
                 "ID_Plan": tipo_entrenamiento,
                 "ID_Usuario": current_user.id,
             }
-            
+
             response_horario = requests.post(url_horarios, json=payload_horario)
 
             if response_horario.status_code == 201:
@@ -150,15 +152,27 @@ def procesar_reserva():
                         requests.delete(f"{url_horarios}{reserva['id']}")
                     except:
                         pass
-                
-                error_msg = response_horario.json().get("error", "Error al crear el horario")
-                return jsonify({"error": f"Error al crear reserva para {dia}: {error_msg}"}), 400
-        
-        return jsonify({
-            "message": "Reservas realizadas con éxito",
-            "reservas": reservas_creadas
-        }), 200
-        
+
+                error_msg = response_horario.json().get(
+                    "error", "Error al crear el horario"
+                )
+                return (
+                    jsonify(
+                        {"error": f"Error al crear reserva para {dia}: {error_msg}"}
+                    ),
+                    400,
+                )
+
+        return (
+            jsonify(
+                {
+                    "message": "Reservas realizadas con éxito",
+                    "reservas": reservas_creadas,
+                }
+            ),
+            200,
+        )
+
     except requests.exceptions.RequestException as e:
         return jsonify({"error": "Error de conexión con el servidor"}), 500
     except Exception as ex:
@@ -172,50 +186,49 @@ def reservas():
     toast_error = session.pop("toast_error", False)
     planes = []
     contador_dias = {
-        'lunes': 0,
-        'martes': 0,
-        'miercoles': 0,
-        'jueves': 0,
-        'viernes': 0,
-        'sabado': 0,
-        'domingo': 0
+        "lunes": 0,
+        "martes": 0,
+        "miercoles": 0,
+        "jueves": 0,
+        "viernes": 0,
+        "sabado": 0,
+        "domingo": 0,
     }
-    
+
     # Diccionario para controlar límites por día
     dias_disponibles = {
-        'lunes': True,
-        'martes': True,
-        'miercoles': True,
-        'jueves': True,
-        'viernes': True,
-        'sabado': True,
-        'domingo': True
+        "lunes": True,
+        "martes": True,
+        "miercoles": True,
+        "jueves": True,
+        "viernes": True,
+        "sabado": True,
+        "domingo": True,
     }
-    
+
     try:
         url_planes = f"{API_HOST}/api/planes/"
         response_planes = requests.get(url_planes)
 
         if response_planes.status_code == 200:
             planes_data = response_planes.json()
-            planes = [{
-                "id": plan["id"],
-                "nombre": plan["nombre"]}
-                for plan in planes_data]
+            planes = [
+                {"id": plan["id"], "nombre": plan["nombre"]} for plan in planes_data
+            ]
         else:
             print(f"Error al obtener planes: {response_planes.status_code}")
-            
+
         url_horarios = f"{API_HOST}/api/horariosentrenamiento/"
         response_horarios = requests.get(url_horarios)
-        
+
         if response_horarios.status_code == 200:
             horarios_data = response_horarios.json()
-            
+
             for horario in horarios_data:
-                dias_reserva = horario.get('Dias', '').lower()
-                
-                if ',' in dias_reserva:
-                    dias_lista = [dia.strip() for dia in dias_reserva.split(',')]
+                dias_reserva = horario.get("Dias", "").lower()
+
+                if "," in dias_reserva:
+                    dias_lista = [dia.strip() for dia in dias_reserva.split(",")]
                     for dia in dias_lista:
                         if dia in contador_dias:
                             contador_dias[dia] += 1
@@ -230,20 +243,22 @@ def reservas():
                             dias_disponibles[dias_reserva] = False
         else:
             print(f"Error al obtener horarios: {response_horarios.status_code}")
-            
+
     except requests.exceptions.RequestException as e:
         print(f"Error de conexión: {e}")
     except Exception as ex:
         print(f"Error general: {ex}")
-    
-    return render_template("reservas.html",
-                          user=current_user,
-                          toast_exitoso=toast_exitoso,
-                          error=toast_error,
-                          planes=planes,
-                          contador_dias=contador_dias,
-                          dias_disponibles=dias_disponibles)
-        
+
+    return render_template(
+        "reservas.html",
+        user=current_user,
+        toast_exitoso=toast_exitoso,
+        error=toast_error,
+        planes=planes,
+        contador_dias=contador_dias,
+        dias_disponibles=dias_disponibles,
+    )
+
 
 @app.route("/tienda", methods=["GET"])
 def tienda():
@@ -501,7 +516,7 @@ def registro():
         print("ERROR EN EL GET:", ex)
         return render_template(
             "auth/registro.html", error="Error en el servidor. Intentalo más tarde."
-    )
+        )
 
 
 @app.route("/logout", methods=["POST"])
@@ -852,12 +867,12 @@ def admin_planes():
 
             for plan_api in planes_api:
                 precio_dias = plan_api.get("precio_dias", {})
-                
+
                 plan = {
                     "ID_Plan": plan_api.get("id"),
                     "Nombre": plan_api.get("nombre"),
-                    "Precio_3_dias": precio_dias.get('3', 0), 
-                    "Precio_5_dias": precio_dias.get('5', 0), 
+                    "Precio_3_dias": precio_dias.get("3", 0),
+                    "Precio_5_dias": precio_dias.get("5", 0),
                     "Deportes_disponibles": ", ".join(plan_api.get("deportes", [])),
                     "Imagen": plan_api.get("imagen"),
                 }
@@ -872,15 +887,15 @@ def admin_planes():
                     )
 
                 planes.append(plan)
-                
+
             promedio_3_dias = 0
             promedio_5_dias = 0
             if planes:
-                total_3 = sum(plan['Precio_3_dias'] for plan in planes)
-                total_5 = sum(plan['Precio_5_dias'] for plan in planes)
+                total_3 = sum(plan["Precio_3_dias"] for plan in planes)
+                total_5 = sum(plan["Precio_5_dias"] for plan in planes)
                 promedio_3_dias = round(total_3 / len(planes), 2)
                 promedio_5_dias = round(total_5 / len(planes), 2)
-                
+
         else:
             print(f"Error al obtener planes de la API: {response.status_code}")
             planes = []
@@ -906,6 +921,7 @@ def admin_planes():
         plan_creado=plan_creado,
         plan_eliminado=plan_eliminado,
     )
+
 
 @app.route("/admin/plan/nuevo", methods=["GET", "POST"])
 @login_required
@@ -941,7 +957,6 @@ def nuevo_plan():
 
         print(f"Response status: {response.status_code}")
         print(f"Response text: {response.text}")
-
 
         if response.status_code == 201:
             session["plan_creado"] = True
@@ -997,11 +1012,11 @@ def editar_plan(id):
 
     try:
         payload = {
-            "Nombre": nombre,
-            "Precio_3_dias": int(precio_3_dias),
-            "Precio_5_dias": int(precio_5_dias),
-            "Deportes_disponibles": deportes_disponibles,
-            "Imagen": imagen,
+            "nombre": nombre,
+            "precio_3_dias": int(precio_3_dias),
+            "precio_5_dias": int(precio_5_dias),
+            "deportes_disponibles": deportes_disponibles,
+            "imagen": imagen,
         }
 
         response = requests.put(f"{API_HOST}/api/planes/{id}", json=payload)
@@ -1037,6 +1052,7 @@ def eliminar_plan(id):
         return redirect("/admin/planes")
     except Exception as e:
         return redirect("/admin/planes")
+
 
 # ----------------------Rutas||Tienda----------------------
 @app.route("/agregar_plan_carrito/<path:plan_nombre>", methods=["POST"])

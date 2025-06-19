@@ -17,7 +17,10 @@
   </head>
   <body class="bg-stone-100 min-h-screen w-full flex flex-col">
     {% block navbar %}
-    <nav id="navbar" class="bg-white w-full h-[90px] flex justify-between fixed z-10 transition-all duration-500 ease-in-out {% if request.path == '/' %}-translate-y-full{% endif %}">
+    <nav
+      id="navbar"
+      class="bg-white w-full h-[90px] flex justify-between fixed z-10 transition-all duration-500 ease-in-out"
+    >
       <!-- Logo -->
       <div class="flex items-center justify-center pl-10">
         <img
@@ -428,8 +431,7 @@
       </div>
     </footer>
     {% endblock %}
-    
+
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-    
   </body>
 </html>
