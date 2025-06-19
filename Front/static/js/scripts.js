@@ -619,10 +619,10 @@ const formSubirImagen = document.getElementById("form-subir-imagen-plan");
   // Confirmación antes de salir con cambios no guardados
   let formChanged = false;
   const form = document.getElementById("form-editar");
-
-  form.addEventListener("input", function () {
+if(form){form.addEventListener("input", function () {
     formChanged = true;
-  });
+  });}
+  
 
   window.addEventListener("beforeunload", function (e) {
     if (formChanged) {
@@ -631,8 +631,9 @@ const formSubirImagen = document.getElementById("form-subir-imagen-plan");
     }
   });
 
-  // No mostrar confirmación al enviar el formulario
+if(form){  // No mostrar confirmación al enviar el formulario
   form.addEventListener("submit", function () {
-    formChanged = false;})
+    formChanged = false;})}
+
  
   });
