@@ -1,0 +1,141 @@
+{% extends "base.html" %} {% block content %}
+<div
+  class="bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-white min-h-screen pt-24"
+>
+  <div class="max-w-4xl mx-auto p-6 pt-24">
+    <h1 class="text-2xl font-bold mb-4">Tu Carrito</h1>
+
+    {% if carrito %} {% for item in carrito %}
+    <div class="bg-white shadow-md p-4 mb-4 rounded-lg">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <!-- Información del producto/plan -->
+        <div class="flex items-center gap-4 flex-1">
+          {% if item.imagen %}
+            {% if item.imagen.startswith('producto') %}
+              <img
+                src="{{ url_for('static', filename='images/uploads/productos/' + item.imagen) }}"
+                alt="{{ item.nombre }}"
+                class="w-20 h-20 object-cover rounded"
+              />
+            {% else %}
+              <img
+                src="{{ url_for('static', filename='images/uploads/planes/' + item.imagen) }}"
+                alt="{{ item.nombre }}"
+                class="w-20 h-20 object-cover rounded"
+              />
+            {% endif %}
+          {% endif %}
+
+          <div class="text-black text-sm sm:text-base space-y-1">
+            <h2 class="font-bold">{{ item.nombre }}</h2>
+            <p class="font-semibold">
+              Cantidad: <span class="font-normal">{{ item.cantidad }}</span>
+            </p>
+            <p class="font-semibold">
+              Precio unitario: <span class="font-normal">${{ item.precio }}</span>
+            </p>
+            <p class="font-semibold">
+              Total: <span class="font-normal">${{ item.precio * item.cantidad }}</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Botón eliminar -->
+        <form
+          method="POST"
+          action="{{ url_for('eliminar_producto_carrito', item_id=
+                    ('plan_' + item.plan_key) if item.tipo == 'plan' else item.id
+                ) }}"
+        >
+          <button
+            type="submit"
+            class="text-red-500 text-sm hover:text-red-700 px-4 py-2 bg-red-50 rounded hover:bg-red-100 transition-colors w-full sm:w-auto"
+          >
+            Eliminar
+          </button>
+        </form>
+      </div>
+
+      <!-- Información adicional -->
+      <div class="mt-3 text-sm text-gray-600 flex flex-wrap gap-2">
+        {% if item.tipo == 'plan' %}
+          <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Plan</span>
+          {% if item.deporte %}
+            <span class="bg-green-100 text-green-800 px-2 py-1 rounded">{{ item.deporte }}</span>
+          {% endif %}
+          <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded">{{ item.dias }} días/semana</span>
+        {% else %}
+          <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded">Producto</span>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+    <!-- Botones -->
+    <div class="text-right mt-6">
+      <p class="text-xl font-semibold">Total: ${{ "%.2f"|format(total) }}</p>
+      <div class="mt-4 flex justify-end space-x-4">
+        <a
+          href="{{ url_for('home') }}"
+          class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+        >
+          Volver al Home
+        </a>
+        <a
+          href="{{ url_for('tienda') }}"
+          class="bg-black text-white px-4 py-2 rounded-lg hover:bg-black/85 transition-colors cursor-pointer"
+        >
+          Seguir Comprando
+        </a>
+        <form action="{{ url_for('pasarela') }}" method="get" class="inline">
+          <button
+            type="submit"
+            class="bg-primary hover:bg-primary/85 text-white px-4 py-2 rounded-lg transition-colors cursor-pointer"
+          >
+            Finalizar Compra
+          </button>
+        </form>
+      </div>
+    </div>
+    {% else %}
+    <!-- Carrito vacio -->
+    <div class="text-center py-12">
+      <div class="mb-4">
+        <svg
+          class="mx-auto h-24 w-24 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13v6a2 2 0 002 2h6a2 2 0 002-2v-6m-9 0h10"
+          />
+        </svg>
+      </div>
+      <h3 class="text-xl font-medium text-gray-300 mb-2">
+        Tu carrito está vacío
+      </h3>
+      <p class="text-gray-400 mb-6">
+        ¿Por qué no agregas algunos productos increíbles?
+      </p>
+      <div class="space-x-4">
+        <a
+          href="{{ url_for('tienda') }}"
+          class="bg-primary hover:bg-primary/85 text-white px-6 py-3 rounded-lg transition-colors inline-block"
+        >
+          Ir a la Tienda
+        </a>
+        <a
+          href="{{ url_for('planes') }}"
+          class="bg-black hover:bg-black/85 text-white px-6 py-3 rounded-lg transition-colors inline-block"
+        >
+          Ver Planes
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

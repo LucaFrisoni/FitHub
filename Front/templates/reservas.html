@@ -1,0 +1,648 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Alerta de éxito -->
+<div id="alert-success"
+  class="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 hidden">
+  <span>✓</span>
+  <span id="success-message">Reserva procesada exitosamente</span>
+  <button id="button_alert_success" class="ml-4 text-white hover:text-gray-200">
+    <span class="text-lg">&times;</span>
+  </button>
+</div>
+
+<!-- Alerta de error -->
+<div id="alert-error"
+  class="fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 hidden">
+  <span>⚠️</span>
+  <span id="error-message">Error al procesar la reserva</span>
+  <button id="button_alert_error" class="ml-4 text-white hover:text-gray-200">
+    <span class="text-lg">&times;</span>
+  </button>
+</div>
+
+<!-- Alerta de advertencia -->
+<div id="alert-warning"
+  class="fixed top-4 right-4 z-50 bg-yellow-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 hidden">
+  <span>⚠️</span>
+  <span id="warning-message">Por favor completa todos los campos</span>
+  <button id="button_alert_warning" class="ml-4 text-white hover:text-gray-200">
+    <span class="text-lg">&times;</span>
+  </button>
+</div>
+
+<div class="min-h-screen bg-[url(/static/images/reserva_fondo.png)]">
+  <div class="py-4 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7x1 mx-auto">
+      <div class="flex flex-col lg:flex-row justify-center gap-6 mt-22">
+        <div class="w-full lg:w-3/5">
+          <div class="bg-white border rounded-lg shadow-lg p-4 sm:p-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
+              Reservación
+            </h2>
+
+            <form id="miFormulario" class="mb-6">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Disponibilidad</label>
+              <div class="grid grid-cols-7 gap-1 sm:gap-0">
+                <div>
+                  <input type="checkbox" id="lun" name="dias[]" value="Lunes" class="day-checkbox hidden" {% if not
+                    dias_disponibles.lunes %}disabled{% endif %}>
+                  <label for="lun"
+                    class="day-button block px-2 sm:px-4 py-2 sm:py-3 {% if dias_disponibles.lunes %}hover:bg-yellow-500 cursor-pointer{% else %}bg-red-200 cursor-not-allowed opacity-60{% endif %} border border-gray-300 font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px first:ml-0 bg-white">
+                    Lun
+                    {% if not dias_disponibles.lunes %}<br><span class="text-xs text-red-600">Lleno</span>{% endif %}
+                  </label>
+                </div>
+
+                <div>
+                  <input type="checkbox" id="mar" name="dias[]" value="Martes" class="day-checkbox hidden" {% if not
+                    dias_disponibles.martes %}disabled{% endif %}>
+                  <label for="mar"
+                    class="day-button block px-2 sm:px-4 py-2 sm:py-3 {% if dias_disponibles.martes %}hover:bg-yellow-500 cursor-pointer{% else %}bg-red-200 cursor-not-allowed opacity-60{% endif %} border border-gray-300 font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
+                    Mar
+                    {% if not dias_disponibles.martes %}<br><span class="text-xs text-red-600">Lleno</span>{% endif %}
+                  </label>
+                </div>
+
+                <div>
+                  <input type="checkbox" id="mie" name="dias[]" value="Miercoles" class="day-checkbox hidden" {% if not
+                    dias_disponibles.miercoles %}disabled{% endif %}>
+                  <label for="mie"
+                    class="day-button block px-2 sm:px-4 py-2 sm:py-3 {% if dias_disponibles.miercoles %}hover:bg-yellow-500 cursor-pointer{% else %}bg-red-200 cursor-not-allowed opacity-60{% endif %} border border-gray-300 font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
+                    Mié
+                    {% if not dias_disponibles.miercoles %}<br><span class="text-xs text-red-600">Lleno</span>{% endif
+                    %}
+                  </label>
+                </div>
+
+                <div>
+                  <input type="checkbox" id="jue" name="dias[]" value="Jueves" class="day-checkbox hidden" {% if not
+                    dias_disponibles.jueves %}disabled{% endif %}>
+                  <label for="jue"
+                    class="day-button block px-2 sm:px-4 py-2 sm:py-3 {% if dias_disponibles.jueves %}hover:bg-yellow-500 cursor-pointer{% else %}bg-red-200 cursor-not-allowed opacity-60{% endif %} border border-gray-300 font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
+                    Jue
+                    {% if not dias_disponibles.jueves %}<br><span class="text-xs text-red-600">Lleno</span>{% endif %}
+                  </label>
+                </div>
+
+                <div>
+                  <input type="checkbox" id="vie" name="dias[]" value="Viernes" class="day-checkbox hidden" {% if not
+                    dias_disponibles.viernes %}disabled{% endif %}>
+                  <label for="vie"
+                    class="day-button block px-2 sm:px-4 py-2 sm:py-3 {% if dias_disponibles.viernes %}hover:bg-yellow-500 cursor-pointer{% else %}bg-red-200 cursor-not-allowed opacity-60{% endif %} border border-gray-300 font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
+                    Vie
+                    {% if not dias_disponibles.viernes %}<br><span class="text-xs text-red-600">Lleno</span>{% endif %}
+                  </label>
+                </div>
+
+                <div>
+                  <input type="checkbox" id="sab" name="dias[]" value="Sabado" class="day-checkbox hidden" {% if not
+                    dias_disponibles.sabado %}disabled{% endif %}>
+                  <label for="sab"
+                    class="day-button block px-2 sm:px-4 py-2 sm:py-3 {% if dias_disponibles.sabado %}hover:bg-yellow-500 cursor-pointer{% else %}bg-red-200 cursor-not-allowed opacity-60{% endif %} border border-gray-300 font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
+                    Sáb
+                    {% if not dias_disponibles.sabado %}<br><span class="text-xs text-red-600">Lleno</span>{% endif %}
+                  </label>
+                </div>
+
+                <div>
+                  <input type="checkbox" id="dom" name="dias[]" value="Domingo" class="day-checkbox hidden" {% if not
+                    dias_disponibles.domingo %}disabled{% endif %}>
+                  <label for="dom"
+                    class="day-button block px-2 sm:px-4 py-2 sm:py-3 {% if dias_disponibles.domingo %}hover:bg-yellow-500 cursor-pointer{% else %}bg-red-200 cursor-not-allowed opacity-60{% endif %} border border-gray-300 font-medium text-gray-700 text-center text-xs sm:text-sm min-w-0 sm:min-w-[70px] -ml-px bg-white">
+                    Dom
+                    {% if not dias_disponibles.domingo %}<br><span class="text-xs text-red-600">Lleno</span>{% endif %}
+                  </label>
+                </div>
+              </div>
+
+              <div class="mt-3 mb-3">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Tipo de Entrenamiento</label>
+                <select id="type-exercise"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base">
+                  <option value="">Selecciona un tipo de entrenamiento</option>
+                  {% for plan in planes %}
+                  <option value="{{ plan.id }}">{{ plan.nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Horario</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <input type="time" id="start-time" value="09:00"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base" />
+                    <label class="text-xs text-gray-500 mt-1 block">Inicio</label>
+                  </div>
+                  <div>
+                    <input type="time" id="end-time" value="10:00"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base" />
+                    <label class="text-xs text-gray-500 mt-1 block">Fin</label>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            <div class="block">
+              <button id="button-reserva"
+                class="Reserva w-full bg-gradient-to-r from-black to-gray-800 hover:from-gray-800 hover:to-yellow-500 text-white py-3 rounded font-semibold transition duration-300 text-sm sm:text-base cursor-pointer">
+                RESERVAR
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="w-full lg:w-2/5">
+          <div class="bg-white border rounded-lg shadow-lg p-4 sm:p-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3">
+              Turnos Disponibles
+            </h2>
+            <div class="space-y-1">
+              <!-- Lunes -->
+              <div
+                class="flex items-center justify-between p-2 sm:p-3 border rounded-lg {% if contador_dias.lunes >= 20 %}bg-red-50 border-red-200{% elif contador_dias.lunes >= 18 %}bg-yellow-50 border-yellow-200{% else %}bg-white{% endif %} hover:bg-stone-100 transition">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                  <span class="font-semibold text-black text-sm sm:text-base">Lunes</span>
+                  <div class="flex items-center">
+                    {% if contador_dias.lunes >= 20 %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% elif contador_dias.lunes >= 15 %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% else %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span
+                    class="{% if contador_dias.lunes >= 20 %}bg-red-200 text-red-700{% elif contador_dias.lunes >= 18 %}bg-yellow-200 text-yellow-700{% else %}bg-gray-200 text-gray-700{% endif %} px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                    {{ contador_dias.lunes }}
+                  </span>
+                  <span
+                    class="bg-yellow-400 text-gray-800 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                    20
+                  </span>
+                  {% if contador_dias.lunes >= 20 %}
+                  <span class="text-xs text-red-600 font-semibold">COMPLETO</span>
+                  {% elif contador_dias.lunes >= 15 %}
+                  <span class="text-xs text-yellow-600 font-semibold">CASI LLENO</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Martes -->
+              <div
+                class="flex items-center justify-between p-2 sm:p-3 border rounded-lg {% if contador_dias.martes >= 20 %}bg-red-50 border-red-200{% elif contador_dias.martes >= 18 %}bg-yellow-50 border-yellow-200{% else %}bg-white{% endif %} hover:bg-stone-100 transition">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                  <span class="font-semibold text-black text-sm sm:text-base">Martes</span>
+                  <div class="flex items-center">
+                    {% if contador_dias.martes >= 20 %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% elif contador_dias.martes >= 15 %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% else %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span
+                    class="{% if contador_dias.martes >= 20 %}bg-red-200 text-red-700{% elif contador_dias.martes >= 18 %}bg-yellow-200 text-yellow-700{% else %}bg-gray-200 text-gray-700{% endif %} px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                    {{ contador_dias.martes }}
+                  </span>
+                  <span
+                    class="bg-yellow-400 text-gray-800 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                    20
+                  </span>
+                  {% if contador_dias.martes >= 20 %}
+                  <span class="text-xs text-red-600 font-semibold">COMPLETO</span>
+                  {% elif contador_dias.martes >= 15 %}
+                  <span class="text-xs text-yellow-600 font-semibold">CASI LLENO</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Miércoles -->
+              <div
+                class="flex items-center justify-between p-2 sm:p-3 border rounded-lg {% if contador_dias.miercoles >= 20 %}bg-red-50 border-red-200{% elif contador_dias.miercoles >= 18 %}bg-yellow-50 border-yellow-200{% else %}bg-white{% endif %} hover:bg-stone-100 transition">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                  <span class="font-semibold text-black text-sm sm:text-base">Miércoles</span>
+                  <div class="flex items-center">
+                    {% if contador_dias.miercoles >= 20 %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% elif contador_dias.miercoles >= 15 %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% else %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span
+                    class="{% if contador_dias.miercoles >= 20 %}bg-red-200 text-red-700{% elif contador_dias.miercoles >= 18 %}bg-yellow-200 text-yellow-700{% else %}bg-gray-200 text-gray-700{% endif %} px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                    {{ contador_dias.miercoles }}
+                  </span>
+                  <span
+                    class="bg-yellow-400 text-gray-800 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                    20
+                  </span>
+                  {% if contador_dias.miercoles >= 20 %}
+                  <span class="text-xs text-red-600 font-semibold">COMPLETO</span>
+                  {% elif contador_dias.miercoles >= 15 %}
+                  <span class="text-xs text-yellow-600 font-semibold">CASI LLENO</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Jueves -->
+              <div
+                class="flex items-center justify-between p-2 sm:p-3 border rounded-lg {% if contador_dias.jueves >= 20 %}bg-red-50 border-red-200{% elif contador_dias.jueves >= 18 %}bg-yellow-50 border-yellow-200{% else %}bg-white{% endif %} hover:bg-stone-100 transition">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                  <span class="font-semibold text-black text-sm sm:text-base">Jueves</span>
+                  <div class="flex items-center">
+                    {% if contador_dias.jueves >= 20 %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% elif contador_dias.jueves >= 15 %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% else %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span
+                    class="{% if contador_dias.jueves >= 20 %}bg-red-200 text-red-700{% elif contador_dias.jueves >= 18 %}bg-yellow-200 text-yellow-700{% else %}bg-gray-200 text-gray-700{% endif %} px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                    {{ contador_dias.jueves }}
+                  </span>
+                  <span
+                    class="bg-yellow-400 text-gray-800 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                    20
+                  </span>
+                  {% if contador_dias.jueves >= 20 %}
+                  <span class="text-xs text-red-600 font-semibold">COMPLETO</span>
+                  {% elif contador_dias.jueves >= 15 %}
+                  <span class="text-xs text-yellow-600 font-semibold">CASI LLENO</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Viernes -->
+              <div
+                class="flex items-center justify-between p-2 sm:p-3 border rounded-lg {% if contador_dias.viernes >= 20 %}bg-red-50 border-red-200{% elif contador_dias.viernes >= 18 %}bg-yellow-50 border-yellow-200{% else %}bg-white{% endif %} hover:bg-stone-100 transition">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                  <span class="font-semibold text-black text-sm sm:text-base">Viernes</span>
+                  <div class="flex items-center">
+                    {% if contador_dias.viernes >= 20 %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% elif contador_dias.viernes >= 15 %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% else %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span
+                    class="{% if contador_dias.viernes >= 20 %}bg-red-200 text-red-700{% elif contador_dias.viernes >= 18 %}bg-yellow-200 text-yellow-700{% else %}bg-gray-200 text-gray-700{% endif %} px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                    {{ contador_dias.viernes }}
+                  </span>
+                  <span
+                    class="bg-yellow-400 text-gray-800 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                    20
+                  </span>
+                  {% if contador_dias.viernes >= 20 %}
+                  <span class="text-xs text-red-600 font-semibold">COMPLETO</span>
+                  {% elif contador_dias.viernes >= 15 %}
+                  <span class="text-xs text-yellow-600 font-semibold">CASI LLENO</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Sábado -->
+              <div
+                class="flex items-center justify-between p-2 sm:p-3 border rounded-lg {% if contador_dias.sabado >= 20 %}bg-red-50 border-red-200{% elif contador_dias.sabado >= 18 %}bg-yellow-50 border-yellow-200{% else %}bg-white{% endif %} hover:bg-stone-100 transition">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                  <span class="font-semibold text-black text-sm sm:text-base">Sábado</span>
+                  <div class="flex items-center">
+                    {% if contador_dias.sabado >= 20 %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% elif contador_dias.sabado >= 15 %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% else %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span
+                    class="{% if contador_dias.sabado >= 20 %}bg-red-200 text-red-700{% elif contador_dias.sabado >= 18 %}bg-yellow-200 text-yellow-700{% else %}bg-gray-200 text-gray-700{% endif %} px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                    {{ contador_dias.sabado }}
+                  </span>
+                  <span
+                    class="bg-yellow-400 text-gray-800 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                    20
+                  </span>
+                  {% if contador_dias.sabado >= 20 %}
+                  <span class="text-xs text-red-600 font-semibold">COMPLETO</span>
+                  {% elif contador_dias.sabado >= 15 %}
+                  <span class="text-xs text-yellow-600 font-semibold">CASI LLENO</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Domingo -->
+              <div
+                class="flex items-center justify-between p-2 sm:p-3 border rounded-lg {% if contador_dias.domingo >= 20 %}bg-red-50 border-red-200{% elif contador_dias.domingo >= 18 %}bg-yellow-50 border-yellow-200{% else %}bg-white{% endif %} hover:bg-stone-100 transition">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                  <span class="font-semibold text-black text-sm sm:text-base">Domingo</span>
+                  <div class="flex items-center">
+                    {% if contador_dias.domingo >= 20 %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% elif contador_dias.domingo >= 15 %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% else %}
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span
+                    class="{% if contador_dias.domingo >= 20 %}bg-red-200 text-red-700{% elif contador_dias.domingo >= 18 %}bg-yellow-200 text-yellow-700{% else %}bg-gray-200 text-gray-700{% endif %} px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                    {{ contador_dias.domingo }}
+                  </span>
+                  <span
+                    class="bg-yellow-400 text-gray-800 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                    20
+                  </span>
+                  {% if contador_dias.domingo >= 20 %}
+                  <span class="text-xs text-red-600 font-semibold">COMPLETO</span>
+                  {% elif contador_dias.domingo >= 15 %}
+                  <span class="text-xs text-yellow-600 font-semibold">CASI LLENO</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  function mostrarAlerta(tipo, mensaje) {
+    ocultarTodasLasAlertas();
+
+    const alerta = document.getElementById(`alert-${tipo}`);
+    const mensajeElement = document.getElementById(`${tipo}-message`);
+
+    if (alerta && mensajeElement) {
+      mensajeElement.textContent = mensaje;
+      alerta.classList.remove('hidden');
+
+      // Auto-ocultar después de 5 segundos
+      setTimeout(() => {
+        alerta.classList.add('hidden');
+      }, 5000);
+    }
+  }
+
+  function ocultarTodasLasAlertas() {
+    const alertas = ['alert-success', 'alert-error', 'alert-warning'];
+    alertas.forEach(id => {
+      const alerta = document.getElementById(id);
+      if (alerta) {
+        alerta.classList.add('hidden');
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('miFormulario');
+    if (form) {
+      form.setAttribute('novalidate', 'novalidate');
+    }
+
+    const botonesAlert = ['button_alert_success', 'button_alert_error', 'button_alert_warning'];
+
+    botonesAlert.forEach(id => {
+      const boton = document.getElementById(id);
+      if (boton) {
+        boton.onclick = () => {
+          const alerta = boton.closest('[id^="alert-"]');
+          if (alerta) {
+            alerta.classList.add('hidden');
+          }
+        };
+      }
+    });
+
+    const dayCheckboxes = document.querySelectorAll('.day-checkbox');
+    dayCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', function () {
+        const label = this.nextElementSibling;
+        if (this.checked) {
+          label.classList.add('bg-yellow-400', 'text-gray-800', 'font-semibold');
+          label.classList.remove('bg-white', 'text-gray-700');
+        } else {
+          label.classList.remove('bg-yellow-400', 'text-gray-800', 'font-semibold');
+          label.classList.add('bg-white', 'text-gray-700');
+        }
+      });
+    });
+
+    const reserveButton = document.getElementById("button-reserva");
+    if (reserveButton) {
+      reserveButton.addEventListener('click', async function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const selectedDays = [];
+        dayCheckboxes.forEach(checkbox => {
+          if (checkbox.checked) {
+            selectedDays.push(checkbox.value);
+          }
+        });
+
+        if (selectedDays.length === 0) {
+          mostrarAlerta('warning', 'Por favor selecciona al menos un día para tu reserva.');
+          return;
+        }
+
+        const trainingType = document.querySelector('#type-exercise').value;
+        const startTime = document.querySelector('#start-time').value;
+        const endTime = document.querySelector('#end-time').value;
+
+        if (!trainingType || trainingType === '') {
+          mostrarAlerta('warning', 'Por favor selecciona un tipo de entrenamiento válido.');
+          return;
+        }
+
+        if (!startTime || startTime === '') {
+          mostrarAlerta('warning', 'Por favor selecciona una hora de inicio.');
+          return;
+        }
+
+        if (!endTime || endTime === '') {
+          mostrarAlerta('warning', 'Por favor selecciona una hora de fin.');
+          return;
+        }
+
+        const datos_reserva = {
+          dias: selectedDays,
+          tipo_entrenamiento: trainingType,
+          hora_inicio: startTime,
+          hora_fin: endTime
+        };
+
+        try {
+          reserveButton.disabled = true;
+          reserveButton.textContent = "Procesando...";
+
+          const response = await fetch('/procesar_reserva', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(datos_reserva)
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            mostrarAlerta('success', 'Reserva procesada exitosamente');
+            limpiarFormulario();
+          } else {
+            mostrarAlerta('error', result.error || 'Error al procesar la reserva');
+          }
+        } catch (error) {
+          console.error("Error al procesar la reserva:", error);
+          mostrarAlerta('error', "Error de conexión. Por favor, intenta nuevamente.");
+        } finally {
+          reserveButton.disabled = false;
+          reserveButton.textContent = "RESERVAR";
+        }
+      });
+    }
+
+    function limpiarFormulario() {
+      dayCheckboxes.forEach(checkbox => {
+        checkbox.checked = false;
+        const label = checkbox.nextElementSibling;
+        label.classList.remove('bg-yellow-400', 'text-gray-800', 'font-semibold');
+        label.classList.add('bg-white', 'text-gray-700');
+      });
+
+      const typeExercise = document.querySelector('#type-exercise');
+      if (typeExercise) typeExercise.selectedIndex = 0;
+
+      const startTime = document.querySelector('#start-time');
+      const endTime = document.querySelector('#end-time');
+      if (startTime) startTime.value = '09:00';
+      if (endTime) endTime.value = '10:00';
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    }
+
+    const touchElements = document.querySelectorAll('.day-button, button, select, input, textarea');
+    touchElements.forEach(element => {
+      element.addEventListener('touchstart', function () {
+        this.style.transform = 'scale(0.98)';
+      });
+      element.addEventListener('touchend', function () {
+        this.style.transform = 'scale(1)';
+      });
+    });
+  });
+</script>
+{% endblock %}
+{% block footer%}{% endblock %}

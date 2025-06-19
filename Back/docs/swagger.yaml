@@ -1,0 +1,1412 @@
+openapi: 3.0.3
+info:
+  title: Fithub API
+  description: API para la plataforma de entrenamiento Fitter
+  version: 1.0.0-SNAPSHOT
+
+servers:
+  - url: https://fithub.mancini.es/api/
+
+paths:
+  /usuarios/registro:
+    post:
+      summary: Registrar un nuevo usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuario'
+      responses:
+        '201':
+          description: Usuario creado correctamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Falta un campo en el body, hay un error de tipo o la contraseña es debil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Un usuario con el mail ya existe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /usuarios/cambiar-contra:
+    post:
+      summary: Cambiar la contraseña de un usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Email:
+                  type: string
+                  example: mail@mail.com
+                Contraseña:
+                  type: string
+                  example: Nuevacontraseña1$
+                Contraseña2:
+                  type: string
+                  example: Nuevacontraseña1$
+      responses:
+        '400':
+          description: Faltan datos, las contraseñas no coinciden o es muy debil.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Un usuario con ese mail no existe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: Contraseña cambiada correctamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Contraseña actualizada.
+  
+  /usuarios/login:
+    post:
+      summary: Intento de logeo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Email:
+                  type: string
+                  example: mail@mail.com
+                Contraseña:
+                  type: string
+                  example: password
+      responses:
+        '400':
+          description: Faltan datos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: La contraseña es incorrecta.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Un usuario con ese mail no existe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: Logeo correcto
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  usuario:
+                    $ref: '#/components/schemas/Usuario'
+  /usuarios/editar-foto:
+    put:
+      summary: Editar la foto de perfil de un usuario
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                Email:
+                  type: string
+                  example: mail@mail.com
+                Id:
+                  type: integer
+                  example: 1
+                foto:
+                  type: string
+                  format: binary
+            encoding:
+              foto:
+                contentType: image/png, image/jpg, image/jpeg
+      responses:
+        '400':
+          description: Faltan datos o no se adjunto ninguna imagen, o el formato de la imagen no esta permitido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Un usuario con ese mail no existe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: La foto se cambio correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  usuario:
+                    $ref: '#/components/schemas/Usuario'
+  /usuarios/editar-usuario:
+    put:
+      summary: Edita un usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Email:
+                  type: string
+                  example: mail@mail.com
+                Nombre:
+                  type: string
+                Apellido:
+                  type: string
+                Usuario:
+                  type: string
+                Telefono:
+                  type: string
+                FechaNacimiento:
+                  type: string
+              required:
+                - Email
+      responses:
+        '400':
+          description: Faltan datos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: Usuario actualizado.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Usuario actualizado exitosamente
+                  usuario:
+                    $ref: '#/components/schemas/Usuario'
+  /usuarios:
+    get:
+      summary: Obtener todos los usuarios
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
+  /usuarios/{id}:
+    get:
+      summary: Obtener usuario por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  usuario:
+                    $ref: '#/components/schemas/Usuario'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+    put:
+      summary: Actualizar usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuario'
+      responses:
+        '200':
+          description: Usuario actualizado
+    delete:
+      summary: Eliminar usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Usuario eliminado
+
+  /roles:
+    get:
+      summary: Listar todos los roles
+      responses:
+        '200':
+          description: Lista de roles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rol'
+    post:
+      summary: Crear nuevo rol
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              Tipo_rol: "Admin"
+      responses:
+        '400':
+          description: Faltan campos, o los tipo de dato no coinciden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: El rol con ese tipo de nombre ya existe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '201':
+          description: Rol creado
+          content:
+            application/json:
+              example:
+                success: true
+                id: 1
+
+  /planes:
+    get:
+      summary: Obtener todos los planes
+      responses:
+        '200':
+          description: Lista de planes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlanConverted'
+        
+    post:
+      summary: Crear nuevo plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanPostBody'
+      responses:
+        '400':
+          description: Faltan datos, tipos incorrectos o precios negativos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Un plan con ese nombre ya existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '201':
+          description: Plan creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessId'
+
+  /planes/{id}:
+    get:
+      summary: Obtener un plan por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Plan encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanGetConverted'
+        '404':
+          description: Plan no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Actualizar un plan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanPostBody'
+      responses:
+        '400':
+          description: Faltan datos, tipos incorrectos o precios negativos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Un plan con ese nombre no existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Un plan con ese nombre ya existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '201':
+          description: Plan creado
+          content:
+            application/json:
+              example:
+                success: true
+                message: "string"
+    delete:
+      summary: Eliminar plan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '404':
+          description: Un plan con ese nombre no existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: No se pudo eliminar el plan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: Plan eliminado
+          content:
+            application/json:
+              example:
+                success: true
+                message: string
+  /planes/subir-imagen:
+    post:
+      summary: Subir la foto de un plan
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                foto:
+                  type: string
+                  format: binary
+            encoding:
+              foto:
+                contentType: image/png, image/jpg, image/jpeg
+      responses:
+        '400':
+          description: No se selecciono ningun archivo, o extension invalida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorSuccess'
+        '200':
+          description: Imagen subida correctamente
+          content:
+            application/json:
+              example:
+                success: true
+                filename: string
+                message: string
+
+  /alquileres:
+    get:
+      summary: Ver todos los alquileres
+      responses:
+        '200':
+          description: Lista de alquileres
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlquilerJoined'
+    post:
+      summary: Registrar nuevo alquiler
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              ID_Plan: 0
+              ID_Usuario: 0
+              Nota: string
+      responses:
+        '400':
+          description: Faltan datos o tipos incorrectos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: No se encontro el plan o el usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '201':
+          description: Se registro correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessId'
+  
+
+  /alquileres/{id}:
+    get:
+      summary: Ver alquiler por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '404':
+          description: Alquiler no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: Alquiler encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlquilerJoined'
+    put:
+      summary: Editar los datos del alquiler
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              ID_Plan: integer
+              ID_Usuario: integer
+              Nota: string
+      responses:
+        '400':
+          description: No se proporcionaron datos, no hay campos validos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Alquiler, plan o usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: Actualizado correctamente
+          content:
+            application/json:
+              example:
+                success: true
+    delete:
+      summary: Eliminar alquiler
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '404':
+          description: Alquiler no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: Borrado correctamente
+          content:
+            application/json:
+              example:
+                success: true
+  /alquileres/usuario/{id}:
+    get:
+      summary: Obtener todos los alquileres de un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '404':
+          description: No existe el usuario o no tiene alquileres registrados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: Borrado correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlquilerJoined'
+  /alquileres/verificacion-reserva:
+    post:
+      summary: Verifica si un usuario puede reservar un plan en especifico.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              user_id: integer
+              tipoEntrenamiento: string
+      responses:
+        '400':
+          description: Faltan datos en el request o el usuario no tiene el plan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: El usuario tiene el plan y puede reservarlo
+          content:
+            application/json:
+              example: 
+                success: true
+                message: string
+                planes_usuario:
+                  - 0
+                  - 1
+
+  /horariosentrenamiento:
+    get:
+      summary: Obtener todos los horarios
+      responses:
+        '200':
+          description: Lista de horarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Horario'
+    post:
+      summary: Crear nuevo horario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HorarioNoID'
+      responses:
+        '400':
+          description: Faltan datos o tipos incorrectos
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Plan no encontrado o usuario no encontrado
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '201':
+          description: Horario creado
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessId'
+                
+  /horariosentrenamiento/{id}:
+    delete:
+      summary: Borrar horario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '404':
+          description: Horario no encontrado
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: Horario eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+    put:
+      summary: Actualizar horario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Faltan datos o tipos incorrectos
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Horario o plan no encontrado
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: Horario eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+
+  /horariosentrenamiento/usuario/{id}:
+    get:
+      summary: Horarios asignados a un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '404':
+          description: Usuario no encontrado
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: Lista de horarios del usuario
+          content:
+            application/json:
+              example:
+                ID_HorarioEntrenamiento: 0
+                Dias: string
+                Horario: string
+                ID_Plan: 0
+                ID_Usuario: 0
+                Nombre_plan: string
+
+  /compras:
+    get:
+      summary: Obtener compras
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: nrocompra
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: usuario
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: fecha
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: total
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Datos mal ingresados
+          content:
+            application/json:
+              example:
+                error: string
+                nombres_invalidos:
+                 - string
+                valores_invalidos:
+                 - string
+        '200':
+          description: Lista de compras
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Compra'
+    post:
+      summary: Registrar nueva compra
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              ID_Usuario: integer
+              FechaCompra: string
+              Total: integer
+      responses:
+        '400':
+          description: Faltan datos o tipos incorrectos
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Usuario no encontrado
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '201':
+          description: Compra registrada
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessId'
+  /compras/{id}:
+    get:
+      summary: Obtener compra por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            
+      responses:
+        '404':
+          description: Compra no encontrada
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'      
+        '200':
+          description: Compra encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Compra'
+    delete:
+      summary: Eliminar compra
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '404':
+          description: Compra no encontrada
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'      
+        '200':
+          description: Compra eliminada
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'      
+
+  /compras/usuario/{id}:
+    get:
+      summary: Ver compras hechas por un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '404':
+          description: Usuario no encontrado
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'     
+        '200':
+          description: Lista de compras del usuario
+          content:
+            application/json:
+              example:
+                - ID_Compra: integer
+                  FechaCompra: string
+                  Total: integer
+                  Cantidad: integer
+                  ID_Producto: integer
+                  NombreProducto: string
+                  ImagenProducto: string
+                  ID_Usuario: integer
+
+  /productos:
+    get:
+      summary: Obtener todos los productos
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: nombre
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: descripcion
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: codigo
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cantidad
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: precio
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: categoria
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Producto'
+    post:
+      summary: Crear nuevo producto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoNoID'
+      responses:
+        '400':
+          description: Faltan datos o tipos invalidos
+          content:
+            application/json:
+              example:
+                error: string
+                nombres_invalidos:
+                  - string
+                valor_erroneo:
+                  - string
+        '409':
+          description: Ya existe un producto con ese codigo
+          content:
+            application/json:
+              example: 
+                error: string
+        '201':
+          description: Producto creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessId'
+  /productos/{id}:
+    get:
+      summary: Obtener producto por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '404':
+          description: Producto no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Producto'
+    put:
+      summary: Actualizar producto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoNoID'
+
+      responses:
+        '400':
+          description: Faltan datos o tipos invalidos
+          content:
+            application/json:
+              example:
+                error: string
+                nombres_invalidos:
+                  - string
+                valor_erroneo:
+                  - string
+        '409':
+          description: Ya existe un producto con ese codigo
+          content:
+            application/json:
+              example: 
+                error: string
+        '404':
+          description: Producto no encontrado
+          content:
+            application/json:
+              example: 
+                error: string
+        '200':
+          description: Producto actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+    delete:
+      summary: Eliminar producto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '404':
+          description: Producto no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: Producto eliminado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+  /productos/subir-imagen:
+    post:
+      summary: Subir la imagen de un producto
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                foto:
+                  type: string
+                  format: binary
+            encoding:
+              foto:
+                contentType: image/png, image/jpg, image/jpeg
+      responses:
+        '400':
+          description: No se selecciono ningun archivo, o extension invalida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorSuccess'
+        '200':
+          description: Imagen subida correctamente
+          content:
+            application/json:
+              example:
+                success: true
+                filename: string
+                message: string
+  /pago:
+    post:
+      summary: Valida el pago de productos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                numero: 
+                  type: integer
+                fecha: 
+                  type: string
+                cvv: 
+                  type: integer
+                titular: 
+                  type: integer
+                productos:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Producto"
+      responses:
+        '400':
+          description: Faltan datos o son invalidos o un producto no tiene stock
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: Pago procesado correctamente
+          content:
+            application/json:
+              example:
+                mensaje: string
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+        
+    ErrorSuccess:
+      example:
+        success: false
+        error: string
+        
+    Success:
+      example:
+        success: true
+    
+    SuccessId:
+      example:
+        success: true
+        new_id: integer
+        
+    Usuario:
+      type: object
+      properties:
+        ID_usuario:
+          type: integer
+        Nombre:
+          type: string
+        Email:
+          type: string
+        Contrasenia:
+          type: string
+        ID_rol:
+          type: integer
+        FechaNacimiento:
+          type: string
+        Usuario:
+          type: string
+        Imagen:
+          type: string
+      required: 
+        - Email
+
+    Rol:
+      type: object
+      properties:
+        ID_Rol:
+          type: integer
+        Tipo_rol:
+          type: string
+      required:
+        - Tipo_rol
+
+    Plan:
+      type: object
+      properties:
+        ID_Plan:
+          type: integer
+        Nombre:
+          type: string
+        Imagen:
+          type: string
+        Precio_3_dias:
+          type: integer
+        Precio_5_dias:
+          type: integer
+        Deportes_disponibles:
+          type: string
+      required:
+        - Nombre
+        - Imagen
+    PlanConverted:
+      example:
+        id: 1
+        nombre: Spinning
+        dias_elegidos: 3
+        imagen: 'static/images/uploads/...'
+        precio_dias:
+          3: 1000
+          5: 2000
+        deportes:
+         - 'Spinning'
+    PlanPostBody:
+      example:
+        nombre: "string"
+        imagen: "string"
+        precio_3_dias: integer
+        precio_5_dias: integer
+        deportes_disponibles: string
+    PlanGetConverted:
+      example:
+        # este endpoint esta rarisimo jasdjk
+        ID_Plan: 1
+        Precio_3_dias: 1000
+        Precio_5_dias: 2000
+        Deportes_disponibles: "Spinning, boxeo"
+        id: 1
+        nombre: Spinning
+        dias_elegidos: 3
+        imagen: 'static/images/uploads/...'
+        precio_dias:
+          3: 1000
+          5: 2000
+        deportes:
+         - 'Spinning'
+    
+    AlquilerJoined:
+      example:
+        ID_AlquilerPlan: 0
+        ID_Plan: 0
+        ID_Usuario: 0
+        Nota: string
+        Usuario_Nombre: string
+        Usuario_Apellido: string
+    Alquiler:
+      type: object
+      properties:
+        ID_AlquilerPlan:
+          type: integer
+        ID_Plan:
+          type: integer
+        ID_Usuario:
+          type: integer
+        Nota:
+          type: string
+      required:
+        - ID_Plan
+        - ID_Usuario
+
+    HorarioNoID:
+      type: object
+      properties:
+        ID_Usuario:
+          type: integer
+        Dias:
+          type: string
+        Horario:
+          type: string
+        ID_Plan:
+          type: integer
+      required:
+        - ID_Usuario
+        - Dias
+        - Horario
+        - ID_Plan
+
+    Horario:
+      type: object
+      properties:
+        ID_HorarioEntrenamiento:
+          type: integer
+        ID_Usuario:
+          type: integer
+        Dias:
+          type: string
+        Horario:
+          type: string
+        ID_Plan:
+          type: integer
+      required:
+        - ID_Usuario
+        - Dias
+        - Horario
+        - ID_Plan
+
+    Compra:
+      type: object
+      properties:
+        ID_Compra:
+          type: integer
+        ID_Usuario:
+          type: integer
+        ID_Producto:
+          type: integer
+        FechaCompra:
+          type: string
+        Total:
+          type: integer
+        Cantidad:
+          type: integer
+      required:
+        - ID_Usuario
+        - ID_Producto
+        - FechaCompra
+        - Total
+        - Cantidad
+
+    ProductoNoID:
+      type: object
+      properties:
+        Nombre:
+          type: string
+        Descripcion:
+          type: string
+        Precio:
+          type: number
+        Cantidad:
+          type: integer
+        Imagen:
+          type: string
+        Categoria:
+          type: string
+        Codigo:
+          type: string
+      required:
+        - Nombre
+        - Precio
+        - Cantidad
+        - Imagen
+        - Descripcion
+        - Categoria
+        - Codigo
+    Producto:
+      type: object
+      properties:
+        ID_Producto:
+          type: integer
+        Nombre:
+          type: string
+        Descripcion:
+          type: string
+        Precio:
+          type: number
+        Cantidad:
+          type: integer
+        Imagen:
+          type: string
+        Categoria:
+          type: string
+        Codigo:
+          type: string
+      required:
+        - Nombre
+        - Precio
+        - Cantidad
+        - Imagen
+        - Descripcion
+        - Categoria
+        - Codigo

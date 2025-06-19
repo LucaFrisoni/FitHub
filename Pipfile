@@ -5,14 +5,15 @@ name = "pypi"
 
 [packages]
 flasgger = "*"
-flask-cors = "*"
 mysql-connector = "*"
 python-dotenv = "*"
 bcrypt = "*"
 mysql-connector-python = "*"
-flask = "*"
 requests = "*"
 flask-login = "*"
+werkzeug = "*"
+flask = "*"
+flask-cors = "*"
 
 [dev-packages]
 

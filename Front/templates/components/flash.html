@@ -1,0 +1,44 @@
+ {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="mb-6">
+        {% for category, message in messages %}
+        <div class="
+          {% if category == 'error' %}
+            bg-red-500 text-white
+          {% elif category == 'warning' %}
+            bg-yellow-500 text-white
+          {% elif category == 'info' %}
+            bg-blue-500 text-white
+          {% else %}
+            bg-green-500 text-white
+          {% endif %}
+          px-4 py-3 rounded-lg mb-2 shadow-lg flash-message
+        ">
+          <div class="flex items-center">
+            <span class="text-sm font-medium">
+              {% if category == 'error' %}
+                ✗ {{ message }}
+              {% elif category == 'warning' %}
+                ⚠ {{ message }}
+              {% elif category == 'info' %}
+                ℹ {{ message }}
+              {% else %}
+                ✓ {{ message }}
+              {% endif %}
+            </span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <script>
+        setTimeout(function () {
+          const flashMessages = document.querySelectorAll(".flash-message");
+          flashMessages.forEach(function (message) {
+            message.style.transition = "opacity 0.5s ease-out";
+            message.style.opacity = "0";
+            setTimeout(() => message.remove(), 500);
+          });
+        }, 3000);
+      </script>
+      {% endif %} 
+    {% endwith %}   
