@@ -2,10 +2,8 @@
 
 <!-- Alertas de éxito -->
 {% if producto_creado %}
-<div
-  id="alert-success"
-  class="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2"
->
+<div id="alert-success"
+  class="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2">
   <span>✓</span>
   <span>Producto creado exitosamente</span>
   <button id="button_alert_success" class="ml-4 text-white hover:text-gray-200">
@@ -13,10 +11,8 @@
   </button>
 </div>
 {% endif %} {% if producto_editado %}
-<div
-  id="alert-success"
-  class="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2"
->
+<div id="alert-success"
+  class="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2">
   <span>✓</span>
   <span>Producto actualizado exitosamente</span>
   <button id="button_alert_success" class="ml-4 text-white hover:text-gray-200">
@@ -24,10 +20,8 @@
   </button>
 </div>
 {% endif %} {% if producto_eliminado %}
-<div
-  id="alert-success"
-  class="fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2"
->
+<div id="alert-success"
+  class="fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2">
   <span>🗑️</span>
   <span>Producto eliminado exitosamente</span>
   <button id="button_alert_success" class="ml-4 text-white hover:text-gray-200">
@@ -36,22 +30,21 @@
 </div>
 {% endif %}
 
-<div
-  class="min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-white pt-24 px-6"
->
+<div class="min-h-screen bg-gradient-to-r from-black via-gray-900 to-yellow-600 text-white pt-24 px-6 py-3">
   <div class="max-w-7xl mx-auto">
     <!-- Header -->
-    <div class="flex justify-between items-center mb-8 mt-20">
-      <div>
+    <div class="mb-8 mt-20">
+      <div class="mb-4">
         <h1 class="text-4xl font-bold mb-2">Panel de Administración</h1>
-        <p class="text-gray-300">Gestiona los productos de la tienda</p>
+        <p class="text-gray-300">Gestiona los planes de entrenamiento</p>
       </div>
-      <a
-        href="{{ url_for('nuevo_producto') }}"
-        class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-semibold transition duration-200 shadow-lg"
-      >
-        + Nuevo Producto
-      </a>
+
+      <div class="flex justify-center md:justify-end">
+        <a href="{{ url_for('nuevo_producto') }}"
+          class="w-full md:w-auto bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-semibold transition duration-200 shadow-lg text-center">
+          + Nuevo Producto
+        </a>
+      </div>
     </div>
 
     <!-- Estadísticas -->
@@ -80,34 +73,22 @@
         <table class="w-full">
           <thead class="bg-black/20">
             <tr>
-              <th
-                class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
                 ID
               </th>
-              <th
-                class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
                 Nombre
               </th>
-              <th
-                class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
                 Código
               </th>
-              <th
-                class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
                 Precio
               </th>
-              <th
-                class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
                 Stock
               </th>
-              <th
-                class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
                 Acciones
               </th>
             </tr>
@@ -130,22 +111,17 @@
               </td>
               <td class="px-6 py-4 text-sm">
                 <span
-                  class="{% if producto.Cantidad <= 5 %}text-red-400{% elif producto.Cantidad <= 10 %}text-yellow-400{% else %}text-green-400{% endif %}"
-                >
+                  class="{% if producto.Cantidad <= 5 %}text-red-400{% elif producto.Cantidad <= 10 %}text-yellow-400{% else %}text-green-400{% endif %}">
                   {{ producto.Cantidad }}
                 </span>
               </td>
               <td class="px-6 py-4 text-sm space-x-2">
-                <a
-                  href="{{ url_for('editar_producto', id=producto.ID_Producto) }}"
-                  class="inline-block bg-black hover:bg-black/85 text-white px-3 py-1 rounded text-xs font-medium transition"
-                >
+                <a href="{{ url_for('editar_producto', id=producto.ID_Producto) }}"
+                  class="mb-1 inline-block bg-black hover:bg-black/85 text-white px-3 py-1 rounded text-xs font-medium transition">
                   Editar
                 </a>
-                <button
-                  onclick="confirmarEliminacion('{{ producto.ID_Producto }}', '{{ producto.Nombre }}')"
-                  class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-medium transition cursor-pointer"
-                >
+                <button onclick="confirmarEliminacion('{{ producto.ID_Producto }}', '{{ producto.Nombre }}')"
+                  class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-medium transition cursor-pointer">
                   Eliminar
                 </button>
               </td>
@@ -166,10 +142,7 @@
 </div>
 
 <!-- Modal de confirmación de eliminación -->
-<div
-  id="modal-eliminar"
-  class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50"
->
+<div id="modal-eliminar" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
   <div class="bg-white rounded-lg p-6 max-w-md mx-4">
     <h3 class="text-lg font-semibold text-gray-900 mb-4">
       Confirmar eliminación
@@ -179,17 +152,13 @@
       <strong id="producto-nombre"></strong>? Esta acción no se puede deshacer.
     </p>
     <div class="flex justify-end space-x-3">
-      <button
-        onclick="cerrarModal()"
-        class="px-4 py-2 text-gray-600 bg-gray-200 rounded hover:bg-gray-300 transition cursor-pointer"
-      >
+      <button onclick="cerrarModal()"
+        class="px-4 py-2 text-gray-600 bg-gray-200 rounded hover:bg-gray-300 transition cursor-pointer">
         Cancelar
       </button>
       <form id="form-eliminar" method="POST" class="inline">
-        <button
-          type="submit"
-          class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition cursor-pointer"
-        >
+        <button type="submit"
+          class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition cursor-pointer">
           Eliminar
         </button>
       </form>

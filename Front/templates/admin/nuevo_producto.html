@@ -32,15 +32,28 @@
 
     <!-- Formulario -->
     <div class="bg-white/10 backdrop-blur-sm rounded-lg p-8">
-      {% if error %}
+      {% if errors %}
       <div
         class="bg-red-500/20 border border-red-500 text-red-100 px-4 py-3 rounded mb-6"
       >
+        <strong>Errores encontrados:</strong>
+        <ul class="mt-2 list-disc list-inside">
+          {% for error in errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if error %}
+      <div class="bg-red-500/20 border border-red-500 text-red-100 px-4 py-3 rounded mb-6">
         <strong>Error:</strong> {{ error }}
       </div>
       {% endif %}
 
-      <form method="POST" class="space-y-6" enctype="multipart/form-data">
+      <!-- Mensaje de imagen requerida se insertará aquí dinámicamente -->
+
+      <form method="POST" class="space-y-6" id="form-agregar" enctype="multipart/form-data">
         <!-- Sección de imagen -->
         <div class="flex justify-between pb-[24px] w-full">
           <div class="flex gap-x-6 items-center">
@@ -67,7 +80,7 @@
               </div>
             </div>
             <div class="flex flex-col gap-y-1.5">
-              <p class="font-bold text-2xl">Imagen del Producto</p>
+              <p class="font-bold text-2xl">Imagen del Producto <span class="text-red-400">*</span></p>
               <p class="text-primary font-bold text-sm">
                 Recomendado: 500x500px
               </p>
@@ -85,72 +98,63 @@
 
         <!-- Nombre del producto -->
         <div>
-          <label for="nombre" class="block text-sm font-medium mb-2"
-            >Nombre del Producto</label
-          >
+          <label for="nombre" class="block text-sm font-medium mb-2">
+            Nombre del Producto <span class="text-red-400">*</span>
+          </label>
           <input
             type="text"
             id="nombre"
             name="nombre"
             required
+            minlength="3"
             class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
             placeholder="Nombre del producto..."
           />
+          <small class="text-gray-400">Mínimo 3 caracteres</small>
         </div>
 
         <!-- Descripción -->
         <div>
-          <label for="descripcion" class="block text-sm font-medium mb-2"
-            >Descripción del Producto</label
-          >
+          <label for="descripcion" class="block text-sm font-medium mb-2">
+            Descripción del Producto <span class="text-red-400">*</span>
+          </label>
           <textarea
             id="descripcion"
             name="descripcion"
             rows="3"
             required
+            minlength="10"
             class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none"
             placeholder="Describe el producto..."
           ></textarea>
+          <small class="text-gray-400">Mínimo 10 caracteres</small>
         </div>
 
         <!-- Código del producto -->
         <div>
-          <label for="codigo" class="block text-sm font-medium mb-2"
-            >Código del Producto</label
-          >
+          <label for="codigo" class="block text-sm font-medium mb-2">
+            Código del Producto <span class="text-red-400">*</span>
+          </label>
           <input
             type="text"
             id="codigo"
             name="codigo"
             required
+            minlength="3"
+            style="text-transform: uppercase"
             class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
             placeholder="Ej: PROD001, SUP-001, etc."
           />
+          <small class="text-gray-400">Código único, mínimo 3 caracteres</small>
         </div>
 
         <!-- Precio y Cantidad en fila -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Precio -->
-          <div>
-            <label for="precio" class="block text-sm font-medium mb-2"
-              >Precio ($) / producto</label
-            >
-            <input
-              type="number"
-              id="precio"
-              name="precio"
-              min="0"
-              required
-              class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-              placeholder="0"
-            />
-          </div>
-
           <!-- Cantidad -->
           <div>
-            <label for="cantidad" class="block text-sm font-medium mb-2"
-              >Cantidad Disponible</label
-            >
+            <label for="cantidad" class="block text-sm font-medium mb-2">
+              Cantidad en Stock <span class="text-red-400">*</span>
+            </label>
             <input
               type="number"
               id="cantidad"
@@ -160,14 +164,31 @@
               class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
               placeholder="0"
             />
+            <small class="text-gray-400">Unidades disponibles</small>
+          </div>
+
+          <!-- Precio -->
+          <div>
+            <label for="precio" class="block text-sm font-medium mb-2">
+              Precio ($) / producto <span class="text-red-400">*</span>
+            </label>
+            <input
+              type="number"
+              id="precio"
+              name="precio"
+              min="0"
+              step="0.01"
+              required
+              class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+              placeholder="0"
+            />
+            <small class="text-gray-400">Precio de venta</small>
           </div>
         </div>
 
         <!-- Categoría -->
         <div>
-          <label for="categoria" class="block text-sm font-medium mb-2"
-            >Categoría</label
-          >
+          <label for="categoria" class="block text-sm font-medium mb-2">Categoría</label>
           <select
             id="categoria"
             name="categoria"
@@ -184,17 +205,43 @@
         </div>
 
         <!-- Botones -->
-        <div class="flex justify-end space-x-4 pt-6">
+        <div class="flex justify-end space-x-4 pt-6 border-t border-white/10">
           <a
             href="{{ url_for('admin_panel') }}"
-            class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition"
+            class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition flex items-center"
           >
+            <svg
+              class="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
             Cancelar
           </a>
           <button
             type="submit"
-            class="px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-semibold transition cursor-pointer"
+            class="px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-semibold transition flex items-center cursor-pointer"
           >
+            <svg
+              class="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
             Crear Producto
           </button>
         </div>
@@ -204,4 +251,147 @@
 </div>
 
 <!-- Incluimos el modal para la imagen del producto -->
-{% include "components/modales/modal_producto_image.html" %} {% endblock %}
+{% include "components/modales/modal_producto_image.html" %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("form-agregar");
+    const inputs = form.querySelectorAll("input, textarea");
+
+    window.imagenSubida = false;
+
+    function actualizarEstadoBotonCrear() {
+      const botonCrear = document.querySelector('button[type="submit"]');
+      const mensajeImagen = document.getElementById("mensaje-imagen-requerida");
+      
+      if (botonCrear) {
+        if (!window.imagenSubida) {
+          botonCrear.disabled = true;
+          botonCrear.classList.add("opacity-50", "cursor-not-allowed");
+          botonCrear.classList.remove("hover:bg-primary/90");
+          
+          if (!mensajeImagen) {
+            const mensaje = document.createElement("div");
+            mensaje.id = "mensaje-imagen-requerida";
+            mensaje.className = "bg-yellow-500/20 border border-yellow-500 text-yellow-200 px-4 py-3 rounded mb-4";
+            mensaje.innerHTML = '<strong>Atención:</strong> Debes subir una imagen del producto antes de crearlo.';
+
+            const formulario = document.getElementById("form-agregar");
+            formulario.parentNode.insertBefore(mensaje, formulario);
+          }
+        } else {
+          botonCrear.disabled = false;
+          botonCrear.classList.remove("opacity-50", "cursor-not-allowed");
+          botonCrear.classList.add("hover:bg-primary/90");
+          
+          if (mensajeImagen) {
+            mensajeImagen.remove();
+          }
+        }
+      }
+    }
+
+    window.actualizarEstadoBotonCrear = actualizarEstadoBotonCrear;
+
+    const hiddenInput = document.getElementById("nombre_imagen_producto");
+    if (hiddenInput && hiddenInput.value !== "default_producto.png" && hiddenInput.value !== "") {
+      window.imagenSubida = true;
+    }
+    
+    actualizarEstadoBotonCrear();
+
+    const codigoInput = document.getElementById("codigo");
+    if (codigoInput) {
+      codigoInput.addEventListener("input", function () {
+        this.value = this.value.toUpperCase();
+      });
+    }
+
+    form.addEventListener("submit", function (e) {
+      let isValid = true;
+      let errors = [];
+
+      if (!window.imagenSubida) {
+        errors.push("Debes subir una imagen del producto");
+        isValid = false;
+      }
+
+      const nombre = document.getElementById("nombre").value.trim();
+      if (!nombre || nombre.length < 3) {
+        errors.push("El nombre debe tener al menos 3 caracteres");
+        isValid = false;
+      }
+
+      const descripcion = document.getElementById("descripcion").value.trim();
+      if (!descripcion || descripcion.length < 10) {
+        errors.push("La descripción debe tener al menos 10 caracteres");
+        isValid = false;
+      }
+
+      const codigo = document.getElementById("codigo").value.trim();
+      if (!codigo || codigo.length < 3) {
+        errors.push("El código debe tener al menos 3 caracteres");
+        isValid = false;
+      }
+
+      const cantidad = parseInt(document.getElementById("cantidad").value);
+      if (isNaN(cantidad) || cantidad < 0) {
+        errors.push("La cantidad debe ser un número válido mayor o igual a 0");
+        isValid = false;
+      }
+
+      const precio = parseFloat(document.getElementById("precio").value);
+      if (isNaN(precio) || precio < 0) {
+        errors.push("El precio debe ser un número válido mayor o igual a 0");
+        isValid = false;
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+        alert(
+          "Por favor, corrige los siguientes errores:\n\n" + errors.join("\n")
+        );
+      }
+    });
+
+    const descripcionTextarea = document.getElementById("descripcion");
+    if (descripcionTextarea) {
+      const contador = document.createElement("div");
+      contador.className = "text-xs text-gray-400 mt-1 text-right";
+      contador.id = "contador-descripcion";
+      descripcionTextarea.parentNode.appendChild(contador);
+
+      function actualizarContador() {
+        const length = descripcionTextarea.value.length;
+        contador.textContent = `${length} caracteres`;
+        contador.className =
+          length < 10
+            ? "text-xs text-red-400 mt-1 text-right"
+            : "text-xs text-gray-400 mt-1 text-right";
+      }
+
+      descripcionTextarea.addEventListener("input", actualizarContador);
+      actualizarContador();
+    }
+  });
+
+  let formChanged = false;
+  const form = document.getElementById("form-agregar");
+
+  form.addEventListener("input", function () {
+    formChanged = true;
+  });
+
+  window.addEventListener("beforeunload", function (e) {
+    if (formChanged) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  });
+
+  form.addEventListener("submit", function () {
+    formChanged = false;
+  });
+</script>
+
+{% endblock %}

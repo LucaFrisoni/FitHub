@@ -19,7 +19,7 @@
     {% block navbar %}
     <nav
       id="navbar"
-      class="bg-white w-full h-[90px] flex justify-between fixed z-10 transition-all duration-500 ease-in-out"
+      class="bg-white w-full h-[90px] flex justify-between fixed z-10 transition-all duration-500 ease-in-out {% if request.path == '/' %}-translate-y-full{% endif %}"
     >
       <!-- Logo -->
       <div class="flex items-center justify-center pl-10">
@@ -203,20 +203,6 @@
 
                     <p class="text-slate-800 font-medium ml-2">Adm Planes</p>
                   </a>
-
-                  <a
-                    href="{{ url_for('admin_reservas') }}"
-                    role="menuitem"
-                    class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
-                  >
-                    <img
-                      src="{{ url_for('static',filename='images/admin_icono.png')}}"
-                      class="w-5 h-5"
-                      alt="admin-icono"
-                    />
-
-                    <p class="text-slate-800 font-medium ml-2">Adm Reservas</p>
-                  </a>
                 </div>
                 {% endif %}
                 <!-- Cerrar Sesión Item -->
@@ -264,33 +250,9 @@
               />
               <p class="text-slate-800 font-medium ml-2">Login</p></a
             >
-            <!-- Light Mode Item -->
-            <hr class="my-2 border-slate-200" role="menuitem" />
-            <a
-              role="menuitem"
-              class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
-            >
-              <img
-                src="{{ url_for('static',filename='images/sun.svg') }}"
-                class="w-5 h-5"
-                alt="admin-icono"
-              />
-              <p class="text-slate-800 font-medium ml-2">Light Mode</p>
-            </a>
 
             {% endif %}
           </div>
-        </div>
-
-        <!-- Sol -->
-        <div
-          class="hidden lg:flex hover:bg-slate-200/40 transition duration-300 ease-in-out rounded-2xl p-2 cursor-pointer translate-x-[-20%] {% if user.is_authenticated %}translate-x-[-60%]{% endif %}"
-        >
-          <img
-            class="min-w-[40px] min-h-[40px]"
-            src="{{ url_for('static',filename='images/sun.svg') }}"
-            alt="logo"
-          />
         </div>
 
         {% if user.is_authenticated %}
@@ -359,19 +321,6 @@
               <p class="text-slate-800 font-medium ml-2">Adm Planes</p>
             </a>
 
-            <a
-              href="{{ url_for('admin_reservas') }}"
-              role="menuitem"
-              class="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
-            >
-              <img
-                src="{{ url_for('static',filename='images/admin_icono.png')}}"
-                class="w-5 h-5"
-                alt="admin-icono"
-              />
-
-              <p class="text-slate-800 font-medium ml-2">Adm Reservas</p>
-            </a>
             {% endif %}
             <!-- Cerrar Sesión Item -->
             <hr class="my-2 border-slate-200" role="menuitem" />

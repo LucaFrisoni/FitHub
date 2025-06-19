@@ -4,7 +4,7 @@
 >
   <div class="bg-white rounded-lg p-6 max-w-md mx-4">
     <h3 class="text-lg font-semibold text-gray-900 mb-4">
-      Subir imagen del producto
+      Subir imagen del producto <span class="text-red-500">*</span>
     </h3>
     <div class="flex flex-col justify-center items-center space-y-8">
       <!-- Preview -->
@@ -64,16 +64,16 @@
 </div>
 
 <script>
-  // Imagen por defecto para restaurar al cerrar el modal
   const previewOriginalProducto =
     "{{ url_for('static', filename='images/default_producto.jpg') }}";
+
+  window.imagenSubida = window.imagenSubida || false;
 
   document
     .getElementById("form-subir-imagen-producto")
     .addEventListener("submit", function (e) {
       e.preventDefault();
 
-      // Mostrar loader
       mostrarLoaderProducto();
 
       const formData = new FormData(this);
@@ -90,7 +90,6 @@
         })
         .then((data) => {
           if (data.success) {
-            // Actualizar vista previa principal
             const previewPrincipal = document.getElementById(
               "preview-imagen-principal"
             );
@@ -98,7 +97,6 @@
               previewPrincipal.src = data.url;
             }
 
-            // Actualizar campo oculto con el nombre de la imagen
             const hiddenInput = document.getElementById(
               "nombre_imagen_producto"
             );
@@ -106,10 +104,13 @@
               hiddenInput.value = data.filename;
             }
 
-            // Cerrar modal
+            window.imagenSubida = true;
+            if (window.actualizarEstadoBotonCrear) {
+              window.actualizarEstadoBotonCrear();
+            }
+
             cerrarModalProducto();
 
-            // Opcional: mostrar mensaje de éxito
             console.log("Imagen subida correctamente");
           } else {
             alert("Error: " + (data.error || "Error desconocido"));
@@ -157,18 +158,15 @@
       "preview-imagen-principal"
     );
 
-    // Ruta absoluta de la imagen por defecto
     const defaultPath =
       "{{ url_for('static', filename='images/default_producto.jpg') }}";
 
-    // Comparar solo el final del src, por si hay dominio o path diferente
     const tieneImagen = !previewPrincipal.src.endsWith(
       "images/default_producto.jpg"
     );
 
     previewModal.src = tieneImagen ? previewPrincipal.src : defaultPath;
 
-    // Guardar en dataset la imagen original para restaurar al cerrar
     previewModal.dataset.original = previewModal.src;
   }
 
@@ -198,4 +196,12 @@
     document.getElementById("form-subir-imagen-producto").reset();
     ocultarLoaderProducto();
   }
+
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const hiddenInput = document.getElementById("nombre_imagen_producto");
+    if (hiddenInput && hiddenInput.value !== "default_producto.png" && hiddenInput.value !== "") {
+      window.imagenSubida = true;
+    }
+  });
 </script>

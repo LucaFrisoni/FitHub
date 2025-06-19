@@ -426,136 +426,6 @@ if (titulo) {
   titulo.innerHTML = letras.join("");
 }
 
-// -------------------- RESERVAS ----------------------
-// Funcionalidad de los checkboxes de días
-const dayCheckboxes = document.querySelectorAll(".day-checkbox");
-
-dayCheckboxes.forEach((checkbox) => {
-  checkbox.addEventListener("change", function () {
-    const label = this.nextElementSibling;
-    if (this.checked) {
-      label.classList.add("bg-yellow-400", "text-gray-800", "font-semibold");
-      label.classList.remove("bg-white", "text-gray-700");
-    } else {
-      label.classList.remove("bg-yellow-400", "text-gray-800", "font-semibold");
-      label.classList.add("bg-white", "text-gray-700");
-    }
-  });
-});
-
-// Funcionalidad del botón reservar
-const reserveButton = document.getElementById("button-reserva");
-if (reserveButton) {
-  reserveButton.addEventListener("click", async function (e) {
-    e.preventDefault();
-
-    // Obtener días seleccionados
-    const selectedDays = [];
-    dayCheckboxes.forEach((checkbox) => {
-      if (checkbox.checked) {
-        selectedDays.push(checkbox.value);
-      }
-    });
-
-    // Validar que se haya seleccionado al menos un día
-    if (selectedDays.length === 0) {
-      alert("Por favor selecciona al menos un día para tu reserva.");
-      return;
-    }
-
-    // Obtener otros valores del formulario
-    const trainingType = document.querySelector("#type-exercise").value;
-    const trainingType_number = parseInt(trainingType.value); // Convertir a número el tipo de entrenamiento
-    const startTime = document.querySelectorAll('input[type="time"]')[0].value;
-    const endTime = document.querySelectorAll('input[type="time"]')[1].value;
-    const comments = document.querySelector("#comment-area").value;
-
-    // Validar que se seleccionó un tipo de entrenamiento válido
-    if (isNaN(trainingType) || trainingType <= 0) {
-      alert("Por favor selecciona un tipo de entrenamiento válido.");
-      return;
-    }
-
-    // Preparar datos para enviar
-    const datos_reserva = {
-      dias: selectedDays, // conjunto de días seleccionados
-      tipo_entrenamiento: trainingType,
-      hora_inicio: startTime,
-      hora_fin: endTime,
-      comentarios: comments,
-    };
-
-    console.log("Datos de reserva:", datos_reserva);
-
-    try {
-      // Enviar datos al servidor Flask
-      const response = await fetch("/procesar_reserva", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(datos_reserva),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-
-      if (result.success) {
-        alert("¡Reserva exitosa!");
-        // limpiar el formulario después de una reserva exitosa
-        limpiarFormulario();
-      } else {
-        alert(`Error: ${result.error || "Error desconocido"}`);
-      }
-    } catch (error) {
-      console.error("Error al procesar la reserva:", error);
-      alert("Error de conexión. Por favor, intenta nuevamente.");
-    }
-  });
-}
-
-// Función auxiliar para limpiar el formulario después de una reserva exitosa
-function limpiarFormulario() {
-  // Desmarcar todos los checkboxes de días
-  dayCheckboxes.forEach((checkbox) => {
-    checkbox.checked = false;
-    const label = checkbox.nextElementSibling;
-    label.classList.remove("bg-yellow-400", "text-gray-800", "font-semibold");
-    label.classList.add("bg-white", "text-gray-700");
-  });
-
-  // Resetear select de tipo de entrenamiento
-  const typeExercise = document.querySelector("#type-exercise");
-  if (typeExercise) typeExercise.selectedIndex = 0;
-
-  // Resetear horarios a valores por defecto
-  const timeInputs = document.querySelectorAll('input[type="time"]');
-  if (timeInputs[0]) timeInputs[0].value = "09:00";
-  if (timeInputs[1]) timeInputs[1].value = "10:00";
-
-  // Limpiar comentarios
-  const commentArea = document.querySelector("#comment-area");
-  if (commentArea) commentArea.value = "";
-}
-
-// Mejorar la experiencia táctil en móviles
-const touchElements = document.querySelectorAll(
-  ".day-button, button, select, input, textarea"
-);
-touchElements.forEach((element) => {
-  element.addEventListener("touchstart", function () {
-    this.style.transform = "scale(0.98)";
-  });
-
-  element.addEventListener("touchend", function () {
-    this.style.transform = "scale(1)";
-  });
-});
-
 //Script para subir una imagen en planes
 function abrirModalPlan() {
   document.getElementById("modal-imagen-plan").classList.add("flex");
@@ -585,60 +455,53 @@ function previewFotoPlan(input) {
 const previewOriginalPlan =
   "{% if plan.Imagen and plan.Imagen != 'default_plan.jpg' %}{{ url_for('static', filename='images/uploads/planes/' + plan.Imagen) }}{% else %}{{ url_for('static', filename='images/default_plan.jpg') }}{% endif %}";
 
-document
-  .getElementById("form-subir-imagen-plan")
-  .addEventListener("submit", function (e) {
-    e.preventDefault();
 
-    // Mostrar loader
-    mostrarLoaderPlan();
+const formSubirImagen = document.getElementById("form-subir-imagen-plan");
+  if (formSubirImagen) {
+    formSubirImagen.addEventListener("submit", function (e) {
+      e.preventDefault();
+      mostrarLoaderPlan();
 
     const formData = new FormData(this);
 
-    fetch(this.action, {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
+      fetch(this.action, {
+        method: "POST",
+        body: formData,
       })
-      .then((data) => {
-        if (data.success) {
-          // Actualizar vista previa principal
-          const previewPrincipal = document.getElementById(
-            "preview-imagen-principal"
-          );
-          if (previewPrincipal) {
-            previewPrincipal.src = data.url;
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.success) {
+            const previewPrincipal = document.getElementById("preview-imagen-principal");
+            if (previewPrincipal) {
+              previewPrincipal.src = data.url;
+            }
 
-          // Actualizar campo oculto con el nombre de la imagen
-          const hiddenInput = document.getElementById("nombre_imagen_plan");
-          if (hiddenInput) {
-            hiddenInput.value = data.filename;
+            const hiddenInput = document.getElementById("nombre_imagen_plan");
+            if (hiddenInput) {
+              hiddenInput.value = data.filename;
+            }
+
+            cerrarModalPlan();
+            formChanged = true;
+
+            console.log("Imagen subida correctamente");
+          } else {
+            alert("Error: " + (data.error || "Error desconocido"));
+            ocultarLoaderPlan();
           }
-
-          // Cerrar modal
-          cerrarModalPlan();
-
-          // Marcar que el formulario ha cambiado
-          formChanged = true;
-
-          console.log("Imagen subida correctamente");
-        } else {
-          alert("Error: " + (data.error || "Error desconocido"));
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Error al subir la imagen: " + error.message);
           ocultarLoaderPlan();
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        alert("Error al subir la imagen: " + error.message);
-        ocultarLoaderPlan();
-      });
-  });
+        });
+    });
+  }
 
 function mostrarLoaderPlan() {
   document.getElementById("loader").classList.add("flex");
@@ -693,13 +556,11 @@ function cerrarModalPlan() {
   document.getElementById("preview-imagen-plan").src = previewOriginalPlan;
   document.getElementById("form-subir-imagen-plan").reset();
 
-  // Asegurar que el loader está oculto
-  ocultarLoaderPlan();
-}
-
-// Validación en tiempo real
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("form-editar");
+    // Asegurar que el loader está oculto
+    ocultarLoaderPlan();
+  }
+  // Validación en tiempo real
+   const form = document.getElementById("form-editar");
 
   // Validación antes del envío
   form.addEventListener("submit", function (e) {
@@ -749,13 +610,13 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// Confirmación antes de salir con cambios no guardados
-let formChanged = false;
-const form = document.getElementById("form-editar");
-
-form.addEventListener("input", function () {
-  formChanged = true;
-});
+  // Confirmación antes de salir con cambios no guardados
+  let formChanged = false;
+  const form = document.getElementById("form-editar");
+if(form){form.addEventListener("input", function () {
+    formChanged = true;
+  });}
+  
 
 window.addEventListener("beforeunload", function (e) {
   if (formChanged) {
@@ -764,7 +625,9 @@ window.addEventListener("beforeunload", function (e) {
   }
 });
 
-// No mostrar confirmación al enviar el formulario
-form.addEventListener("submit", function () {
-  formChanged = false;
-});
+if(form){  // No mostrar confirmación al enviar el formulario
+  form.addEventListener("submit", function () {
+    formChanged = false;})}
+
+ 
+  });
