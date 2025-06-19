@@ -997,11 +997,11 @@ def editar_plan(id):
 
     try:
         payload = {
-            "Nombre": nombre,
-            "Precio_3_dias": int(precio_3_dias),
-            "Precio_5_dias": int(precio_5_dias),
-            "Deportes_disponibles": deportes_disponibles,
-            "Imagen": imagen,
+            "nombre": nombre,
+            "precio_3_dias": int(precio_3_dias),
+            "precio_5_dias": int(precio_5_dias),
+            "deportes_disponibles": deportes_disponibles,
+            "imagen": imagen,
         }
 
         response = requests.put(f"{API_HOST}/api/planes/{id}", json=payload)
