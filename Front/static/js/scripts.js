@@ -467,12 +467,11 @@ function previewFotoPlan(input) {
   const previewOriginalPlan =
     "{% if plan.Imagen and plan.Imagen != 'default_plan.jpg' %}{{ url_for('static', filename='images/uploads/planes/' + plan.Imagen) }}{% else %}{{ url_for('static', filename='images/default_plan.jpg') }}{% endif %}";
 
-  document
-    .getElementById("form-subir-imagen-plan")
-    .addEventListener("submit", function (e) {
-      e.preventDefault();
 
-      // Mostrar loader
+const formSubirImagen = document.getElementById("form-subir-imagen-plan");
+  if (formSubirImagen) {
+    formSubirImagen.addEventListener("submit", function (e) {
+      e.preventDefault();
       mostrarLoaderPlan();
 
       const formData = new FormData(this);
@@ -489,24 +488,17 @@ function previewFotoPlan(input) {
         })
         .then((data) => {
           if (data.success) {
-            // Actualizar vista previa principal
-            const previewPrincipal = document.getElementById(
-              "preview-imagen-principal"
-            );
+            const previewPrincipal = document.getElementById("preview-imagen-principal");
             if (previewPrincipal) {
               previewPrincipal.src = data.url;
             }
 
-            // Actualizar campo oculto con el nombre de la imagen
             const hiddenInput = document.getElementById("nombre_imagen_plan");
             if (hiddenInput) {
               hiddenInput.value = data.filename;
             }
 
-            // Cerrar modal
             cerrarModalPlan();
-
-            // Marcar que el formulario ha cambiado
             formChanged = true;
 
             console.log("Imagen subida correctamente");
@@ -521,6 +513,7 @@ function previewFotoPlan(input) {
           ocultarLoaderPlan();
         });
     });
+  }
 
   function mostrarLoaderPlan() {
     document.getElementById("loader").classList.add("flex");
@@ -578,10 +571,8 @@ function previewFotoPlan(input) {
     // Asegurar que el loader está oculto
     ocultarLoaderPlan();
   }
-
   // Validación en tiempo real
-  document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("form-editar");
+   const form = document.getElementById("form-editar");
 
     // Validación antes del envío
     form.addEventListener("submit", function (e) {
@@ -642,5 +633,6 @@ function previewFotoPlan(input) {
 
   // No mostrar confirmación al enviar el formulario
   form.addEventListener("submit", function () {
-    formChanged = false;
+    formChanged = false;})
+ 
   });
