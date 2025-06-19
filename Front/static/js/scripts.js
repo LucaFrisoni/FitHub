@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
     navbar.classList.add("-translate-y-full");
     
     window.addEventListener("scroll", () => {
-      if (window.scrollY > innerHeight) {
+      if (window.scrollY > innerHeight * 0.1) {
         navbar.classList.remove("-translate-y-full");
         navbar.classList.add("translate-y-0");
       } else {
