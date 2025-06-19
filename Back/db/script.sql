@@ -67,7 +67,8 @@ CREATE TABLE productos (
     Codigo VARCHAR(50),
     Imagen VARCHAR(255) DEFAULT NULL,
     Cantidad INT,
-    Precio INT
+    Precio INT,
+    Oculto BIT DEFAULT 0
 );
 
 -- Tabla de compras

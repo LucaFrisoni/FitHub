@@ -64,6 +64,7 @@ def get_productos():
 
         cursor.execute(query, values)
         productos = cursor.fetchall()
+        productos =[ producto for producto in productos if producto['Oculto'] == 0 ]
 
         return jsonify(productos)
     except Exception as ex:
@@ -252,30 +253,35 @@ def delete_producto(id):
         
         if not producto:
             return jsonify({"error": "Producto no encontrado"}), 404
-
-        imagen_filename = producto[0] if producto[0] else None
-
-        cursor.execute("DELETE FROM productos WHERE ID_Producto = %s", (id,))
+        
+        cursor.execute("UPDATE productos SET Oculto = 1 WHERE ID_Producto = %s", (id,))
         conn.commit()
-
-        if cursor.rowcount == 0:
-            return jsonify({"error": "No se pudo eliminar el producto"}), 500
-
-        if imagen_filename:
-            try:
-                upload_dir = "../Front/static/images/uploads/productos"
-                imagen_path = os.path.join(upload_dir, imagen_filename)
-                
-                if os.path.exists(imagen_path):
-                    os.remove(imagen_path)
-                    print(f"Imagen eliminada: {imagen_path}")
-                else:
-                    print(f"La imagen no existe en el path: {imagen_path}")
-                    
-            except Exception as img_ex:
-                print(f"Error al eliminar imagen: {str(img_ex)}")
-
+        
         return jsonify({"success": True, "message": "Producto eliminado exitosamente"}), 200
+
+        # imagen_filename = producto[0] if producto[0] else None
+
+        # cursor.execute("DELETE FROM productos WHERE ID_Producto = %s", (id,))
+        # conn.commit()
+
+        # if cursor.rowcount == 0:
+        #     return jsonify({"error": "No se pudo eliminar el producto"}), 500
+
+        # if imagen_filename:
+        #     try:
+        #         upload_dir = "../Front/static/images/uploads/productos"
+        #         imagen_path = os.path.join(upload_dir, imagen_filename)
+                
+        #         if os.path.exists(imagen_path):
+        #             os.remove(imagen_path)
+        #             print(f"Imagen eliminada: {imagen_path}")
+        #         else:
+        #             print(f"La imagen no existe en el path: {imagen_path}")
+                    
+        #     except Exception as img_ex:
+        #         print(f"Error al eliminar imagen: {str(img_ex)}")
+
+        # return jsonify({"success": True, "message": "Producto eliminado exitosamente"}), 200
 
     except Exception as ex:
         return devolver_error(ruta="productos", metodo="DELETE", ex=ex)
