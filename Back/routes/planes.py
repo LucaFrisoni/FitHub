@@ -21,6 +21,9 @@ def get_planes():
         
         planes = []
         for plan_db in planes_db:
+            if plan_db['Oculto'] == 1:
+                continue
+            
             plan = {
                 "id": plan_db['ID_Plan'],
                 "nombre": plan_db['Nombre'],
@@ -31,8 +34,8 @@ def get_planes():
                     5: plan_db['Precio_5_dias']
                 }
             }
-            print(f"Plan cargado: {plan}")
-            
+
+                        
             if plan_db['Deportes_disponibles']:
                 deportes_list = plan_db['Deportes_disponibles'].split(',')
                 deportes_list = [deporte.strip() for deporte in deportes_list]  
@@ -224,9 +227,9 @@ def put_plan(id):
         return devolver_error(ruta=f"planes/{id}", metodo="PUT", ex=ex)
     finally:
         if cursor:
-            cursor.close()
+         cursor.close()
         if conn:
-            conn.close()
+         conn.close()
 
 
 @planes_bp.route("/<int:id>", methods=["DELETE"])
@@ -241,31 +244,11 @@ def delete_plan(id):
         if not plan:
             return jsonify({"error": "Plan no encontrado"}), 404
 
-        # Obtener el nombre de la imagen (si existe)
-        imagen_filename = plan[0] if plan[0] else None
-
-        cursor.execute("DELETE FROM planes WHERE ID_Plan = %s", (id,))
+        cursor.execute("UPDATE planes SET Oculto = 1 WHERE ID_Plan = %s", (id,))
         conn.commit()
-
-        if cursor.rowcount == 0:
-            return jsonify({"error": "No se pudo eliminar el plan"}), 500
-
-        if imagen_filename:
-            try:
-                upload_dir = "../Front/static/images/uploads/planes"
-                imagen_path = os.path.join(upload_dir, imagen_filename)
-                
-                if os.path.exists(imagen_path):
-                    os.remove(imagen_path)
-                    print(f"Imagen de plan eliminada: {imagen_path}")
-                else:
-                    print(f"La imagen del plan no existe en el path: {imagen_path}")
-                    
-            except Exception as img_ex:
-                print(f"Error al eliminar imagen del plan: {str(img_ex)}")
-
+        
         return jsonify({"success": True, "message": "Plan eliminado correctamente"}), 200
-
+        
     except Exception as ex:
         return devolver_error(ruta=f"planes/{id}", metodo="DELETE", ex=ex)
     finally:

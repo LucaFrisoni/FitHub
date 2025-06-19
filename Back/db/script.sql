@@ -33,7 +33,8 @@ CREATE TABLE planes (
     Imagen VARCHAR(255),
     Precio_3_dias INT,
     Precio_5_dias INT,
-    Deportes_disponibles VARCHAR(255)
+    Deportes_disponibles VARCHAR(255),
+    Oculto BIT DEFAULT 0
 );
 
 
